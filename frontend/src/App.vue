@@ -1,123 +1,93 @@
 <template>
-  <v-app :theme="themeObject">
-    <!-- App Bar with Hamburger Menu -->
-    <v-app-bar app color="primary" :dark="darkMode">
-      <v-btn prepend-icon="mdi-menu" @click="toggleDrawer"></v-btn> <!-- Toggles the drawer -->
-      <v-toolbar-title>Optica</v-toolbar-title>
-      <v-spacer></v-spacer>
-
-      <div class="theme-toggle">
-        <v-switch 
-          :value="darkMode" 
-          @change="toggleDarkMode" 
-          :label="`toggle ${switchLabel} mode`"
-        ></v-switch>
-      </div>
-
-      <v-btn v-if="!isLoggedIn" prepend-icon="mdi-login" to="/login">Login</v-btn>
-      <v-btn v-if="!isLoggedIn" prepend-icon="mdi-account-plus" to="/register">Register</v-btn>
-      <v-btn v-if="isLoggedIn" prepend-icon="mdi-logout" @click.prevent="logout">Logout</v-btn>
-    </v-app-bar>
-
-    <!-- Navigation -->
-    <v-navigation-drawer v-model="drawer" app temporary>
-      <v-list density="compact">
-        
-
-        <template v-if="isLoggedIn">
-          <!-- Looping through the events array and displaying each event -->
-          
-            <v-list-item v-for="(event, index) in rutas" :key="index" :to="event.path" :prepend-icon="event.icon">
-              <v-list-item-title>{{event.name}}</v-list-item-title>
-            </v-list-item>
-          
-
-          
-
-
-
-        </template>
-      </v-list>
-    </v-navigation-drawer>
-
-    <!-- Main Content -->
-    <v-main class="mt-12">
-      <div v-if="error" class="text-center text-red mt-4">{{ error }}</div>
-      <router-view />
+  <v-app>
+    <v-main class="d-flex justify-center align-center" style="height: 100vh">
+      <v-card width="400px" elevation="6" rounded-lg>
+        <v-card-title class="text-h5">Registration Form</v-card-title>
+        <v-card-text>
+          <v-form @submit.prevent="handleSubmit">
+            <v-text-field
+              v-model="username"
+              label="Username"
+              :rules="[rules.required]"
+              required
+            ></v-text-field>
+            <v-menu
+              ref="menu"
+              v-model="menu"
+              :close-on-content-click="false"
+              transition="scale-transition"
+              offset-y
+              min-width="auto"
+            >
+              <template v-slot:activator="{ on, attrs }">
+                <v-text-field
+                  v-model="birthdayFormatted"
+                  label="Birthday"
+                  prepend-icon="mdi-calendar"
+                  readonly
+                  :rules="[rules.required]"
+                  v-bind="attrs"
+                  v-on="on"
+                  required
+                ></v-text-field>
+              </template>
+              <v-date-picker
+                ref="picker"
+                v-model="birthday"
+                @change="saveDate"
+              ></v-date-picker>
+            </v-menu>
+            <v-text-field
+              v-model="password"
+              label="Password"
+              type="password"
+              :rules="[rules.required, rules.password]"
+              required
+            ></v-text-field>
+            <v-btn block color="primary" type="submit">Register</v-btn>
+          </v-form>
+        </v-card-text>
+      </v-card>
     </v-main>
   </v-app>
 </template>
 
 <script>
-import { computed } from 'vue';
-import { useStore } from 'vuex';
-import { useRouter } from 'vue-router';
-import { useTheme } from 'vuetify'
-
 export default {
-  name: 'App',
-  setup() {
-    const store = useStore();
-    const router = useRouter();
-    const theme = useTheme()
-
-    const drawer = computed(() => store.getters.drawer);
-    const isLoggedIn = computed(() => store.getters.isLoggedIn);
-    const error = computed(() => store.getters.error);
-
-    const logout = () => {
-      store.dispatch('logout');
-      router.push('/login');
-    };
-
-    const toggleDrawer = () => {
-      store.commit('SET_DRAWER', !drawer.value);
-    };
-
-    const toggleDarkMode = () => {
-      theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
-      //this.darkMode = !this.darkMode;
-    }
-
-    const rutas = router.options.routes;
-    console.log({rutas});
-    
-
-    
-    
-
-    
-
+  data() {
     return {
-      drawer,
-      isLoggedIn,
-      error,
-      logout,
-      toggleDrawer,
-      toggleDarkMode,
-      rutas
+      username: '',
+      birthday: '',
+      password: '',
+      menu: false,
+      rules: {
+        required: value => !!value || 'This field is required.',
+        password: value => (value && value.length >= 6) || 'Password must be at least 6 characters long',
+      },
     };
   },
-  data: () => ({ 
-      darkMode: false
-    }),
-    methods: {
-      
-      /* toggleDarkMode: function () {
-        theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
-        this.darkMode = !this.darkMode;
-      } */
+  computed: {
+    birthdayFormatted() {
+      return this.birthday ? new Date(this.birthday).toLocaleDateString() : '';
     },
-    computed: {
-      switchLabel: function () {
-        return this.darkMode ? 'light' : 'dark';
-      }
-    }
+  },
+  watch: {
+    menu(val) {
+      val && setTimeout(() => (this.$refs.picker.activePicker = 'YEAR'), 300);
+    },
+  },
+  methods: {
+    saveDate(date) {
+      this.$refs.menu.save(date);
+    },
+    handleSubmit() {
+      console.log('Form Submitted:', { username: this.username, birthday: this.birthday, password: this.password });
+      // Handle form submission here
+    },
+  },
 };
 </script>
 
 <style>
-body, html {
-  /* Other styles */
-}
+/* Add any custom styles if needed */
 </style>
