@@ -31,9 +31,9 @@ module.exports = {
   
   async login(req, res) {
     try {
-      const { email, password } = req.body;
+      const { email, password,username } = req.body;
       
-      const user = await User.findOne({ where: { email } });
+      const user = await User.findOne({ where: { username } });
       
       if (!user) {
         return res.status(400).json({ message: 'User not found' });
@@ -53,6 +53,16 @@ module.exports = {
       return res.json({ user, token });
     } catch (error) {
       return res.status(400).json({ message: error.message });
+    }
+  },
+
+  async getAllUsers (req, res) {
+    try {
+      const users = await User.findAll({ attributes: ['id', 'username', 'email'] });
+      res.status(200).json({ users });
+    } catch (error) {
+      console.error('Failed to fetch users:', error);
+      res.status(500).send('Internal Server Error');
     }
   }
 };
