@@ -1,35 +1,36 @@
-const jwt = require('jsonwebtoken');
-const { User } = require('../models');
-const jwtConfig = require('../config/jwt');
+const jwt = require("jsonwebtoken");
+const { User } = require("../models");
+const jwtConfig = require("../config/jwt");
 
 module.exports = {
-  async register(req, res) {
+  async login(req, res) {
     try {
-      const { username, email, password } = req.body;
+      const { password, username } = req.body;
 
-      console.log('[register] hi', {username, email, password});
-      
-      
-      if (await User.findOne({ where: { email } })) {
-        return res.status(400).json({ message: 'User already exists' });
+      const user = await User.findOne({ where: { Username: username } });
+
+      if (!user) {
+        return res.status(400).json({ message: "User not found" });
       }
-      
-      const user = await User.create({ username, email, password });
-      
+
+      if (!(await user.isValidPassword(password))) {
+        return res.status(400).json({ message: "Invalid password" });
+      }
+
       // Don't send password in response
       user.password = undefined;
-      
-      const token = jwt.sign({ id: user.id }, jwtConfig.secret, {
+
+      const token = jwt.sign({ id: user.Id }, jwtConfig.secret, {
         expiresIn: jwtConfig.expiresIn,
       });
-      
-      return res.status(201).json({ user, token });
+
+      return res.json({ user, token });
     } catch (error) {
       return res.status(400).json({ message: error.message });
     }
   },
-  
-  async login(req, res) {
+
+  async registerUser(req, res) {
     try {
       const { email, password,username } = req.body;
       
@@ -38,19 +39,20 @@ module.exports = {
       if (!user) {
         return res.status(400).json({ message: 'User not found' });
       }
-      
-      if (!(await user.isValidPassword(password))) {
-        return res.status(400).json({ message: 'Invalid password' });
-      }
-      
+
+      const user = await User.create({
+        Username: username,
+        Password: password,
+      });
+
       // Don't send password in response
       user.password = undefined;
-      
-      const token = jwt.sign({ id: user.id }, jwtConfig.secret, {
+
+      const token = jwt.sign({ id: user.Id }, jwtConfig.secret, {
         expiresIn: jwtConfig.expiresIn,
       });
-      
-      return res.json({ user, token });
+
+      return res.status(201).json({ user, token });
     } catch (error) {
       return res.status(400).json({ message: error.message });
     }

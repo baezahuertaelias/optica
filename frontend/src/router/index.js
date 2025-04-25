@@ -1,9 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '../views/LoginView.vue'
 import Mainview from '../views/MainView.vue' // Import the new layout view
-import ListarUsuarioView from '../views/ListarUsuarioView.vue'
 
 import { useAuthStore } from '../stores/auth'
+import ListUserView from '@/views/ListUserView.vue'
+import CreateOrUpdateUserView from '@/views/CreateOrUpdateUserView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -18,12 +19,8 @@ const router = createRouter({
       name: 'main',
       component: Mainview, // Use Mainview as the parent layout
       children: [
-        {
-          path: 'listar-usuario',
-          name: 'listar-usuario',
-          component: ListarUsuarioView,
-          meta: { requiresAuth: true },
-        },
+        { path: 'users', name: 'listUser', component: ListUserView,meta: { requiresAuth: true } },
+        { path: 'users/:id?', name: 'editUser', component: CreateOrUpdateUserView, meta: { requiresAuth: true } }, // This route can handle both create and edit
       ],
     },
   ],

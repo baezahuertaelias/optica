@@ -1,50 +1,39 @@
-const bcrypt = require('bcryptjs');
+const { DataTypes } = require("sequelize");
+const UserType = require('./usertype');
 
-module.exports = (sequelize, DataTypes) => {
+module.exports = (sequelize) => {
   const User = sequelize.define('User', {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+      allowNull: false
+    },
     username: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
-      validate: {
-        notEmpty: true
-      }
-    },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-      validate: {
-        isEmail: true
-      }
+      unique: true
     },
     password: {
       type: DataTypes.STRING,
+      allowNull: false
+    },
+    userTypeId: {
+      type: DataTypes.INTEGER,
       allowNull: false,
-      validate: {
-        notEmpty: true
+      references: {
+        model: UserType,
+        key: 'id'
       }
     }
   }, {
-    hooks: {
-      beforeCreate: async (user) => {
-        if (user.password) {
-          const salt = await bcrypt.genSalt(10);
-          user.password = await bcrypt.hash(user.password, salt);
-        }
-      },
-      beforeUpdate: async (user) => {
-        if (user.changed('password')) {
-          const salt = await bcrypt.genSalt(10);
-          user.password = await bcrypt.hash(user.password, salt);
-        }
-      }
-    }
+    tableName: 'user',
+    timestamps: true
   });
-  
-  User.prototype.isValidPassword = async function(password) {
-    return await bcrypt.compare(password, this.password);
-  };
+
+  // Define the association
+  User.belongsTo(UserType, { foreignKey: "userTypeId" });
+  UserType.hasMany(User, { foreignKey: "userTypeId" });
 
   return User;
 };

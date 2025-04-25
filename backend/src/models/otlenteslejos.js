@@ -1,38 +1,44 @@
 const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
-  const otLentesLejos = sequelize.define('otLentesLejos', {
+  const OtLentesLejos = sequelize.define('OtLentesLejos', {
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       autoIncrement: true,
       primaryKey: true
     },
-    od_esf: {
+    odEsf: {
       type: DataTypes.FLOAT,
       allowNull: false
     },
-    od_cyl: {
+    odCyl: {
       type: DataTypes.FLOAT,
       allowNull: false
     },
-    od_eje: {
+    odEje: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    oi_esf: {
+    oiEsf: {
       type: DataTypes.FLOAT,
       allowNull: false
     },
-    oi_cyl: {
+    oiCyl: {
       type: DataTypes.FLOAT,
       allowNull: false
     },
-    oi_eje: {
+    oiEje: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    dp: {
       type: DataTypes.INTEGER,
       allowNull: false
     }
+  }, {
+    tableName: 'OtLentesLejos' // Ensures the table name is PascalCase in PostgreSQL
   });
 
-  return otLentesLejos;
+  return OtLentesLejos;
 };

@@ -1,22 +1,20 @@
 const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
-  const Agendamiento = sequelize.define('Agendamiento', {
+  const UserType = sequelize.define('UserType', {
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       autoIncrement: true,
       primaryKey: true
     },
-    fecha: {
-      type: DataTypes.DATEONLY,
-      allowNull: false
-    },
-    hora: {
-      type: DataTypes.TIME,
+    type: {
+      type: DataTypes.STRING,
       allowNull: false
     }
+  }, {
+    tableName: 'UserTypes' // Ensures the table name is PascalCase in PostgreSQL
   });
 
-  return Agendamiento;
+  return UserType;
 };
