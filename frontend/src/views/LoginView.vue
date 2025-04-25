@@ -5,7 +5,7 @@ import { useAuthStore } from '../stores/auth' // Import the specific store
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import Button from 'primevue/button'
-import axios from 'axios'
+import apiClient from '../axios-config'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -16,17 +16,24 @@ const password = ref('')
 const login = async () => {
   try {
     //TODO ARREGLAR EL URL BASE
-    console.log(import.meta.env.VITE_URL_BACKEND)
 
-    const response = await axios.post(import.meta.env.VITE_URL_BACKEND + '/auth/login', {
+    const response = await apiClient.post('/auth/login', {
       username: username.value,
       password: password.value,
     })
 
     if (response.status === 200) {
-      // Assuming the backend returns a token or sets session storage upon successful login
-      authStore.setUser(response.data.user)
-      router.push({ name: 'main' }) // Redirect to the AboutView after successful login
+      // Assuming the backend returns a token and user information
+      const { token, user } = response.data
+
+      // Store token in localStorage
+      localStorage.setItem('token', token)
+
+      // Set user information in auth store
+      authStore.setUser(user)
+
+      // Redirect to main page
+      router.push({ name: 'main' })
     }
   } catch (error) {
     console.error('Login failed:', error)
