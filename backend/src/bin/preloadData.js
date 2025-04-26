@@ -1,25 +1,42 @@
-const bcrypt = require("bcrypt")
-const {Users} = require("../models")
+const bcrypt = require("bcrypt");
+const { Users, UserTypes } = require("../models");
 
 module.exports = {
-    async fun() {
-        const username = 'elias';
-        const password = '123';
-        const userTypeId = 2;
+  async fun() {
+    // Hash the password before storing it
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Hash the password before storing it
-        const hashedPassword = await bcrypt.hash(password, 10);
+    try {
+      const user = await Users.create([
+        {
+          username: "elias",
+          password: hashedPassword,
+          userTypeId: 1,
+        },
+        {
+          username: "javi",
+          password: hashedPassword,
+          userTypeId: 2,
+        },
+      ]);
 
-        try {
-            const user = await Users.create({
-                username: username,
-                password: hashedPassword,
-                userTypeId
-            });
+      console.log("User created:", user);
 
-            console.log('User created:', user);
-        } catch (error) {
-            console.error('Error creating user:', error);
+      const typeUser = await UserTypes.create(
+        {
+          id: 1,
+          type: "Admin",
+        },
+        {
+          id: 2,
+          type: "Bendedor",
         }
+      );
+
+      console.log("TypeUser created:", typeUser);
+      
+    } catch (error) {
+      console.error("Error creating user:", error);
     }
-}
+  },
+};

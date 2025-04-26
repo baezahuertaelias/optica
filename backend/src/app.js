@@ -17,7 +17,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(express.json());
-app.use("/api", routes);
+app.use("/", routes);
 
 // Database connection
 const PORT = process.env.PORT || 5000;
