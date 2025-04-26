@@ -1,4 +1,3 @@
-<!-- src/views/Settings.vue -->
 <template>
   <div class="page-container">
     <h1>Settings</h1>
@@ -17,30 +16,21 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { reactive } from 'vue'
 import Dropdown from 'primevue/dropdown'
 import ToggleButton from 'primevue/togglebutton'
 import Button from 'primevue/button'
 
-export default {
-  components: {
-    Dropdown,
-    ToggleButton,
-    Button
-  },
-  data() {
-    return {
-      settings: {
-        theme: { name: 'Light', value: 'light' },
-        notifications: true
-      },
-      themeOptions: [
-        { name: 'Light', value: 'light' },
-        { name: 'Dark', value: 'dark' }
-      ]
-    }
-  }
-}
+const themeOptions = [
+  { name: 'Light', value: 'light' },
+  { name: 'Dark', value: 'dark' }
+]
+
+const settings = reactive({
+  theme: { name: 'Light', value: 'light' },
+  notifications: true
+})
 </script>
 
 <style scoped>

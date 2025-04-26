@@ -18,33 +18,23 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import Button from 'primevue/button'
 
-export default {
-  name: 'Login',
-  components: {
-    InputText,
-    Password,
-    Button
-  },
-  data() {
-    return {
-      username: '',
-      password: ''
-    }
-  },
-  methods: {
-    login() {
-      // Simple login without actual authentication
-      if (this.username && this.password) {
-        localStorage.setItem('isLoggedIn', 'true')
-        localStorage.setItem('username', this.username)
-        this.$router.push('/app/dashboard')
-      }
-    }
+const router = useRouter()
+const username = ref('')
+const password = ref('')
+
+const login = () => {
+  // Simple login without actual authentication
+  if (username.value && password.value) {
+    localStorage.setItem('isLoggedIn', 'true')
+    localStorage.setItem('username', username.value)
+    router.push('/app/dashboard')
   }
 }
 </script>

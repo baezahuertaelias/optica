@@ -1,4 +1,3 @@
-<!-- src/views/Dashboard.vue -->
 <template>
   <div class="page-container">
     <h1>Dashboard</h1>
@@ -7,6 +6,10 @@
     </div>
   </div>
 </template>
+
+<script setup>
+// Using script setup - Composition API
+</script>
 
 <style scoped>
 .page-container {
@@ -20,4 +23,3 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 </style>
-

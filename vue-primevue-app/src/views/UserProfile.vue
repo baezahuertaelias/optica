@@ -17,24 +17,15 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { reactive } from 'vue'
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
 
-export default {
-  components: {
-    InputText,
-    Button
-  },
-  data() {
-    return {
-      profile: {
-        name: 'John Doe',
-        email: 'john.doe@example.com'
-      }
-    }
-  }
-}
+const profile = reactive({
+  name: 'John Doe',
+  email: 'john.doe@example.com'
+})
 </script>
 
 <style scoped>
@@ -62,4 +53,3 @@ label {
   margin-bottom: 0.5rem;
 }
 </style>
-

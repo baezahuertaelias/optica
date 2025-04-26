@@ -17,51 +17,47 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import PanelMenu from 'primevue/panelmenu'
 import Button from 'primevue/button'
 
-export default {
-  name: 'MainLayout',
-  components: {
-    PanelMenu,
-    Button
+const router = useRouter()
+const username = ref('')
+
+onMounted(() => {
+  username.value = localStorage.getItem('username') || 'User'
+})
+
+const menuItems = [
+  {
+    label: 'Dashboard',
+    icon: 'pi pi-fw pi-home',
+    command: () => router.push('/app/dashboard')
   },
-  data() {
-    return {
-      username: localStorage.getItem('username') || 'User',
-      menuItems: [
-        {
-          label: 'Dashboard',
-          icon: 'pi pi-fw pi-home',
-          command: () => this.$router.push('/app/dashboard')
-        },
-        {
-          label: 'User',
-          icon: 'pi pi-fw pi-user',
-          items: [
-            {
-              label: 'Profile',
-              icon: 'pi pi-fw pi-user-edit',
-              command: () => this.$router.push('/app/profile')
-            },
-            {
-              label: 'Settings',
-              icon: 'pi pi-fw pi-cog',
-              command: () => this.$router.push('/app/settings')
-            }
-          ]
-        }
-      ]
-    }
-  },
-  methods: {
-    logout() {
-      localStorage.removeItem('isLoggedIn')
-      localStorage.removeItem('username')
-      this.$router.push('/')
-    }
+  {
+    label: 'User',
+    icon: 'pi pi-fw pi-user',
+    items: [
+      {
+        label: 'Profile',
+        icon: 'pi pi-fw pi-user-edit',
+        command: () => router.push('/app/profile')
+      },
+      {
+        label: 'Settings',
+        icon: 'pi pi-fw pi-cog',
+        command: () => router.push('/app/settings')
+      }
+    ]
   }
+]
+
+const logout = () => {
+  localStorage.removeItem('isLoggedIn')
+  localStorage.removeItem('username')
+  router.push('/')
 }
 </script>
 

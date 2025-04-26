@@ -5,6 +5,10 @@
   </div>
 </template>
 
+<script setup>
+// Using script setup - Composition API
+</script>
+
 <style>
 html, body {
   margin: 0;

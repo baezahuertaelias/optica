@@ -5,8 +5,8 @@ import App from './App.vue'
 
 // PrimeVue imports
 import PrimeVue from 'primevue/config'
-//import 'primevue/resources/themes/lara-light-blue/theme.css' // theme
-//import 'primevue/resources/primevue.min.css' // core css
+import 'primevue/resources/themes/lara-light-blue/theme.css' // theme
+import 'primevue/resources/primevue.min.css' // core css
 import 'primeicons/primeicons.css' // icons
 
 // Route components
@@ -14,7 +14,7 @@ import Login from './views/Login.vue'
 import Dashboard from './views/Dashboard.vue'
 import UserProfile from './views/UserProfile.vue'
 import Settings from './views/Settings.vue'
-import MainLayout from './layout/MainLayout.vue'
+import MainLayout from './layouts/MainLayout.vue'
 
 // Router configuration
 const routes = [
