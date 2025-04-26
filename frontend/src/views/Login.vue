@@ -25,17 +25,48 @@ import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import Button from 'primevue/button'
 
+//nuevos
+import apiClient from '../axios-config'
+
 const router = useRouter()
 const username = ref('')
 const password = ref('')
 
-const login = () => {
+const login = async () => {
   // Simple login without actual authentication
-  if (username.value && password.value) {
+  /* if (username.value && password.value) {
     localStorage.setItem('isLoggedIn', 'true')
     localStorage.setItem('username', username.value)
     router.push('/app/dashboard')
+  } */
+  try {
+    const response = await apiClient.post('/auth/login', {
+      username: username.value,
+      password: password.value,
+    })
+
+    if (response.status === 200) {
+      // Assuming the backend returns a token and user information
+      const { token, user } = response.data
+
+      // Store token in localStorage
+      localStorage.setItem('isLoggedIn', 'true')
+      localStorage.setItem('username', username.value)
+
+      // Redirect to main page
+      router.push('/app/dashboard')
+    } else {
+      // Show error message using toast when the response is not 200
+      //showErrorMessage(response.data.message || 'Login failed')
+      alert('login malo')
+    }
+  } catch (error) {
+    console.log('[Login] error', error);
+    
+    alert('login error')
   }
+
+
 }
 </script>
 

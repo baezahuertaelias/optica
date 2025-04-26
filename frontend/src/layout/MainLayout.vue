@@ -40,6 +40,17 @@ const menuItems = [
     label: 'User',
     icon: 'pi pi-fw pi-user',
     items: [
+    {
+        label: 'Crear usuarios',
+        icon: 'pi pi-fw pi-user-edit',
+        command: () => router.push('/app/createuser')
+      },
+      {
+        label: 'Listado usuarios',
+        icon: 'pi pi-fw pi-user-edit',
+        command: () => router.push('/app/listuser')
+      }
+    ]/* [
       {
         label: 'Profile',
         icon: 'pi pi-fw pi-user-edit',
@@ -50,7 +61,7 @@ const menuItems = [
         icon: 'pi pi-fw pi-cog',
         command: () => router.push('/app/settings')
       }
-    ]
+    ] */
   }
 ]
 
