@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
-  const UserType = sequelize.define('UserType', {
+  const UserTypes = sequelize.define('UserTypes', {
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -16,5 +16,5 @@ module.exports = (sequelize) => {
     tableName: 'UserTypes' // Ensures the table name is PascalCase in PostgreSQL
   });
 
-  return UserType;
+  return UserTypes;
 };

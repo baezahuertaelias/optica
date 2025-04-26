@@ -2,7 +2,7 @@ const { DataTypes } = require("sequelize");
 const UserType = require('./usertype');
 
 module.exports = (sequelize) => {
-  const User = sequelize.define('User', {
+  const Users = sequelize.define('Users', {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -21,19 +21,23 @@ module.exports = (sequelize) => {
     userTypeId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: {
-        model: UserType,
+      /* references: {
+        model: UsersType,
         key: 'id'
-      }
+      } */
+    },
+    status: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
     }
   }, {
-    tableName: 'user',
+    tableName: 'Users',
     timestamps: true
   });
 
-  // Define the association
-  User.belongsTo(UserType, { foreignKey: "userTypeId" });
-  UserType.hasMany(User, { foreignKey: "userTypeId" });
 
-  return User;
+  // Define the association
+  /* Users.belongsTo(UsersType, { foreignKey: "userTypeId" });
+  UsersType.hasMany(Users, { foreignKey: "userTypeId" }); */
+  return Users;
 };

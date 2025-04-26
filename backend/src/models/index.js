@@ -2,9 +2,11 @@ const fs = require("fs");
 const path = require("path");
 const { Sequelize, DataTypes } = require("sequelize"); // Correctly import Sequelize and DataTypes
 const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || "development";
+//const env = process.env.NODE_ENV || "development";
+const env = "development"
 const config = require("../config/database")[env];
 const db = {};
+
 
 let sequelize;
 if (config.use_env_variable) {
@@ -25,6 +27,7 @@ fs.readdirSync(__dirname)
     );
   })
   .forEach((file) => {
+    
     const model = require(path.join(__dirname, file))(sequelize, DataTypes); // Correctly pass DataTypes
     db[model.name] = model;
   });

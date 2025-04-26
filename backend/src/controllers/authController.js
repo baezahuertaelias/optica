@@ -1,100 +1,151 @@
 const jwt = require("jsonwebtoken");
-const { User } = require("../models");
+const { Users, UserTypes } = require("../models");
 const jwtConfig = require("../config/jwt");
+const bcrypt = require("bcryptjs"); // Make sure this package is installed
 
 module.exports = {
   async login(req, res) {
     try {
       const { password, username } = req.body;
+      
+      if (!username || !password) {
+        return res.status(400).json({ message: "Username and password are required" });
+      }
 
-      const user = await User.findOne({ where: { Username: username } });
+      const user = await Users.findOne({ where: { username } });
 
       if (!user) {
-        return res.status(400).json({ message: "User not found" });
+        return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      if (!(await user.isValidPassword(password))) {
-        return res.status(400).json({ message: "Invalid password" });
+      // Direct password comparison with bcrypt
+      const passwordMatch = await bcrypt.compare(password, user.password);
+      
+      if (!passwordMatch) {
+        return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      // Don't send password in response
-      user.password = undefined;
+      // Create a user object without password for response
+      const userResponse = {
+        id: user.id ,
+        username: user.username,
+        userTypeId: user.userTypeId,
+        status: user.status
+      };
 
-      const token = jwt.sign({ id: user.Id }, jwtConfig.secret, {
+      const token = jwt.sign({ id: user.id || user.Id }, jwtConfig.secret, {
         expiresIn: jwtConfig.expiresIn,
       });
 
-      return res.json({ user, token });
+      return res.json({ 
+        user: userResponse, 
+        token 
+      });
     } catch (error) {
-      return res.status(400).json({ message: error.message });
+      console.error("Login error:", error);
+      return res.status(500).json({ message: "Internal server error" });
     }
   },
 
   async registerUser(req, res) {
     try {
-      const { username, password } = req.body;
-
-      if (await User.findOne({ where: { Username: username } })) {
-        return res.status(400).json({ message: "User already exists" });
+      const { username, password, userTypeId } = req.body;
+      
+      if (!username || !password) {
+        return res.status(400).json({ message: "Username and password are required" });
       }
 
-      const user = await User.create({
-        Username: username,
-        Password: password,
+      // Password strength validation
+      if (password.length < 8) {
+        return res.status(400).json({ message: "Password must be at least 8 characters long" });
+      }
+
+      const existingUser = await Users.findOne({ where: { username } });
+      if (existingUser) {
+        return res.status(409).json({ message: "Username already taken" });
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      const user = await Users.create({
+        username,
+        password: hashedPassword, // Password will be hashed in the model's beforeSave hook
+        status: 1,
+        userTypeId
       });
 
-      // Don't send password in response
-      user.password = undefined;
+      // Create a user object without the password for the token payload
+      const userForToken = {
+        id: user.id,
+        username: user.username
+      };
 
-      const token = jwt.sign({ id: user.Id }, jwtConfig.secret, {
+      const token = jwt.sign({ id: user.Id || user.id }, jwtConfig.secret, {
         expiresIn: jwtConfig.expiresIn,
       });
 
-      return res.status(201).json({ user, token });
+      return res.status(201).json({ 
+        user: userForToken, 
+        token 
+      });
     } catch (error) {
-      return res.status(400).json({ message: error.message });
+      console.error("Registration error:", error);
+      return res.status(500).json({ message: "Internal server error" });
     }
   },
 
   async getAllUsers(req, res) {
     try {
-      const users = await User.findAll({
-        attributes: ["Id", "Username"],
+      const users = await Users.findAll({
+        attributes: ["id", "username", "userTypeId", "status"], // Include both id cases for compatibility
       });
-      res.status(200).json({ users });
+      return res.status(200).json({ users });
     } catch (error) {
       console.error("Failed to fetch users:", error);
-      res.status(500).send("Internal Server Error");
+      return res.status(500).json({ message: "Internal server error" });
     }
   },
 
   async updateUser(req, res) {
     try {
       const { id } = req.params;
+      const { username, password, userTypeId, status } = req.body;
 
-      const { username, password, userTypeId } = req.body;
+      // Find user by id, handling both capitalization cases
+      const user = await Users.findOne({
+        where: {
+          id
+        }
+      });
 
-      //Find user by id
-      const user = await User.findByPk(id);
       if (!user) {
-        return res.status(404).json({ message: "User not found." });
+        return res.status(404).json({ message: "User not found" });
       }
 
       // Update fields if provided
-      if (username) user.Username = username;
-      if (password) user.Password = password;
-      if (userTypeId) user.UserTypeId = userTypeId;
+      if (username) user.username = username;
+      
+      // Password validation if provided
+      if (password) {
+        if (password.length < 8) {
+          return res.status(400).json({ message: "Password must be at least 8 characters long" });
+        }
+        const hashedPassword = await bcrypt.hash(password, 10);
+        user.password = hashedPassword;
+      }
+      
+      if (userTypeId) user.userTypeId = userTypeId;
 
       await user.save();
 
       return res.status(200).json({
-        Id: user.Id,
-        Username: user.Username,
-        UserTypeId: user.UserTypeId,
+        id: user.id,
+        username: user.username,
+        userTypeId: user.userTypeId
       });
     } catch (error) {
       console.error("Error updating user:", error);
-      return res.status(500).json({ message: "Internal server error." });
+      return res.status(500).json({ message: "Internal server error" });
     }
   },
 
@@ -102,19 +153,26 @@ module.exports = {
     try {
       const { id } = req.params;
 
-      // Validate input
       if (!id) {
-        return res.status(400).json({ message: "User ID is required." });
+        return res.status(400).json({ message: "User ID is required" });
       }
 
-      const user = await User.findByPk(id, {
-        attributes: ["Id", "Username", "UserTypeId"], // Exclude sensitive information
+      // Find user by id, handling both capitalization cases
+      const user = await Users.findOne({
+        where: {
+          [Users.sequelize.or]: [{ id }, { Id: id }]
+        },
+        attributes: ["id", "username", "userTypeId", "status"] // Include both capitalization cases
       });
 
-      res.status(200).json({ user });
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      return res.status(200).json({ user });
     } catch (error) {
       console.error("Failed to fetch user:", error);
-      res.status(500).send("Internal Server Error");
+      return res.status(500).json({ message: "Internal server error" });
     }
   },
 
@@ -122,36 +180,45 @@ module.exports = {
     try {
       const { id } = req.params;
 
-      // Validate input
       if (!id) {
-        return res.status(400).json({ message: "User ID is required." });
+        return res.status(400).json({ message: "User ID is required" });
       }
 
-      const user = await User.findByPk(id);
+      // Find user by id, handling both capitalization cases
+      const user = await Users.findOne({
+        where: {
+          [Users.sequelize.or]: [{ id }, { Id: id }]
+        }
+      });
 
       if (!user) {
-        return res.status(404).json({ message: "User not found." });
+        return res.status(404).json({ message: "User not found" });
       }
 
       await user.destroy();
-
-      return res.status(200).json({ message: "User deleted successfully." });
+      return res.status(200).json({ message: "User deleted successfully" });
     } catch (error) {
       console.error("Failed to delete user:", error);
-      res.status(500).send("Internal Server Error");
+      return res.status(500).json({ message: "Internal server error" });
     }
   },
 
   async getAllUserTypes(req, res) {
     try {
-      const userTypes = await UserType.findAll();
-      if (!userTypes) {
-        return res.status(404).json({ message: "No user types found." });
+      // Check if UserType model exists
+      if (!UserTypes) {
+        return res.status(500).json({ message: "UserType model not found" });
       }
-      res.status(200).json(userTypes);
+      
+      const userTypes = await UserTypes.findAll();
+      if (!userTypes || userTypes.length === 0) {
+        return res.status(404).json({ message: "No user types found" });
+      }
+      
+      return res.status(200).json({ userTypes });
     } catch (error) {
       console.error("Failed to fetch UserTypes:", error);
-      res.status(500).json({ message: "Internal server error." });
+      return res.status(500).json({ message: "Internal server error" });
     }
   },
 };
