@@ -49,7 +49,7 @@ module.exports = {
 
   async registerUser(req, res) {
     try {
-      const { username, password, userTypeId } = req.body;
+      const { username, password, userType } = req.body;
       
       if (!username || !password) {
         return res.status(400).json({ message: "Username and password are required" });
@@ -71,7 +71,7 @@ module.exports = {
         username,
         password: hashedPassword, // Password will be hashed in the model's beforeSave hook
         status: 1,
-        userTypeId
+        userTypeId: userType
       });
 
       // Create a user object without the password for the token payload
@@ -158,12 +158,7 @@ module.exports = {
       }
 
       // Find user by id, handling both capitalization cases
-      const user = await Users.findOne({
-        where: {
-          [Users.sequelize.or]: [{ id }, { Id: id }]
-        },
-        attributes: ["id", "username", "userTypeId", "status"] // Include both capitalization cases
-      });
+      const user = await Users.findByPk(id);
 
       if (!user) {
         return res.status(404).json({ message: "User not found" });
