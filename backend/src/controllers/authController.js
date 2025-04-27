@@ -60,6 +60,11 @@ module.exports = {
         return res.status(400).json({ message: "Password must be at least 8 characters long" });
       }
 
+
+      if (userTypeId === null || userTypeId === undefined) {
+        return res.status(400).json({ message: "Usertype cant be null" });
+      }
+
       const existingUser = await Users.findOne({ where: { username } });
       if (existingUser) {
         return res.status(409).json({ message: "Username already taken" });
