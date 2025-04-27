@@ -1,5 +1,6 @@
 <template>
   <div class="p-3">
+    <Toast/>
     <h1>Lista de Usuarios</h1>
     <DataTable
       :value="users"
@@ -12,12 +13,18 @@
       <Column field="username" header="Username"></Column>
       <Column field="status" header="Estado">
         <template #body="{ data }">
-            <Tag :value="data.status === true ? 'Activo': 'Inactivo' " :severity="data.status === true ? 'success': 'danger'" />
+          <Tag
+            :value="data.status === true ? 'Activo' : 'Inactivo'"
+            :severity="data.status === true ? 'success' : 'danger'"
+          />
         </template>
       </Column>
       <Column field="typeUserId" header="Tipo usuario">
         <template #body="{ data }">
-            <Tag :value="data.userType.type" :severity="getSeverity(data.userType.type)" />
+          <Tag
+            :value="data.userType.type"
+            :severity="getSeverity(data.userType.type)"
+          />
         </template>
       </Column>
       <Column header="Actions">
@@ -39,18 +46,20 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import apiClient from '../axios-config'
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
-import Button from 'primevue/button'
-import Tag from 'primevue/tag'
-import { useRouter } from 'vue-router'
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useToast } from "primevue/usetoast";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
+import Button from "primevue/button";
+import Tag from "primevue/tag";
+import Toast from "primevue/toast";
+import apiClient from "../axios-config";
 
 // State to hold the list of users
 const users = ref([]);
-const router = useRouter()
-
+const router = useRouter();
+const toast = useToast();
 // Function to fetch users
 const fetchUsers = async () => {
   try {
@@ -60,49 +69,49 @@ const fetchUsers = async () => {
       users.value = response.data.users;
     }
   } catch (error) {
-    console.error("Failed to fetch users:", error.response);
+    toast.add({
+      severity: "error",
+      summary: "Error",
+      detail: error.response.data.message || "Algo fallo",
+      life: 3000,
+    });
   }
-  console.log('value', users.value) 
+  console.log("value", users.value);
 };
 
-const editUser = async(user_) => {
+const editUser = async (user_) => {
   try {
-    
-    router.push({ name: 'Crear usuario', params: { id: user_.id } });
+    router.push({ name: "Crear usuario", params: { id: user_.id } });
   } catch (error) {
-    console.log('edit error', error);
-    
+    console.log("edit error", error);
   }
 };
 
-const deleteUser = async() => {
-    try {
-        console.log('has to delete')
-    }catch (error){
-        console.log('deleteuser error')
-    }
-}
+const deleteUser = async () => {
+  try {
+    console.log("has to delete");
+  } catch (error) {
+    console.log("deleteuser error");
+  }
+};
 
 const getSeverity = (status) => {
-    switch (status) {
-        case 'Admin':
-            return 'info';
+  switch (status) {
+    case "Admin":
+      return "info";
 
-        case 'Vendedor':
-            return 'warn';
+    case "Vendedor":
+      return "warn";
 
-        case 'true':
-            return 'success';
+    case "true":
+      return "success";
 
-        case 'false':
-            return 'danger';
-    }
-}
+    case "false":
+      return "danger";
+  }
+};
 
-// Fetch users on component mount
-import { onMounted } from "vue";
 onMounted(() => {
-    console.log('ON MOUNTED')
   fetchUsers();
 });
 </script>

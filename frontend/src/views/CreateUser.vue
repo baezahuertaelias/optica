@@ -1,5 +1,6 @@
 <template>
   <div class="p-3">
+    <Toast/>
     <h1>{{ isNew ? "Crear Usuario" : "Modificar Usuario" }}</h1>
     <form @submit.prevent="saveUser">
       <InputText v-model="user.username" placeholder="Username" required />
@@ -21,15 +22,19 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
+import { useToast } from 'primevue/usetoast';
 import InputText from "primevue/inputtext";
 import Password from "primevue/password";
 import Dropdown from "primevue/dropdown";
 import Button from "primevue/button";
 import ToggleSwitch from "primevue/toggleswitch";
 import apiClient from "../axios-config";
+import Toast from "primevue/toast";
 
 const router = useRouter();
 const route = useRoute();
+const toast = useToast();
+
 
 // State to hold user data
 const user = ref({
@@ -86,20 +91,6 @@ const saveUser = async () => {
   try {
     const userData = { ...user.value };
 
-    
-
-    //TODO: Tomar la respuesta cuando es status=400 y mostrar msj error
-    //basarse en el login. quedo resuelto
-
-    if (!isNew && userData.password.length < 8) {
-      alert("passwd debe ser mayor a 8");
-      return null;
-    }
-    if (!isNew && userData.userTypeId === null) {
-      alert("elegir tipo de usuario");
-      return null;
-    }
-
     let response;
     if (isNew.value) {
       response = await apiClient.post("/users", userData);
@@ -109,9 +100,14 @@ const saveUser = async () => {
 
     if (response.status === 200 || response.status === 201) {
       router.push({ name: "Listado usuarios" });
+    } else {
+      // Show error message using toast when the response is not 200
+      //showErrorMessage(response.data.message || 'Login failed')
+      toast.add({ severity: 'error', summary: 'Error', detail: response.data.message || 'Algo fallo', life: 3000 });
     }
   } catch (error) {
     console.error("Failed to save user:", error);
+    toast.add({ severity: 'error', summary: 'Error', detail: error.response.data.message || 'Algo fallo', life: 3000 });
   }
 };
 </script>

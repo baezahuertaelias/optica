@@ -3,13 +3,13 @@
   <div class="login-container">
     <Toast/>
     <div class="login-card">
-      <h2>Login</h2>
+      <h2>Iniciar sesion</h2>
       <div class="field">
-        <label for="username">Username</label>
+        <label for="username">Usuario</label>
         <InputText id="username" v-model="username" class="w-100" />
       </div>
       <div class="field">
-        <label for="password">Password</label>
+        <label for="password">Clave</label>
         <Password id="password" v-model="password" toggleMask class="w-100" />
       </div>
       <div class="field">
@@ -54,7 +54,6 @@ const login = async () => {
       await localStorage.setItem('isLoggedIn', 'true')
       await localStorage.setItem('username', username.value)
       await localStorage.setItem('token', token);
-      console.log('[Login] token',token);
       
 
       // Redirect to main page

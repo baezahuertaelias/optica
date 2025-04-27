@@ -9,23 +9,23 @@
         :options="genders"
         optionLabel="value"
         optionValue="id"
-        placeholder="Select gender"
+        placeholder="Sexo"
         required
       />
-      <InputText v-model="patient.tel" placeholder="tel" />
-      <InputText v-model="patient.homeaddress" placeholder="homeaddress" />
-      <InputText v-model="patient.mail" placeholder="mail" />
-      <InputText v-model="patient.occupation" placeholder="occupation" />
+      <InputText v-model="patient.tel" placeholder="Telefono" />
+      <InputText v-model="patient.homeaddress" placeholder="Direccion" />
+      <InputText v-model="patient.mail" placeholder="Email" />
+      <InputText v-model="patient.occupation" placeholder="Ocupacion" />
       <InputText
         v-model="patient.legalrepresentative"
-        placeholder="legalrepresentative"
+        placeholder="Representante legal"
       />
       <Dropdown
         v-model="patient.idIsapre"
         :options="isapres"
         optionLabel="value"
         optionValue="id"
-        placeholder="Select isapre"
+        placeholder="Isapre"
         required
       />
 

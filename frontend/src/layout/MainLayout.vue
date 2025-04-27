@@ -3,7 +3,7 @@
   <div class="layout-container">
     <div class="layout-sidebar">
       <div class="sidebar-header">
-        <h3>Admin Panel</h3>
+        <h3>Optica</h3>
         <div class="user-info">
           <span>{{ username }}</span>
           <Button icon="pi pi-sign-out" class="p-button-text p-button-sm" @click="logout" />
