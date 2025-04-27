@@ -3,6 +3,7 @@ import './assets/main.css'
 // src/main.js
 import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
+import ToastService from 'primevue/toastservice';
 import App from './App.vue'
 
 // PrimeVue imports
@@ -21,6 +22,9 @@ import CreateUser from './views/CreateUser.vue'
 //
 
 import MainLayout from './layout/MainLayout.vue'
+import CalendarioTest from './views/CalendarioTest.vue'
+
+
 
 // Router configuration
 const routes = [
@@ -62,6 +66,11 @@ const routes = [
       }
 
     ]
+  },
+  {
+    path: '/calendarioTest',
+    name: 'CalendarioTest',
+    component: CalendarioTest
   }
 ]
 
@@ -84,11 +93,12 @@ router.beforeEach((to, from, next) => {
 })
 
 // Create and mount the Vue application
-const app = createApp(App)
+const app = createApp(App);
 app.use(PrimeVue, {
   theme: {
     preset: Aura,
   },
-})
-app.use(router)
-app.mount('#app')
+});
+app.use(ToastService);
+app.use(router);
+app.mount('#app');
