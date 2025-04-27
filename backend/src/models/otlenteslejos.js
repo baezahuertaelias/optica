@@ -37,14 +37,14 @@ module.exports = (sequelize) => {
       allowNull: false
     }
   }, {
-    tableName: 'OtLentesLejos' // Ensures the table name is PascalCase in PostgreSQL
+    tableName: 'OtLentesLejos'
   });
 
   OtLentesLejos.associate = (models) => {
-    // One lens prescription can be associated with many worksheets
-    OtLentesLejos.hasMany(models.Worksheets, {
+    // Change to one-to-one relation with Worksheets
+    OtLentesLejos.hasOne(models.Worksheets, {
       foreignKey: 'idOTLentesLejos',
-      as: 'worksheets'
+      as: 'worksheet'
     });
   };
 

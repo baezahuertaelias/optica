@@ -8,15 +8,27 @@ module.exports = (sequelize, DataTypes) => {
     },
     idPaciente: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: 'Patients',
+        key: 'id'
+      }
     },
     idOTLentesCerca: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: 'OtLentesCerca',
+        key: 'id'
+      }
     },
     idOTLentesLejos: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: 'OtLentesLejos',
+        key: 'id'
+      }
     },
     observaciones: {
       type: DataTypes.STRING,
@@ -24,7 +36,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     userId: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: 'Users',
+        key: 'id'
+      }
     }
   }, {
     tableName: 'Worksheets',
@@ -32,25 +48,25 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   Worksheets.associate = (models) => {
-    // Relation with Users
+    // Many-to-one relation with Users
     Worksheets.belongsTo(models.Users, {
       foreignKey: 'userId',
       as: 'user'
     });
     
-    // Relation with Patients
+    // Many-to-one relation with Patients
     Worksheets.belongsTo(models.Patients, {
       foreignKey: 'idPaciente',
       as: 'patient'
     });
     
-    // Relation with OtLentesCerca
+    // One-to-one relation with OtLentesCerca
     Worksheets.belongsTo(models.OtLentesCerca, {
       foreignKey: 'idOTLentesCerca',
       as: 'lentesCerca'
     });
     
-    // Relation with OtLentesLejos
+    // One-to-one relation with OtLentesLejos
     Worksheets.belongsTo(models.OtLentesLejos, {
       foreignKey: 'idOTLentesLejos',
       as: 'lentesLejos'
