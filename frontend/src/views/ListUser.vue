@@ -51,7 +51,7 @@ const fetchUsers = async () => {
       users.value = response.data.users;
     }
   } catch (error) {
-    console.error("Failed to fetch users:", error);
+    console.error("Failed to fetch users:", error.response);
   }
   console.log('value', users.value) 
 };

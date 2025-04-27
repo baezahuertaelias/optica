@@ -1,6 +1,7 @@
 <!-- src/views/Login.vue -->
 <template>
   <div class="login-container">
+    <Toast/>
     <div class="login-card">
       <h2>Login</h2>
       <div class="field">
@@ -21,24 +22,24 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useToast } from 'primevue/usetoast';
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import Button from 'primevue/button'
+import Toast from 'primevue/toast';
 
 //nuevos
 import apiClient from '../axios-config'
 
 const router = useRouter()
+const toast = useToast();
 const username = ref('')
 const password = ref('')
 
 const login = async () => {
-  // Simple login without actual authentication
-  /* if (username.value && password.value) {
-    localStorage.setItem('isLoggedIn', 'true')
-    localStorage.setItem('username', username.value)
-    router.push('/app/dashboard')
-  } */
+
+  await localStorage.setItem('token', '');
+
   try {
     const response = await apiClient.post('/auth/login', {
       username: username.value,
@@ -47,23 +48,25 @@ const login = async () => {
 
     if (response.status === 200) {
       // Assuming the backend returns a token and user information
-      const { token, user } = response.data
+      const { token } = response.data
 
       // Store token in localStorage
-      localStorage.setItem('isLoggedIn', 'true')
-      localStorage.setItem('username', username.value)
+      await localStorage.setItem('isLoggedIn', 'true')
+      await localStorage.setItem('username', username.value)
+      await localStorage.setItem('token', token);
+      console.log('[Login] token',token);
+      
 
       // Redirect to main page
       router.push('/app/dashboard')
     } else {
       // Show error message using toast when the response is not 200
       //showErrorMessage(response.data.message || 'Login failed')
-      alert('login malo')
+      toast.add({ severity: 'error', summary: 'Error', detail: response.data.message || 'Login fallo', life: 3000 });
     }
   } catch (error) {
-    console.log('[Login] error', error);
     
-    alert('login error')
+    toast.add({ severity: 'error', summary: 'Error', detail: error.response.data.message || 'Login fallo', life: 3000 });
   }
 
 
