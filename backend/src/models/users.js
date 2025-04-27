@@ -1,7 +1,4 @@
-const { DataTypes } = require("sequelize");
-const UserType = require('./usertype');
-
-module.exports = (sequelize) => {
+module.exports = (sequelize, DataTypes) => {
   const Users = sequelize.define('Users', {
     id: {
       type: DataTypes.INTEGER,
@@ -20,11 +17,7 @@ module.exports = (sequelize) => {
     },
     userTypeId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      /* references: {
-        model: UsersType,
-        key: 'id'
-      } */
+      allowNull: false
     },
     status: {
       type: DataTypes.BOOLEAN,
@@ -35,9 +28,19 @@ module.exports = (sequelize) => {
     timestamps: true
   });
 
+  Users.associate = (models) => {
+    // Relation with UserType
+    Users.belongsTo(models.UserTypes, {
+      foreignKey: 'userTypeId',
+      as: 'userType'
+    });
 
-  // Define the association
-  /* Users.belongsTo(UsersType, { foreignKey: "userTypeId" });
-  UsersType.hasMany(Users, { foreignKey: "userTypeId" }); */
+    // Relation with Worksheets
+    Users.hasMany(models.Worksheets, {
+      foreignKey: 'userId',
+      as: 'worksheets'
+    });
+  };
+
   return Users;
 };

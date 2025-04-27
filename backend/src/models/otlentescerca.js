@@ -40,5 +40,13 @@ module.exports = (sequelize) => {
     tableName: 'OtLentesCerca' // Ensures the table name is PascalCase in PostgreSQL
   });
 
+  OtLentesCerca.associate = (models) => {
+    // One lens prescription can be associated with many worksheets
+    OtLentesCerca.hasMany(models.Worksheets, {
+      foreignKey: 'idOTLentesCerca',
+      as: 'worksheets'
+    });
+  };
+
   return OtLentesCerca;
 };

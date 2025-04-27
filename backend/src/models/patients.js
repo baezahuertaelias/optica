@@ -18,5 +18,13 @@ module.exports = (sequelize) => {
     timestamps: true
   });
 
+  Patients.associate = (models) => {
+    // One patient can have many worksheets
+    Patients.hasMany(models.Worksheets, {
+      foreignKey: 'idPaciente',
+      as: 'worksheets'
+    });
+  };
+
   return Patients;
 };
