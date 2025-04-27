@@ -49,7 +49,7 @@ module.exports = {
 
   async registerUser(req, res) {
     try {
-      const { username, password, userType } = req.body;
+      const { username, password, userTypeId } = req.body;
       
       if (!username || !password) {
         return res.status(400).json({ message: "Username and password are required" });
@@ -71,7 +71,7 @@ module.exports = {
         username,
         password: hashedPassword, // Password will be hashed in the model's beforeSave hook
         status: 1,
-        userTypeId: userType
+        userTypeId
       });
 
       // Create a user object without the password for the token payload
