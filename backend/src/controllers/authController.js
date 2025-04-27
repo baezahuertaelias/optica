@@ -9,20 +9,20 @@ module.exports = {
       const { password, username } = req.body;
       
       if (!username || !password) {
-        return res.status(400).json({ message: "Username and password are required" });
+        return res.status(400).json({ message: "Usuario y clave es requerido" });
       }
 
       const user = await Users.findOne({ where: { username } });
 
       if (!user) {
-        return res.status(401).json({ message: "Invalid credentials" });
+        return res.status(401).json({ message: "Usuario no encontrado" });
       }
 
       // Direct password comparison with bcrypt
       const passwordMatch = await bcrypt.compare(password, user.password);
       
       if (!passwordMatch) {
-        return res.status(401).json({ message: "Invalid credentials" });
+        return res.status(401).json({ message: "Clave invalida" });
       }
 
       // Create a user object without password for response
