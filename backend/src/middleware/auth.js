@@ -22,6 +22,9 @@ module.exports = (req, res, next) => {
   
   jwt.verify(token, jwtConfig.secret, (err, decoded) => {
     if (err) {
+      if (err.name === 'TokenExpiredError') {
+        return res.status(401).json({ message: 'Token expired' }); // Handle expired token specifically
+      }
       return res.status(401).json({ message: 'Invalid token' });
     }
     
