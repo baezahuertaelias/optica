@@ -86,14 +86,10 @@ const saveUser = async () => {
   try {
     const userData = { ...user.value };
 
-    // Hash the password before saving if it's a new user or password is changed
-    if (isNew.value || user.value.password) {
-      //userData.password = await bcrypt.hash(user.value.password, 10)
-    } else {
-      //delete userData.password; // Remove password field for update if not changed
-    }
+    
 
     //TODO: Tomar la respuesta cuando es status=400 y mostrar msj error
+    //basarse en el login. quedo resuelto
 
     if (!isNew && userData.password.length < 8) {
       alert("passwd debe ser mayor a 8");

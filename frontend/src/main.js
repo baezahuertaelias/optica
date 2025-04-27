@@ -23,7 +23,8 @@ import CreateUser from './views/CreateUser.vue'
 
 import MainLayout from './layout/MainLayout.vue'
 import CalendarioTest from './views/CalendarioTest.vue'
-
+import CreatePatient from './views/CreatePatient.vue';
+import ListPatient from './views/ListPatient.vue';
 
 
 // Router configuration
@@ -63,8 +64,18 @@ const routes = [
         path: 'createuser/:id?',
         name: 'Crear usuario',
         component: CreateUser
-      }
-
+      },
+      {
+        path: 'listpatient',
+        name: 'Listado paciente',
+        component: ListPatient
+      },
+      {
+        path: 'createpatient/:id?',
+        name: 'Crear paciente',
+        component: CreatePatient
+      },
+      
     ]
   },
   {

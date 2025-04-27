@@ -37,7 +37,7 @@ const menuItems = [
     command: () => router.push('/app/dashboard')
   },
   {
-    label: 'User',
+    label: 'Usuarios',
     icon: 'pi pi-fw pi-user',
     items: [
     {
@@ -50,18 +50,23 @@ const menuItems = [
         icon: 'pi pi-fw pi-user-edit',
         command: () => router.push('/app/listuser')
       }
-    ]/* [
-      {
-        label: 'Profile',
+    ]
+  },
+  {
+    label: 'Pacientes',
+    icon: 'pi pi-fw pi-user',
+    items: [
+    {
+        label: 'Crear paciente',
         icon: 'pi pi-fw pi-user-edit',
-        command: () => router.push('/app/profile')
+        command: () => router.push('/app/createpatient')
       },
       {
-        label: 'Settings',
-        icon: 'pi pi-fw pi-cog',
-        command: () => router.push('/app/settings')
+        label: 'Listado pacientes',
+        icon: 'pi pi-fw pi-user-edit',
+        command: () => router.push('/app/listpatient')
       }
-    ] */
+    ]
   }
 ]
 
