@@ -102,7 +102,13 @@ module.exports = {
   async getAllUsers(req, res) {
     try {
       const users = await Users.findAll({
-        attributes: ["id", "username", "userTypeId", "status"], // Include both id cases for compatibility
+        include: [
+          {
+            model: UserTypes,
+            as: 'userType' // Use the alias specified in your association
+          }
+        ], // Include the related UserType for each user
+        attributes: { exclude: ['password'] },
       });
       return res.status(200).json({ users });
     } catch (error) {
@@ -120,7 +126,8 @@ module.exports = {
       const user = await Users.findOne({
         where: {
           id
-        }
+        },
+        include: UserTypes
       });
 
       if (!user) {

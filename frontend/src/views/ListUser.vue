@@ -10,8 +10,16 @@
       responsiveLayout="scroll"
     >
       <Column field="username" header="Username"></Column>
-      <Column field="status" header="Estado"></Column>
-      <Column field="typeUserId" header="Tipo usuario"></Column>
+      <Column field="status" header="Estado">
+        <template #body="{ data }">
+            <Tag :value="data.status === true ? 'Activo': 'Inactivo' " :severity="data.status === true ? 'success': 'danger'" />
+        </template>
+      </Column>
+      <Column field="typeUserId" header="Tipo usuario">
+        <template #body="{ data }">
+            <Tag :value="data.userType.type" :severity="getSeverity(data.userType.type)" />
+        </template>
+      </Column>
       <Column header="Actions">
         <template #body="{ data }">
           <Button
@@ -36,6 +44,7 @@ import apiClient from '../axios-config'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Button from 'primevue/button'
+import Tag from 'primevue/tag'
 import { useRouter } from 'vue-router'
 
 // State to hold the list of users
@@ -71,6 +80,22 @@ const deleteUser = async() => {
         console.log('has to delete')
     }catch (error){
         console.log('deleteuser error')
+    }
+}
+
+const getSeverity = (status) => {
+    switch (status) {
+        case 'Admin':
+            return 'info';
+
+        case 'Vendedor':
+            return 'warn';
+
+        case 'true':
+            return 'success';
+
+        case 'false':
+            return 'danger';
     }
 }
 

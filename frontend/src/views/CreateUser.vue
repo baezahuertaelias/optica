@@ -12,7 +12,7 @@
         placeholder="Select User Type"
         required
       />
-      <InputSwitch v-model="user.status" trueValue="true" falseValue="false" />
+      <ToggleSwitch v-model="user.status" />
       <Button label="Guardar" class="mt-3" type="submit" />
     </form>
   </div>
@@ -25,7 +25,7 @@ import InputText from "primevue/inputtext";
 import Password from "primevue/password";
 import Dropdown from "primevue/dropdown";
 import Button from "primevue/button";
-import InputSwitch from "primevue/inputswitch";
+import ToggleSwitch from "primevue/toggleswitch";
 import apiClient from "../axios-config";
 
 const router = useRouter();
@@ -41,6 +41,7 @@ const user = ref({
 
 const isNew = ref(true);
 const userTypes = ref([]);
+
 
 onMounted(() => {
   const userId = route.query.id || route.params.id; // Use query or params to get the ID
