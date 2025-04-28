@@ -6,12 +6,12 @@ const bcrypt = require("bcryptjs"); // Ensure this package is installed
 module.exports = {
   async createPatient(req, res) {
     try {
-      const { name, passport, genderId, tel, birthday, homeaddress, mail, occupation, legalrepresentative, idIsapre } = req.body;
+      const { name, passport, genderId, tel, birthday, homeAddress, mail, occupation, legalrepresentative, idIsapre } = req.body;
       if (!name || !genderId || !mail || !birthday) {
         return res.status(400).json({ message: "Required fields missing" });
       }
 
-      const patient = await Patients.create({ name, passport, genderId, tel, birthday, homeaddress, mail, occupation, legalrepresentative, idIsapre });
+      const patient = await Patients.create({ name, passport, genderId, tel, birthday, homeAddress, mail, occupation, legalrepresentative, idIsapre });
       return res.status(201).json({ patient });
     } catch (error) {
       console.error("Error creating patient:", error);

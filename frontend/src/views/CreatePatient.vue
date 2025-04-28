@@ -13,7 +13,7 @@
         required
       />
       <InputText v-model="patient.tel" placeholder="Telefono" />
-      <InputText v-model="patient.homeaddress" placeholder="Direccion" />
+      <InputText v-model="patient.homeAddress" placeholder="Direccion" />
       <InputText v-model="patient.mail" placeholder="Email" />
       <InputText v-model="patient.occupation" placeholder="Ocupacion" />
       <InputText
@@ -29,7 +29,6 @@
         required
       />
 
-      
       <FloatLabel variant="on">
         <DatePicker
           v-model="patient.birthday"
@@ -64,14 +63,13 @@ const patient = ref({
   passport: "",
   genderId: "",
   birthday: "",
-  homeaddress: "",
+  homeAddress: "",
   mail: "",
   occupation: "",
   legalrepresentative: "",
   idIsapre: "",
   // Add other fields as needed
 });
-
 
 const isNew = ref(true);
 const genders = ref([]);
@@ -91,8 +89,8 @@ const fetchPatientDetails = async (id) => {
   try {
     const response = await apiClient.get(`/patients/${id}`);
     if (response.status === 200) {
-      console.log('[fetchPatientDetails]', response.data);
-      
+      console.log("[fetchPatientDetails]", response.data);
+
       patient.value = response.data.patient;
     }
   } catch (error) {
@@ -102,9 +100,8 @@ const fetchPatientDetails = async (id) => {
 
 const savePatient = async () => {
   const patientData = { ...patient.value };
-  console.log('[savePatient]', patientData);
-  
-  
+  console.log("[savePatient]", patientData);
+
   try {
     if (isNew.value) {
       await apiClient.post("/patients", patient.value);
