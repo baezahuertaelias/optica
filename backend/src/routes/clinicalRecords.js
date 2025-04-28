@@ -8,6 +8,8 @@ const clinicalRecordsController = require('../controllers/clinicalRecordsControl
 
 router.get('/:id', /*authMiddleware,*/ clinicalRecordsController.getClinicalRecordWithRelations)
 router.post('/', /*authMiddleware,*/ clinicalRecordsController.createClinicalRecordWithRelations)
+router.get('/', /* authMiddleware, */ clinicalRecordsController.getAllClinicalRecords); // Fetch a single user by ID
+
 //router.get('/:id', authMiddleware, patientsController.getPatientById);
 //router.post('/', authMiddleware, patientsController.createPatient);
 

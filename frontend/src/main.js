@@ -25,6 +25,8 @@ import MainLayout from './layout/MainLayout.vue'
 import CalendarioTest from './views/CalendarioTest.vue'
 import CreatePatient from './views/CreatePatient.vue';
 import ListPatient from './views/ListPatient.vue';
+import ListClinicalRecords from './views/ListClinicalRecords.vue'
+import CreateClinicalRecord from './views/CreateClinicalRecord.vue'
 
 
 // Router configuration
@@ -75,7 +77,14 @@ const routes = [
         name: 'Crear paciente',
         component: CreatePatient
       },
-      
+      { path: 'listclinicalrecords', 
+        name: "Listado Fichas clinicas",
+        component: ListClinicalRecords 
+      },
+      { path: 'createclinicalrecord', 
+        name: "Crear Ficha clinica",
+        component: CreateClinicalRecord 
+      },
     ]
   },
   {

@@ -124,8 +124,86 @@ module.exports = {
 
   async getAllClinicalRecords(req, res) {
     try {
-      const records = await ClinicalRecord.findAll();
-      return res.status(200).json({ records });
+
+      const patients = await Patients.findAll({
+        include: [
+          // Include Gender and Isapre information
+          {
+            model: Genders,
+            as: 'Gender',
+            attributes: ['id', 'value']
+          },
+          {
+            model: Isapres,
+            as: 'Isapre',
+            attributes: ['id', 'value']
+          },
+          // Include all clinical records with their related data
+          {
+            model: ClinicalRecord,
+            include: [
+              // Include the examining user
+              {
+                model: Users,
+                as: 'User',
+                include: [
+                  {
+                    model: UserTypes,
+                    as: 'UserType',
+                    attributes: ['id', 'type']
+                  }
+                ],
+                attributes: ['id', 'username', 'status']
+              },
+              // Include all medical examination data
+              {
+                model: VisualAcuity,
+                as: 'VisualAcuity'
+              },
+              {
+                model: SubjectiveRefractionFar,
+                as: 'SubjectiveRefractionFar'
+              },
+              {
+                model: SubjectiveRefractionNear,
+                as: 'SubjectiveRefractionNear'
+              },
+              {
+                model: ApplanationTonometry,
+                as: 'ApplanationTonometry'
+              }
+            ]
+          }
+        ],
+        // Order by patient name for easier reading
+        order: [
+          ['name', 'ASC'],
+          [ClinicalRecord, 'createdAt', 'DESC'] // Most recent records first
+        ]
+      });
+  
+      
+
+      /* const records = await ClinicalRecord.findAll({include: [
+        {
+          model: Patients,
+          as: 'Patient',
+          include: [
+            { model: Genders, as: 'Gender' },
+            { model: Isapres, as: 'Isapre' }
+          ]
+        },
+        {
+          model: Users, as: 'User', include: [
+            { model: UserTypes, as: 'UserType' }
+          ]
+        },
+        { model: VisualAcuity, as: 'VisualAcuity' },
+        { model: SubjectiveRefractionFar, as: 'SubjectiveRefractionFar' },
+        { model: SubjectiveRefractionNear, as: 'SubjectiveRefractionNear' },
+        { model: ApplanationTonometry, as: 'ApplanationTonometry' }
+      ]}); */
+      return res.status(200).json({ patients });
     } catch (error) {
       console.error("Failed to fetch clinical records:", error);
       return res.status(500).json({ message: "Internal server error" });

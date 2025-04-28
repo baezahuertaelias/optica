@@ -55,6 +55,8 @@ import Tag from "primevue/tag";
 import Toast from "primevue/toast";
 import Dialog from 'primevue/dialog';
 import { useRouter } from "vue-router";
+import { useToast } from 'primevue/usetoast';
+
 
 // State to hold the list of patients
 const clients = ref([]);

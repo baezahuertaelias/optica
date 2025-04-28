@@ -10,11 +10,11 @@ module.exports = {
 
       await UserTypes.bulkCreate(
         [{
-          id: 1,
+          id: 2,
           type: "Admin",
         },
         {
-          id: 2,
+          id: 3,
           type: "Vendedor",
         }]
       );
@@ -119,6 +119,7 @@ module.exports = {
     /* const t = await sequelize.transaction(); */
 
     try {
+      const hashedPassword = await bcrypt.hash('123', 10);
       // Step 1: Create or find a UserType (if it doesn't exist)
       let userType = await UserTypes.findByPk(1/* , { transaction: t } */);
       if (!userType) {
@@ -132,7 +133,7 @@ module.exports = {
       if (!user) {
         user = await Users.create({
           username: 'doctor_user',
-          password: 'hashed_password_here', // In a real app, you'd hash this
+          password: hashedPassword, // In a real app, you'd hash this
           userTypeId: userType.id,
           status: true
         }/* , { transaction: t } */);

@@ -67,7 +67,23 @@ const menuItems = [
         command: () => router.push('/app/listpatient')
       }
     ]
-  }
+  },
+  {
+    label: 'Ficha clinica',
+    icon: 'pi pi-fw pi-user',
+    items: [
+    {
+        label: 'Crear Ficha clinica',
+        icon: 'pi pi-fw pi-user-edit',
+        command: () => router.push('/app/createclinicalrecord')
+      },
+      {
+        label: 'Listado Ficha clinica',
+        icon: 'pi pi-fw pi-user-edit',
+        command: () => router.push('/app/listclinicalrecords')
+      }
+    ]
+  },
 ]
 
 const logout = () => {
