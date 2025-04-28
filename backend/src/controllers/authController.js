@@ -1,13 +1,13 @@
-const jwt = require("jsonwebtoken");
 const { Users, UserTypes } = require("../models");
+const jwt = require("jsonwebtoken");
 const jwtConfig = require("../config/jwt");
-const bcrypt = require("bcryptjs"); // Make sure this package is installed
+const bcrypt = require("bcryptjs");
 
 module.exports = {
   async login(req, res) {
     try {
-      const { password, username } = req.body;
-      
+      const { username, password } = req.body;
+
       if (!username || !password) {
         return res.status(400).json({ message: "Usuario y clave es requerido" });
       }
@@ -20,26 +20,26 @@ module.exports = {
 
       // Direct password comparison with bcrypt
       const passwordMatch = await bcrypt.compare(password, user.password);
-      
+
       if (!passwordMatch) {
         return res.status(401).json({ message: "Clave invalida" });
       }
 
       // Create a user object without password for response
       const userResponse = {
-        id: user.id ,
+        id: user.id,
         username: user.username,
         userTypeId: user.userTypeId,
         status: user.status
       };
 
-      const token = jwt.sign({ id: user.id || user.Id }, jwtConfig.secret, {
+      const token = jwt.sign({ id: user.id }, jwtConfig.secret, {
         expiresIn: jwtConfig.expiresIn,
       });
 
-      return res.json({ 
-        user: userResponse, 
-        token 
+      return res.json({
+        user: userResponse,
+        token
       });
     } catch (error) {
       console.error("Login error:", error);
@@ -50,31 +50,31 @@ module.exports = {
   async registerUser(req, res) {
     try {
       const { username, password, userTypeId } = req.body;
-      
+
       if (!username || !password) {
-        return res.status(400).json({ message: "Username and password are required" });
+        return res.status(400).json({ message: "Usuario y clave son requeridos" });
       }
 
       // Password strength validation
       if (password.length < 8) {
-        return res.status(400).json({ message: "Password must be at least 8 characters long" });
+        return res.status(400).json({ message: "Contraseña tiene que ser mayor a 8 caracteres" });
       }
 
-
       if (userTypeId === null || userTypeId === undefined) {
-        return res.status(400).json({ message: "Usertype cant be null" });
+        return res.status(400).json({ message: "Tipo usuario es necesario" });
       }
 
       const existingUser = await Users.findOne({ where: { username } });
+
       if (existingUser) {
-        return res.status(409).json({ message: "Username already taken" });
+        return res.status(409).json({ message: "Usuario ya existe" });
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
       const user = await Users.create({
         username,
-        password: hashedPassword, // Password will be hashed in the model's beforeSave hook
+        password: hashedPassword,
         status: 1,
         userTypeId
       });
@@ -85,13 +85,13 @@ module.exports = {
         username: user.username
       };
 
-      const token = jwt.sign({ id: user.Id || user.id }, jwtConfig.secret, {
+      const token = jwt.sign({ id: user.id }, jwtConfig.secret, {
         expiresIn: jwtConfig.expiresIn,
       });
 
-      return res.status(201).json({ 
-        user: userForToken, 
-        token 
+      return res.status(201).json({
+        user: userForToken,
+        token
       });
     } catch (error) {
       console.error("Registration error:", error);
@@ -105,9 +105,9 @@ module.exports = {
         include: [
           {
             model: UserTypes,
-            as: 'userType' // Use the alias specified in your association
+            as: 'userType' // Ensure this alias matches your association definition
           }
-        ], // Include the related UserType for each user
+        ],
         attributes: { exclude: ['password'] },
       });
       return res.status(200).json({ users });
@@ -122,38 +122,39 @@ module.exports = {
       const { id } = req.params;
       const { username, password, userTypeId, status } = req.body;
 
-      // Find user by id, handling both capitalization cases
+      // Find user by id
       const user = await Users.findOne({
-        where: {
-          id
-        },
+        where: { id },
         include: UserTypes
       });
 
       if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        return res.status(404).json({ message: "Usuario no encontrado" });
       }
 
       // Update fields if provided
       if (username) user.username = username;
-      
+
       // Password validation if provided
       if (password) {
         if (password.length < 8) {
-          return res.status(400).json({ message: "Password must be at least 8 characters long" });
+          return res.status(400).json({ message: "Contraseña tiene que ser mayor a 8 caracteres" });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
         user.password = hashedPassword;
       }
-      
-      if (userTypeId) user.userTypeId = userTypeId;
+
+      if (userTypeId !== undefined) user.userTypeId = userTypeId;
+
+      if (status !== undefined) user.status = status;
 
       await user.save();
 
       return res.status(200).json({
         id: user.id,
         username: user.username,
-        userTypeId: user.userTypeId
+        userTypeId: user.userTypeId,
+        status: user.status
       });
     } catch (error) {
       console.error("Error updating user:", error);
@@ -166,14 +167,14 @@ module.exports = {
       const { id } = req.params;
 
       if (!id) {
-        return res.status(400).json({ message: "User ID is required" });
+        return res.status(400).json({ message: "ID usuario es requerido" });
       }
 
-      // Find user by id, handling both capitalization cases
+      // Find user by id
       const user = await Users.findByPk(id);
 
       if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        return res.status(404).json({ message: "Usuario no encontrado" });
       }
 
       return res.status(200).json({ user });
@@ -188,22 +189,20 @@ module.exports = {
       const { id } = req.params;
 
       if (!id) {
-        return res.status(400).json({ message: "User ID is required" });
+        return res.status(400).json({ message: "ID usuario es requerido" });
       }
 
-      // Find user by id, handling both capitalization cases
+      // Find user by id
       const user = await Users.findOne({
-        where: {
-          [Users.sequelize.or]: [{ id }, { Id: id }]
-        }
+        where: { id }
       });
 
       if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        return res.status(404).json({ message: "Usuario no encontrado" });
       }
 
       await user.destroy();
-      return res.status(200).json({ message: "User deleted successfully" });
+      return res.status(200).json({ message: "Usuario eliminado" });
     } catch (error) {
       console.error("Failed to delete user:", error);
       return res.status(500).json({ message: "Internal server error" });
@@ -213,15 +212,11 @@ module.exports = {
   async getAllUserTypes(req, res) {
     try {
       // Check if UserType model exists
-      if (!UserTypes) {
-        return res.status(500).json({ message: "UserType model not found" });
-      }
-      
       const userTypes = await UserTypes.findAll();
       if (!userTypes || userTypes.length === 0) {
-        return res.status(404).json({ message: "No user types found" });
+        return res.status(404).json({ message: "No se encontraron tipos de usuario" });
       }
-      
+
       return res.status(200).json({ userTypes });
     } catch (error) {
       console.error("Failed to fetch UserTypes:", error);

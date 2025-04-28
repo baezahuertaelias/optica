@@ -29,17 +29,7 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   Users.associate = (models) => {
-    // Relation with UserType
-    Users.belongsTo(models.UserTypes, {
-      foreignKey: 'userTypeId',
-      as: 'userType'
-    });
-
-    // Relation with Worksheets
-    Users.hasMany(models.Worksheets, {
-      foreignKey: 'userId',
-      as: 'worksheets'
-    });
+    Users.belongsTo(models.UserTypes, { foreignKey: 'userTypeId', as: 'UserType' });
   };
 
   return Users;

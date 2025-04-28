@@ -20,10 +20,6 @@ module.exports = (sequelize) => {
     genderId: {  // Renamed from gender to genderId for consistency
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: {
-        model: 'Genders',
-        key: 'id'
-      }
     },
     tel: {
       type: DataTypes.STRING,
@@ -33,7 +29,7 @@ module.exports = (sequelize) => {
       type: DataTypes.DATEONLY,
       allowNull: false
     },
-    homeaddress: {
+    homeAddress: {
       type: DataTypes.STRING,
       allowNull: true
     },
@@ -46,17 +42,13 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: true
     },
-    legalrepresentative: {
-      type: DataTypes.STRING,
+    legalRepresentative: {
+      type: DataTypes.BOOLEAN,
       defaultValue: false,
       allowNull: false
     },
     idIsapre: {
       type: DataTypes.INTEGER,
-      references: {
-        model: 'Isapres',
-        key: 'id'
-      }
     }
   }, {
     tableName: 'Patients',
@@ -64,24 +56,10 @@ module.exports = (sequelize) => {
   });
 
   Patients.associate = (models) => {
-    // Many-to-one relation with Gender
-    Patients.belongsTo(models.Genders, {
-      foreignKey: 'genderId',
-      as: 'genders'
-    });
-    
-    // Many-to-one relation with Isapres
-    Patients.belongsTo(models.Isapres, {
-      foreignKey: 'idIsapre',
-      as: 'isapre'
-    });
-
-    // One-to-many relation with Worksheets (corrected to match your requirement)
-    Patients.hasMany(models.Worksheets, {
-      foreignKey: 'idPaciente',
-      as: 'worksheets'
-    });
+    Patients.hasMany(models.ClinicalRecord, { foreignKey: 'idPatient' });
+    Patients.belongsTo(models.Genders, { foreignKey: 'genderId', as: 'Gender' });
+    Patients.belongsTo(models.Isapres, { foreignKey: 'idIsapre', as: 'Isapre' });
   };
 
   return Patients;
-};
+}; 

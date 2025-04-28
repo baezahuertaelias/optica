@@ -16,13 +16,13 @@ module.exports = (sequelize) => {
     tableName: 'UserTypes' // Ensures the table name is PascalCase in PostgreSQL
   });
 
+
   UserTypes.associate = (models) => {
-    // Relation with Users
-    UserTypes.hasMany(models.Users, {
-      foreignKey: 'userTypeId',
-      as: 'users'
-    });
+    UserTypes.hasMany(models.Users, { foreignKey: 'userTypeId' });
   };
 
+
   return UserTypes;
+
+
 };

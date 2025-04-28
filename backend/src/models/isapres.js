@@ -19,11 +19,7 @@ module.exports = (sequelize) => {
   });
 
   Isapres.associate = (models) => {
-    // Add one-to-many relation with Patients
-    Isapres.hasMany(models.Patients, {
-      foreignKey: 'idIsapre',
-      as: 'patients'
-    });
+    Isapres.hasOne(models.Patients, { foreignKey: 'idIsapre' });
   };
 
   return Isapres;

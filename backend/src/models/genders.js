@@ -19,11 +19,7 @@ module.exports = (sequelize) => {
     });
 
     Genders.associate = (models) => {
-        // Correct one-to-many relation with Patients
-        Genders.hasMany(models.Patients, {
-            foreignKey: 'genderId',
-            as: 'patients'
-        });
+        Genders.hasOne(models.Patients, { foreignKey: 'genderId' });
     };
 
     return Genders;
