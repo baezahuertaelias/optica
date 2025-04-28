@@ -19,8 +19,10 @@ module.exports = (sequelize) => {
     });
 
     Genders.associate = (models) => {
-        Genders.hasOne(models.Patients, { foreignKey: 'genderId' });
-    };
+        // One Gender can have many patients
+        Genders.hasMany(models.Patients, { foreignKey: 'genderId' });
+      };
+      
 
     return Genders;
 };

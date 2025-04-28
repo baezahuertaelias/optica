@@ -30,7 +30,10 @@ module.exports = (sequelize, DataTypes) => {
 
   Users.associate = (models) => {
     Users.belongsTo(models.UserTypes, { foreignKey: 'userTypeId', as: 'UserType' });
+    // Add this relationship
+    Users.hasMany(models.ClinicalRecord, { foreignKey: 'userId' });
   };
+  
 
   return Users;
 };
