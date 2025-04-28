@@ -23,15 +23,9 @@ module.exports = {
     try {
       const patients = await Patients.findAll({
         include: [
-          {
-            model: Genders,
-            as: 'genders' // Use the alias specified in your association
-          },
-          {
-            model: Isapres,
-            as: 'isapre' // Use the alias specified in your association
-          }
-        ],
+          { model: Genders, as: 'Gender' },
+          { model: Isapres, as: 'Isapre' }
+        ]
   
       });
       return res.status(200).json({ patients });

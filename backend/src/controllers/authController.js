@@ -103,10 +103,7 @@ module.exports = {
     try {
       const users = await Users.findAll({
         include: [
-          {
-            model: UserTypes,
-            as: 'userType' // Ensure this alias matches your association definition
-          }
+          { model: UserTypes, as: 'UserType' }
         ],
         attributes: { exclude: ['password'] },
       });
@@ -125,7 +122,7 @@ module.exports = {
       // Find user by id
       const user = await Users.findOne({
         where: { id },
-        include: UserTypes
+        include: { model: UserTypes, as: 'UserType' }
       });
 
       if (!user) {

@@ -15,7 +15,7 @@
       <Column field="mail" header="Email"></Column>
       <Column field="isapre" header="Isapre">
         <template #body="{ data }">
-          <Tag severity="secondary" :value="data.isapre.value"></Tag>
+          <Tag severity="secondary" :value="data.Isapre.value"></Tag>
         </template>
       </Column>
       <Column header="Actions">
@@ -35,11 +35,27 @@
     </DataTable>
 
     <!-- Confirmation Dialog -->
-    <Dialog :visible="deleteUserDialog" :style="{ width: '300px' }" header="Confirmación" :modal="true">
+    <Dialog
+      :visible="deleteUserDialog"
+      :style="{ width: '300px' }"
+      header="Confirmación"
+      :modal="true"
+    >
       <p>¿Está seguro de que desea eliminar el paciente?</p>
       <template #footer>
-        <Button label="No" icon="pi pi-times" @click="deleteUserDialog = false" class="p-button-text" />
-        <Button label="Sí" icon="pi pi-check" @click="deleteUser(deletePatientId)" class="p-button-text" autofocus />
+        <Button
+          label="No"
+          icon="pi pi-times"
+          @click="deleteUserDialog = false"
+          class="p-button-text"
+        />
+        <Button
+          label="Sí"
+          icon="pi pi-check"
+          @click="deleteUser(deletePatientId)"
+          class="p-button-text"
+          autofocus
+        />
       </template>
     </Dialog>
   </div>
@@ -53,10 +69,9 @@ import Column from "primevue/column";
 import Button from "primevue/button";
 import Tag from "primevue/tag";
 import Toast from "primevue/toast";
-import Dialog from 'primevue/dialog';
+import Dialog from "primevue/dialog";
 import { useRouter } from "vue-router";
-import { useToast } from 'primevue/usetoast';
-
+import { useToast } from "primevue/usetoast";
 
 // State to hold the list of patients
 const clients = ref([]);

@@ -1,6 +1,6 @@
 <template>
   <div class="p-3">
-    <Toast/>
+    <Toast />
     <h1>Lista de Usuarios</h1>
     <DataTable
       :value="users"
@@ -21,10 +21,7 @@
       </Column>
       <Column field="typeUserId" header="Tipo usuario">
         <template #body="{ data }">
-          <Tag
-            :value="data.userType.type"
-            :severity="getSeverity(data.userType.type)"
-          />
+          <Tag :value="data.UserType.type" />
         </template>
       </Column>
       <Column header="Actions">
@@ -44,11 +41,27 @@
     </DataTable>
 
     <!-- Confirmation Dialog -->
-    <Dialog :visible="deleteUserDialog" :style="{ width: '300px' }" header="Confirmación" :modal="true">
+    <Dialog
+      :visible="deleteUserDialog"
+      :style="{ width: '300px' }"
+      header="Confirmación"
+      :modal="true"
+    >
       <p>¿Está seguro de que desea eliminar el usuario?</p>
       <template #footer>
-        <Button label="No" icon="pi pi-times" @click="deleteUserDialog = false" class="p-button-text" />
-        <Button label="Sí" icon="pi pi-check" @click="deleteUser(deleteUserId)" class="p-button-text" autofocus />
+        <Button
+          label="No"
+          icon="pi pi-times"
+          @click="deleteUserDialog = false"
+          class="p-button-text"
+        />
+        <Button
+          label="Sí"
+          icon="pi pi-check"
+          @click="deleteUser(deleteUserId)"
+          class="p-button-text"
+          autofocus
+        />
       </template>
     </Dialog>
   </div>
@@ -63,7 +76,7 @@ import Column from "primevue/column";
 import Button from "primevue/button";
 import Tag from "primevue/tag";
 import Toast from "primevue/toast";
-import Dialog from 'primevue/dialog';
+import Dialog from "primevue/dialog";
 import apiClient from "../axios-config";
 
 // State to hold the list of users
@@ -84,6 +97,8 @@ const fetchUsers = async () => {
       users.value = response.data.users;
     }
   } catch (error) {
+    console.error(error);
+
     toast.add({
       severity: "error",
       summary: "Error",

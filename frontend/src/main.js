@@ -9,6 +9,7 @@ import App from './App.vue'
 // PrimeVue imports
 import PrimeVue from 'primevue/config'
 import Aura from '@primeuix/themes/aura'
+import Nora from '@primeuix/themes/nora'
 import 'primeicons/primeicons.css' // icons
 
 // Route components
@@ -77,13 +78,15 @@ const routes = [
         name: 'Crear paciente',
         component: CreatePatient
       },
-      { path: 'listclinicalrecords', 
+      {
+        path: 'listclinicalrecords',
         name: "Listado Fichas clinicas",
-        component: ListClinicalRecords 
+        component: ListClinicalRecords
       },
-      { path: 'createclinicalrecord', 
+      {
+        path: 'createclinicalrecord',
         name: "Crear Ficha clinica",
-        component: CreateClinicalRecord 
+        component: CreateClinicalRecord
       },
     ]
   },
@@ -102,7 +105,7 @@ const router = createRouter({
 // Navigation guard for login
 router.beforeEach((to, from, next) => {
   const isAuthenticated = localStorage.getItem('isLoggedIn') === 'true'
-  
+
   if (to.path !== '/' && !isAuthenticated) {
     next('/')
   } else if (to.path === '/' && isAuthenticated) {
@@ -116,7 +119,7 @@ router.beforeEach((to, from, next) => {
 const app = createApp(App);
 app.use(PrimeVue, {
   theme: {
-    preset: Aura,
+    preset: Nora,
   },
 });
 app.use(ToastService);

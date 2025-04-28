@@ -6,7 +6,11 @@
         <h3>Optica</h3>
         <div class="user-info">
           <span>{{ username }}</span>
-          <Button icon="pi pi-sign-out" class="p-button-text p-button-sm" @click="logout" />
+          <Button
+            icon="pi pi-sign-out"
+            class="p-button-text p-button-sm"
+            @click="logout"
+          />
         </div>
       </div>
       <PanelMenu :model="menuItems" class="sidebar-menu" />
@@ -18,79 +22,79 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import PanelMenu from 'primevue/panelmenu'
-import Button from 'primevue/button'
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import PanelMenu from "primevue/panelmenu";
+import Button from "primevue/button";
 
-const router = useRouter()
-const username = ref('')
+const router = useRouter();
+const username = ref("");
 
 onMounted(() => {
-  username.value = localStorage.getItem('username') || 'User'
-})
+  username.value = localStorage.getItem("username") || "User";
+});
 
 const menuItems = [
   {
-    label: 'Dashboard',
-    icon: 'pi pi-fw pi-home',
-    command: () => router.push('/app/dashboard')
+    label: "Dashboard",
+    icon: "pi pi-fw pi-home",
+    command: () => router.push("/app/dashboard"),
   },
   {
-    label: 'Usuarios',
-    icon: 'pi pi-fw pi-user',
+    label: "Usuarios",
+    icon: "pi pi-fw pi-user",
     items: [
-    {
-        label: 'Crear usuarios',
-        icon: 'pi pi-fw pi-user-edit',
-        command: () => router.push('/app/createuser')
+      {
+        label: "Crear usuarios",
+        icon: "pi pi-fw pi-user-edit",
+        command: () => router.push("/app/createuser"),
       },
       {
-        label: 'Listado usuarios',
-        icon: 'pi pi-fw pi-user-edit',
-        command: () => router.push('/app/listuser')
-      }
-    ]
+        label: "Listado usuarios",
+        icon: "pi pi-fw pi-user-edit",
+        command: () => router.push("/app/listuser"),
+      },
+    ],
   },
   {
-    label: 'Pacientes',
-    icon: 'pi pi-fw pi-user',
+    label: "Pacientes",
+    icon: "pi pi-fw pi-user",
     items: [
-    {
-        label: 'Crear paciente',
-        icon: 'pi pi-fw pi-user-edit',
-        command: () => router.push('/app/createpatient')
+      {
+        label: "Crear paciente",
+        icon: "pi pi-fw pi-user-edit",
+        command: () => router.push("/app/createpatient"),
       },
       {
-        label: 'Listado pacientes',
-        icon: 'pi pi-fw pi-user-edit',
-        command: () => router.push('/app/listpatient')
-      }
-    ]
+        label: "Listado pacientes",
+        icon: "pi pi-fw pi-user-edit",
+        command: () => router.push("/app/listpatient"),
+      },
+    ],
   },
   {
-    label: 'Ficha clinica',
-    icon: 'pi pi-fw pi-user',
+    label: "Ficha clinica",
+    icon: "pi pi-fw pi-user",
     items: [
-    {
-        label: 'Crear Ficha clinica',
-        icon: 'pi pi-fw pi-user-edit',
-        command: () => router.push('/app/createclinicalrecord')
+      {
+        label: "Crear Ficha clinica",
+        icon: "pi pi-fw pi-user-edit",
+        command: () => router.push("/app/createclinicalrecord"),
       },
       {
-        label: 'Listado Ficha clinica',
-        icon: 'pi pi-fw pi-user-edit',
-        command: () => router.push('/app/listclinicalrecords')
-      }
-    ]
+        label: "Listado Ficha clinica",
+        icon: "pi pi-fw pi-user-edit",
+        command: () => router.push("/app/listclinicalrecords"),
+      },
+    ],
   },
-]
+];
 
 const logout = () => {
-  localStorage.removeItem('isLoggedIn')
-  localStorage.removeItem('username')
-  router.push('/')
-}
+  localStorage.removeItem("isLoggedIn");
+  localStorage.removeItem("username");
+  router.push("/");
+};
 </script>
 
 <style scoped>
@@ -129,6 +133,7 @@ const logout = () => {
   flex-grow: 1;
   padding: 1rem;
   overflow-y: auto;
+  max-width: 55%;
 }
 
 h3 {
