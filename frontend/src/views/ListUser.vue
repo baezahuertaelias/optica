@@ -36,12 +36,21 @@
           />
           <Button
             label="Delete"
-            @click="deleteUser(data)"
+            @click="confirmDelete(data)"
             class="p-button-rounded p-button-danger"
           />
         </template>
       </Column>
     </DataTable>
+
+    <!-- Confirmation Dialog -->
+    <Dialog :visible="deleteUserDialog" :style="{ width: '300px' }" header="Confirmación" :modal="true">
+      <p>¿Está seguro de que desea eliminar el usuario?</p>
+      <template #footer>
+        <Button label="No" icon="pi pi-times" @click="deleteUserDialog = false" class="p-button-text" />
+        <Button label="Sí" icon="pi pi-check" @click="deleteUser(deleteUserId)" class="p-button-text" autofocus />
+      </template>
+    </Dialog>
   </div>
 </template>
 
@@ -54,12 +63,18 @@ import Column from "primevue/column";
 import Button from "primevue/button";
 import Tag from "primevue/tag";
 import Toast from "primevue/toast";
+import Dialog from 'primevue/dialog';
 import apiClient from "../axios-config";
 
 // State to hold the list of users
 const users = ref([]);
 const router = useRouter();
 const toast = useToast();
+
+// Confirmation dialog state
+const deleteUserDialog = ref(false);
+let deleteUserId;
+
 // Function to fetch users
 const fetchUsers = async () => {
   try {
@@ -76,7 +91,6 @@ const fetchUsers = async () => {
       life: 3000,
     });
   }
-  console.log("value", users.value);
 };
 
 const editUser = async (user_) => {
@@ -87,11 +101,35 @@ const editUser = async (user_) => {
   }
 };
 
-const deleteUser = async () => {
+// Confirm delete
+const confirmDelete = (user) => {
+  deleteUserId = user.id;
+  deleteUserDialog.value = true;
+};
+
+// Complete the deleteUser method
+const deleteUser = async (userId) => {
   try {
-    console.log("has to delete");
+    const response = await apiClient.delete(`/users/${userId}`);
+    if (response.status === 200) {
+      toast.add({
+        severity: "success",
+        summary: "Exito",
+        detail: "Usuario eliminado correctamente",
+        life: 3000,
+      });
+      // Refresh the user list after successful deletion
+      fetchUsers();
+    }
   } catch (error) {
-    console.log("deleteuser error");
+    toast.add({
+      severity: "error",
+      summary: "Error",
+      detail: error.response.data.message || "No se pudo eliminar el usuario",
+      life: 3000,
+    });
+  } finally {
+    deleteUserDialog.value = false;
   }
 };
 

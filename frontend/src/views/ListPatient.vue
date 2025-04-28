@@ -27,31 +27,45 @@
           />
           <Button
             label="Delete"
-            @click="deleteUser(data)"
+            @click="confirmDelete(data)"
             class="p-button-rounded p-button-danger"
           />
         </template>
       </Column>
     </DataTable>
+
+    <!-- Confirmation Dialog -->
+    <Dialog :visible="deleteUserDialog" :style="{ width: '300px' }" header="Confirmación" :modal="true">
+      <p>¿Está seguro de que desea eliminar el paciente?</p>
+      <template #footer>
+        <Button label="No" icon="pi pi-times" @click="deleteUserDialog = false" class="p-button-text" />
+        <Button label="Sí" icon="pi pi-check" @click="deleteUser(deletePatientId)" class="p-button-text" autofocus />
+      </template>
+    </Dialog>
   </div>
 </template>
-  
-  <script setup>
-import { ref } from "vue";
+
+<script setup>
+import { ref, onMounted } from "vue";
 import apiClient from "../axios-config";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Button from "primevue/button";
 import Tag from "primevue/tag";
-import { useRouter } from "vue-router";
 import Toast from "primevue/toast";
+import Dialog from 'primevue/dialog';
+import { useRouter } from "vue-router";
 
-// State to hold the list of users
+// State to hold the list of patients
 const clients = ref([]);
 const router = useRouter();
 const toast = useToast();
 
-// Function to fetch users
+// Confirmation dialog state
+const deleteUserDialog = ref(false);
+let deletePatientId;
+
+// Function to fetch patients
 const fetchClients = async () => {
   try {
     const response = await apiClient.get("/patients");
@@ -77,24 +91,45 @@ const editUser = async (user_) => {
   }
 };
 
+// Confirm delete
+const confirmDelete = (patient) => {
+  deletePatientId = patient.id;
+  deleteUserDialog.value = true;
+};
+
+// Complete the deleteUser method
 const deleteUser = async () => {
   try {
-    console.log("has to delete");
+    const response = await apiClient.delete(`/patients/${deletePatientId}`);
+    if (response.status === 200) {
+      toast.add({
+        severity: "success",
+        summary: "Exito",
+        detail: "Paciente eliminado correctamente",
+        life: 3000,
+      });
+      // Refresh the patient list after successful deletion
+      fetchClients();
+    }
   } catch (error) {
-    console.log("deleteuser error");
+    toast.add({
+      severity: "error",
+      summary: "Error",
+      detail: error.response.data.message || "No se pudo eliminar el paciente",
+      life: 3000,
+    });
+  } finally {
+    deleteUserDialog.value = false;
   }
 };
 
-// Fetch users on component mount
-import { onMounted } from "vue";
-import Toast from "primevue/toast";
-import { useToast } from "primevue/usetoast";
+// Fetch patients on component mount
 onMounted(() => {
   fetchClients();
 });
 </script>
-  
-  <style scoped>
+
+<style scoped>
 .page-container {
   padding: 1rem;
 }
@@ -119,4 +154,3 @@ label {
   margin-bottom: 0.5rem;
 }
 </style>
-  
