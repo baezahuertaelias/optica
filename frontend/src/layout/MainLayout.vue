@@ -133,7 +133,7 @@ const logout = () => {
   flex-grow: 1;
   padding: 1rem;
   overflow-y: auto;
-  max-width: 55%;
+  max-width: auto;
 }
 
 h3 {

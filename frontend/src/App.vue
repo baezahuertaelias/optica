@@ -19,7 +19,7 @@ html, body {
 
 #app, .app-container {
   height: 100vh;
-  width: 100vw;
+
   overflow: hidden;
 }
 </style>

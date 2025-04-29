@@ -1,11 +1,10 @@
-import './assets/main.css'
-import './assets/base.css'
-
 // src/main.js
 import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import ToastService from 'primevue/toastservice';
 import App from './App.vue'
+
+//import './style.css'
 
 // PrimeVue imports
 import PrimeVue from 'primevue/config'
@@ -120,7 +119,11 @@ router.beforeEach((to, from, next) => {
 const app = createApp(App);
 app.use(PrimeVue, {
   theme: {
-    preset: Nora,
+    preset: Aura,
+    options: {
+      darkModeSelector: false || 'none',
+    }
+
   },
 });
 app.use(ToastService);
