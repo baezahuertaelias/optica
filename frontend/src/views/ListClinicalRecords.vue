@@ -32,7 +32,24 @@
       responsiveLayout="scroll"
       class="p-datatable-sm"
       stripedRows
+      :filters="filters"
+      filterDisplay="menu"
+      :globalFilterFields="['Patient.name', 'User.username', 'observations']"
     >
+      <template #header>
+        <div class="flex justify-end">
+          <IconField>
+            <InputIcon>
+              <i class="pi pi-search" />
+            </InputIcon>
+            <InputText
+              v-model="filters['global'].value"
+              placeholder="Keyword Search"
+            />
+          </IconField>
+        </div>
+      </template>
+
       <template #groupheader="slotProps">
         <span class="align-middle ml-2 font-bold leading-normal">
           {{ slotProps.data.Patient?.name || "Unknown Patient" }}
@@ -63,7 +80,35 @@
         </div>
       </template>
     </DataTable>
-    <Toast />
+
+    <Dialog
+      v-model:visible="visible"
+      modal
+      header="Edit Profile"
+      :style="{ width: '50rem' }"
+      :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+    >
+      <span class="text-surface-500 dark:text-surface-400 block mb-8"
+        >Update your information.</span
+      >
+      <div class="flex items-center gap-4 mb-4">
+        <label for="username" class="font-semibold w-24">Username</label>
+        <InputText id="username" class="flex-auto" autocomplete="off" />
+      </div>
+      <div class="flex items-center gap-4 mb-8">
+        <label for="email" class="font-semibold w-24">Email</label>
+        <InputText id="email" class="flex-auto" autocomplete="off" />
+      </div>
+      <div class="flex justify-end gap-2">
+        <Button
+          type="button"
+          label="Cancel"
+          severity="secondary"
+          @click="visible = false"
+        ></Button>
+        <Button type="button" label="Save" @click="visible = false"></Button>
+      </div>
+    </Dialog>
   </div>
 </template>
   
@@ -73,14 +118,126 @@ import Toast from "primevue/toast";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Button from "primevue/button";
-import Tag from "primevue/tag";
+import Dialog from "primevue/dialog";
 import { useToast } from "primevue/usetoast";
 import apiClient from "../axios-config";
+import { FilterMatchMode } from "@primevue/core/api";
+import InputIcon from "primevue/inputicon";
+import InputText from "primevue/inputtext";
+import IconField from "primevue/iconfield";
 
 const toast = useToast();
 const clinicalRecords = ref([]);
 const expandedRowGroups = ref([]);
 const loading = ref(true);
+const visible = ref(false);
+const detailClinicalRecord = ref({
+  id: null,
+  idPatient: null,
+  userId: null,
+  anamnesis: null,
+  othersDetails: null,
+  createdAt: null,
+  updatedAt: null,
+  Patient: {
+    id: null,
+    name: null,
+    passport: null,
+    genderId: null,
+    tel: null,
+    birthday: null,
+    homeAddress: null,
+    mail: null,
+    occupation: null,
+    legalRepresentative: null,
+    idIsapre: null,
+    createdAt: null,
+    updatedAt: null,
+    Gender: {
+      id: null,
+      value: null,
+    },
+    Isapre: {
+      id: null,
+      value: null,
+    },
+  },
+  User: {
+    id: null,
+    username: null,
+    password: null,
+    userTypeId: null,
+    status: true,
+    createdAt: null,
+    updatedAt: null,
+    UserType: {
+      id: null,
+      type: null,
+      createdAt: null,
+      updatedAt: null,
+    },
+  },
+  VisualAcuity: {
+    id: null,
+    clinicalrecordId: null,
+    withoutCorrectionLE: null,
+    withoutCorrectionRE: null,
+    withoutCorrectionBI: null,
+    laserCorrectionLE: null,
+    laserCorrectionRE: null,
+    laserCorrectionBI: null,
+    pinholeLE: null,
+    pinholeRE: null,
+    pinholeBI: null,
+    pupilRedLE: null,
+    pupilRedRE: null,
+    createdAt: null,
+    updatedAt: null,
+  },
+  SubjectiveRefractionFar: {
+    id: null,
+    clinicalrecordId: null,
+    sphereLE: null,
+    sphereRE: null,
+    cylinderLE: null,
+    cylinderRE: null,
+    axisLE: null,
+    axisRE: null,
+    vareachedLE: null,
+    vareachedRE: null,
+    pupilarDistance: null,
+    createdAt: null,
+    updatedAt: null,
+  },
+  SubjectiveRefractionNear: {
+    id: null,
+    clinicalrecordId: null,
+    sphereLE: null,
+    sphereRE: null,
+    cylinderLE: null,
+    cylinderRE: null,
+    axisLE: null,
+    axisRE: null,
+    vareachedLE: null,
+    vareachedRE: null,
+    pupilarDistance: null,
+    createdAt: null,
+    updatedAt: null,
+  },
+  ApplanationTonometry: {
+    id: null,
+    leftEye: null,
+    rightEye: null,
+    dateTime: null,
+    createdAt: null,
+    updatedAt: null,
+    clinicalrecordId: null,
+  },
+});
+
+const filters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
 
 // Format date function
 const formatDate = (dateString) => {
@@ -96,8 +253,44 @@ const formatDate = (dateString) => {
 };
 
 // View record function
-const viewRecord = (record) => {
-  console.log("Viewing record:", record);
+const viewRecord = async (record) => {
+  const { id } = record;
+  console.log("Viewing record:", id);
+
+  try {
+    const response = await apiClient.get(`/clinicalRecords/detail/${id}`);
+    if (response.status === 200) {
+      console.log("[viewRecord] API Response:", response.data);
+      detailClinicalRecord.value = response.data.records || [];
+      visible.value = true;
+
+      // Check if the data structure is as expected
+      if (detailClinicalRecord.value.length > 0) {
+        const sampleRecord = detailClinicalRecord.value[0];
+        console.log("Sample record structure:", sampleRecord);
+
+        // Validate required fields
+        /* if (!sampleRecord.Patient?.name) {
+          console.warn("Warning: Patient.name is missing in records");
+        }
+        if (!sampleRecord.User?.username) {
+          console.warn("Warning: User.username is missing in records");
+        } */
+      }
+    }
+  } catch (error) {
+    console.error("API Error:", error);
+    toast.add({
+      severity: "error",
+      summary: "Error",
+      detail:
+        error.response?.data?.message ||
+        "Error al cargar los registros clínicos",
+      life: 3000,
+    });
+  }
+
+  visible.value = true;
   // Implement your view logic here
 };
 

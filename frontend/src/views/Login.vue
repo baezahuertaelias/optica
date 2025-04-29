@@ -1,7 +1,7 @@
 <!-- src/views/Login.vue -->
 <template>
   <div class="login-container">
-    <Toast/>
+    <Toast />
     <div class="login-card">
       <h2>Iniciar sesion</h2>
       <div class="field">
@@ -20,56 +20,64 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useToast } from 'primevue/usetoast';
-import InputText from 'primevue/inputtext'
-import Password from 'primevue/password'
-import Button from 'primevue/button'
-import Toast from 'primevue/toast';
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useToast } from "primevue/usetoast";
+import InputText from "primevue/inputtext";
+import Password from "primevue/password";
+import Button from "primevue/button";
+import Toast from "primevue/toast";
 
 //nuevos
-import apiClient from '../axios-config'
+import apiClient from "../axios-config";
 
-const router = useRouter()
+const router = useRouter();
 const toast = useToast();
-const username = ref('')
-const password = ref('')
+const username = ref("");
+const password = ref("");
 
 const login = async () => {
-
-  await localStorage.setItem('token', '');
+  await localStorage.setItem("token", "");
+  await localStorage.setItem("username", "");
+  await localStorage.setItem("iduser", "");
 
   try {
-    const response = await apiClient.post('/auth/login', {
+    const response = await apiClient.post("/auth/login", {
       username: username.value,
       password: password.value,
-    })
+    });
 
     if (response.status === 200) {
       // Assuming the backend returns a token and user information
-      const { token } = response.data
+      const { token, user } = response.data;
 
       // Store token in localStorage
-      await localStorage.setItem('isLoggedIn', 'true')
-      await localStorage.setItem('username', username.value)
-      await localStorage.setItem('token', token);
-      
+      await localStorage.setItem("isLoggedIn", "true");
+      await localStorage.setItem("username", username.value);
+      await localStorage.setItem("token", token);
+      await localStorage.setItem("iduser", user.id);
 
       // Redirect to main page
-      router.push('/app/dashboard')
+      router.push("/app/dashboard");
     } else {
       // Show error message using toast when the response is not 200
       //showErrorMessage(response.data.message || 'Login failed')
-      toast.add({ severity: 'error', summary: 'Error', detail: response.data.message || 'Login fallo', life: 3000 });
+      toast.add({
+        severity: "error",
+        summary: "Error",
+        detail: response.data.message || "Login fallo",
+        life: 3000,
+      });
     }
   } catch (error) {
-    
-    toast.add({ severity: 'error', summary: 'Error', detail: error.response.data.message || 'Login fallo', life: 3000 });
+    toast.add({
+      severity: "error",
+      summary: "Error",
+      detail: error.response.data.message || "Login fallo",
+      life: 3000,
+    });
   }
-
-
-}
+};
 </script>
 
 <style scoped>

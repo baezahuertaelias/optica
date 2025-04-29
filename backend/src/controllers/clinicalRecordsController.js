@@ -230,6 +230,18 @@ module.exports = {
       return res.status(500).json({ message: "Internal server error" });
     }
   },
+
+  async getPatientsName(req, res){
+    try {
+      const patients = await Patients.findAll({
+        attributes: ['id', 'name'],
+      });
+      return res.status(200).json({ patients });
+    } catch (error) {
+      console.error("Failed to fetch patients:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }
 };
 
 // Example request body structure
