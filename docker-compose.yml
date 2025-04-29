@@ -51,13 +51,12 @@ services:
       PGADMIN_DEFAULT_PASSWORD: Elias..123 #${PGADMIN_DEFAULT_PASSWORD:-admin}
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     volumes:
-       - app-network:/var/lib/pgadmin
+       - pgadmin:/var/lib/pgadmin
     ports:
       - 5050:80 #"${PGADMIN_PORT:-5050}:80"
     networks:
       - app-network
     restart: unless-stopped
-
 
 networks:
   app-network:
@@ -65,4 +64,4 @@ networks:
 
 volumes:
   postgres-data:
-  app-network:
+  pgadmin:
