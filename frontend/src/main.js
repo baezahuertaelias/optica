@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import ToastService from 'primevue/toastservice';
 import App from './App.vue'
 
+//uncomment to use tailwindcss
 //import './style.css'
 
 // PrimeVue imports
