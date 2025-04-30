@@ -281,16 +281,18 @@
                     <label for="ingredient2"> Monofocal </label>
                   </div>
                 </div>
+
                 <AutoComplete
                   id="patient"
                   v-model="selectedPatient"
                   v-model:suggestions="filteredPatients"
                   optionLabel="name"
-                  placeholder="Buscar Lentes"
+                  placeholder="Buscar Marca de lentes"
                   @complete="searchPatients"
                   class="w-full"
                   dropdown
                   forceSelection
+                  @item-select="onPatientSelect"
                 >
                   <template #item="slotProps">
                     <div class="flex items-center">
@@ -323,11 +325,12 @@
                   v-model="selectedPatient"
                   v-model:suggestions="filteredPatients"
                   optionLabel="name"
-                  placeholder="Buscar modelo"
+                  placeholder="Buscar Marco"
                   @complete="searchPatients"
                   class="w-full"
                   dropdown
                   forceSelection
+                  @item-select="onPatientSelect"
                 >
                   <template #item="slotProps">
                     <div class="flex items-center">
@@ -383,6 +386,9 @@ import Toast from "primevue/toast";
 import Card from "primevue/card";
 import InputNumber from "primevue/inputnumber";
 import Checkbox from "primevue/checkbox";
+import MultiSelect from "primevue/multiselect";
+import InputGroup from "primevue/inputgroup";
+import InputGroupAddon from "primevue/inputgroupaddon";
 
 const router = useRouter();
 const route = useRoute();
@@ -429,6 +435,14 @@ const clinicalRecord = ref({
     diff: null,
   },
 });
+
+const cities = ref([
+  { name: "New York", code: "NY" },
+  { name: "Rome", code: "RM" },
+  { name: "London", code: "LDN" },
+  { name: "Istanbul", code: "IST" },
+  { name: "Paris", code: "PRS" },
+]);
 
 onMounted(() => {
   const otId = route.query.id || route.params.id;
