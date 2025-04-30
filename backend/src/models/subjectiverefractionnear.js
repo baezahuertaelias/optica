@@ -27,11 +27,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true
     },
     axisLE: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.FLOAT,
       allowNull: true
     },
     axisRE: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.FLOAT,
       allowNull: true
     },
     vareachedLE: {
