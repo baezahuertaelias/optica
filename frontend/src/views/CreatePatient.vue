@@ -108,7 +108,7 @@ const savePatient = async () => {
     } else {
       await apiClient.put(`/patients/${patient.value.id}`, patient.value);
     }
-    router.push({ name: "Listado paciente" }); // Assuming you have a route named PatientList for listing patients
+    router.push("/app/listPatient");
   } catch (error) {
     console.error("Error saving patient:", error);
   }

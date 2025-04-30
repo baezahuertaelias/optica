@@ -102,7 +102,7 @@ const fetchClients = async () => {
 
 const editUser = async (user_) => {
   try {
-    router.push({ name: "Crear paciente", params: { id: user_.id } });
+    router.push({ path: "/app/createPatient", params: { id: user_.id } });
   } catch (error) {
     console.log("edit error", error);
   }

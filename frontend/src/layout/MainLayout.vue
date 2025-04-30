@@ -47,12 +47,12 @@ const menuItems = [
       {
         label: "Crear usuarios",
         icon: "pi pi-fw pi-user-edit",
-        command: () => router.push("/app/createuser"),
+        command: () => router.push("/app/createUser"),
       },
       {
         label: "Listado usuarios",
         icon: "pi pi-fw pi-user-edit",
-        command: () => router.push("/app/listuser"),
+        command: () => router.push("/app/listUser"),
       },
     ],
   },
@@ -63,12 +63,12 @@ const menuItems = [
       {
         label: "Crear paciente",
         icon: "pi pi-fw pi-user-edit",
-        command: () => router.push("/app/createpatient"),
+        command: () => router.push("/app/createPatient"),
       },
       {
         label: "Listado pacientes",
         icon: "pi pi-fw pi-user-edit",
-        command: () => router.push("/app/listpatient"),
+        command: () => router.push("/app/listPatient"),
       },
     ],
   },
@@ -79,12 +79,44 @@ const menuItems = [
       {
         label: "Crear Ficha clinica",
         icon: "pi pi-fw pi-user-edit",
-        command: () => router.push("/app/createclinicalrecord"),
+        command: () => router.push("/app/createClinicalRecord"),
       },
       {
         label: "Listado Ficha clinica",
         icon: "pi pi-fw pi-user-edit",
-        command: () => router.push("/app/listclinicalrecords"),
+        command: () => router.push("/app/listClinicalRecord"),
+      },
+    ],
+  },
+  {
+    label: "Orden de trabajo",
+    icon: "pi pi-fw pi-user",
+    items: [
+      {
+        label: "Crear OT",
+        icon: "pi pi-fw pi-user-edit",
+        command: () => router.push("/app/createOT"),
+      },
+      {
+        label: "Listado OT",
+        icon: "pi pi-fw pi-user-edit",
+        command: () => router.push("/app/listOT"),
+      },
+    ],
+  },
+  {
+    label: "Agendamiento",
+    icon: "pi pi-fw pi-user",
+    items: [
+      {
+        label: "Crear Agendamiento",
+        icon: "pi pi-fw pi-user-edit",
+        command: () => router.push("/app/createAppointment"),
+      },
+      {
+        label: "Calendario de Agenda",
+        icon: "pi pi-fw pi-user-edit",
+        command: () => router.push("/app/showAgenda"),
       },
     ],
   },

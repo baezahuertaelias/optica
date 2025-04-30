@@ -424,7 +424,7 @@ const saveClinicalRecord = async () => {
         clinicalRecord.value
       );
     }
-    router.push({ name: "Listado Fichas clinicas" }); // Assuming you have a route named PatientList for listing patients
+    router.push("/app/listClinicalRecord");
   } catch (error) {
     console.error("Error saving clinicalRecord:", error);
   }

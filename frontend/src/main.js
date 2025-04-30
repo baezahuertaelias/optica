@@ -23,11 +23,14 @@ import CreateUser from './views/CreateUser.vue'
 //
 
 import MainLayout from './layout/MainLayout.vue'
-import CalendarioTest from './views/CalendarioTest.vue'
 import CreatePatient from './views/CreatePatient.vue';
 import ListPatient from './views/ListPatient.vue';
 import ListClinicalRecords from './views/ListClinicalRecords.vue'
 import CreateClinicalRecord from './views/CreateClinicalRecord.vue'
+import ListOT from './views/ListOT.vue'
+import CreateOT from './views/CreateOT.vue'
+import CalendarAppointment from './views/CalendarAppointment.vue'
+import CreateAppointment from './views/CreateAppointment.vue'
 
 
 // Router configuration
@@ -59,41 +62,56 @@ const routes = [
       }
       ,
       {
-        path: 'listuser',
+        path: 'listUser',
         name: 'Listado usuarios',
         component: ListUser
       },
       {
-        path: 'createuser/:id?',
+        path: 'createUser/:id?',
         name: 'Crear usuario',
         component: CreateUser
       },
       {
-        path: 'listpatient',
+        path: 'listPatient',
         name: 'Listado paciente',
         component: ListPatient
       },
       {
-        path: 'createpatient/:id?',
+        path: 'createPatient/:id?',
         name: 'Crear paciente',
         component: CreatePatient
       },
       {
-        path: 'listclinicalrecords',
+        path: 'listClinicalRecord',
         name: "Listado Fichas clinicas",
         component: ListClinicalRecords
       },
       {
-        path: 'createclinicalrecord',
+        path: 'createClinicalRecord',
         name: "Crear Ficha clinica",
         component: CreateClinicalRecord
       },
+      {
+        path: 'listOT',
+        name: "Listado OT",
+        component: ListOT
+      },
+      {
+        path: 'createOT',
+        name: "Crear OT",
+        component: CreateOT
+      },
+      {
+        path: 'showAgenda',
+        name: "Mostrar agenda",
+        component: CalendarAppointment
+      },
+      {
+        path: 'createAppointment',
+        name: "Agendar",
+        component: CreateAppointment
+      },
     ]
-  },
-  {
-    path: '/calendarioTest',
-    name: 'CalendarioTest',
-    component: CalendarioTest
   }
 ]
 
