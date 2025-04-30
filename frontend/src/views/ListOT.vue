@@ -110,7 +110,7 @@ const fetchUsers = async () => {
 
 const editUser = async (user_) => {
   try {
-    router.push({ path: "/app/createUser", params: { id: user_.id } });
+    //router.push({ path: "/app/createUser", params: { id: user_.id } });
   } catch (error) {
     console.log("edit error", error);
   }

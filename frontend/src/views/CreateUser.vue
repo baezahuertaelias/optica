@@ -48,7 +48,7 @@ const userTypes = ref([]);
 
 onMounted(() => {
   const userId = route.query.id || route.params.id; // Use query or params to get the ID
-  console.log("onmounted userid", userId);
+  console.log("onmounted userid", route);
 
   if (userId) {
     isNew.value = false;
