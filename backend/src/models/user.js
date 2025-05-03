@@ -36,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
         User.belongsTo(models.UserType, { foreignKey: 'userTypeId', as: 'userType' });
         User.hasMany(models.ClinicalRecord, { foreignKey: 'userId' });
         User.hasMany(models.Appointment, { foreignKey: 'userId' });
-        User.hasMany(models.WorkOrder, { foreignKey: 'userId' });  // Added missing association
+        User.hasMany(models.WorkOrder, { foreignKey: 'userId' });
     };
 
     return User;

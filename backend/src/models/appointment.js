@@ -41,9 +41,8 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Appointment.associate = (models) => {
-        Appointment.belongsTo(models.Patient, { foreignKey: 'patientId', as: 'patient' });
+        Appointment.belongsTo(models.TypeAppointment, { foreignKey: 'typeAppointmentId', as: 'typeAppointment' });
         Appointment.belongsTo(models.User, { foreignKey: 'userId', as: 'user' });
-        Appointment.belongsTo(models.TypeAppointment, { foreignKey: 'typeAppointmentId', as: 'appointmentType' });
     };
 
     return Appointment;

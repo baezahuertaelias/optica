@@ -29,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     TypeAppointment.associate = (models) => {
-        TypeAppointment.hasMany(models.Appointment, { foreignKey: 'typeAppointmentId' });
+        TypeAppointment.hasMany(models.Appointment, { foreignKey: 'typeAppointmentId', as: 'appointments' });
     };
 
     return TypeAppointment;

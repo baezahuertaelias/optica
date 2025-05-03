@@ -107,8 +107,6 @@ module.exports = {
         return res.status(404).json({ message: "Patient not found" });
       }
 
-      console.log(`updatePatient ${id}`, req.body);
-
       // Update fields if provided
       if (name !== undefined) patient.name = name;
       if (passport !== undefined) patient.passport = passport;
