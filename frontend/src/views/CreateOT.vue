@@ -261,6 +261,17 @@
             <Card>
               <template #title>Otros detalles</template>
               <template #content>
+                <FloatLabel variant="on">
+                  <Textarea
+                    id="on_label"
+                    v-model="clinicalRecord.anamnesis"
+                    rows="5"
+                    cols="30"
+                    style="resize: none"
+                  />
+                  <label for="on_label">Anamnesis</label>
+                </FloatLabel>
+
                 <div class="card flex flex-wrap justify-center gap-4">
                   <div class="flex items-center gap-2">
                     <Checkbox
@@ -279,6 +290,55 @@
                       value="Mushroom"
                     />
                     <label for="ingredient2"> Monofocal </label>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <Checkbox
+                      v-model="pizza"
+                      inputId="ingredient2"
+                      name="pizza"
+                      value="Mushroom"
+                    />
+                    <label for="ingredient2"> Multifocal </label>
+                  </div>
+
+                  <div class="flex items-center gap-2">
+                    <Checkbox
+                      v-model="pizza"
+                      inputId="ingredient2"
+                      name="pizza"
+                      value="Mushroom"
+                    />
+                    <label for="ingredient2"> Ocupacional </label>
+                  </div>
+                </div>
+
+                <div class="card flex flex-wrap justify-center gap-4">
+                  <div class="flex items-center gap-2">
+                    <Checkbox
+                      v-model="pizza"
+                      inputId="ingredient1"
+                      name="pizza"
+                      value="Cheese"
+                    />
+                    <label for="ingredient1"> Organico </label>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <Checkbox
+                      v-model="pizza"
+                      inputId="ingredient2"
+                      name="pizza"
+                      value="Mushroom"
+                    />
+                    <label for="ingredient2"> Policarbonato </label>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <Checkbox
+                      v-model="pizza"
+                      inputId="ingredient2"
+                      name="pizza"
+                      value="Mushroom"
+                    />
+                    <label for="ingredient2"> Mineral </label>
                   </div>
                 </div>
 
@@ -359,6 +419,24 @@
                 </AutoComplete>
               </template>
             </Card>
+
+            <Card>
+              <template #title>Pagos</template>
+              <template #content>
+                <FloatLabel variant="in">
+                  <InputText id="in_label" v-model="value2" variant="filled" />
+                  <label for="in_label">In Label</label>
+                </FloatLabel>
+                <FloatLabel variant="in">
+                  <InputText id="in_label" v-model="value2" variant="filled" />
+                  <label for="in_label">In Label</label>
+                </FloatLabel>
+                <FloatLabel variant="in">
+                  <InputText id="in_label" v-model="value2" variant="filled" />
+                  <label for="in_label">In Label</label>
+                </FloatLabel>
+              </template>
+            </Card>
           </template>
         </Card>
       </div>
@@ -389,6 +467,9 @@ import Checkbox from "primevue/checkbox";
 import MultiSelect from "primevue/multiselect";
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
+import FloatLabel from "primevue/floatlabel";
+import InputText from "primevue/inputtext";
+import Textarea from "primevue/textarea";
 
 const router = useRouter();
 const route = useRoute();

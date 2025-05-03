@@ -20,11 +20,11 @@
       :value="clinicalRecords"
       expandableRowGroups
       rowGroupMode="subheader"
-      groupRowsBy="Patient.name"
+      groupRowsBy="patient.name"
       @rowgroup-expand="onRowGroupExpand"
       @rowgroup-collapse="onRowGroupCollapse"
       sortMode="single"
-      sortField="Patient.name"
+      sortField="patient.name"
       :sortOrder="1"
       :rowsPerPageOptions="[10, 25, 50]"
       :paginator="true"
@@ -34,7 +34,7 @@
       stripedRows
       :filters="filters"
       filterDisplay="menu"
-      :globalFilterFields="['Patient.name', 'User.username', 'observations']"
+      :globalFilterFields="['patient.name', 'user.username', 'observations']"
     >
       <template #header>
         <div class="flex justify-end">
@@ -52,17 +52,17 @@
 
       <template #groupheader="slotProps">
         <span class="align-middle ml-2 font-bold leading-normal">
-          {{ slotProps.data.Patient?.name || "Unknown Patient" }}
+          {{ slotProps.data.patient?.name || "Unknown Patient" }}
         </span>
       </template>
-      <Column field="Patient.name" header="Name"></Column>
-      <Column field="User.username" header="Medico"></Column>
+      <Column field="patient.name" header="Name"></Column>
+      <Column field="user.username" header="Medico"></Column>
       <Column field="createdAt" header="Fecha">
         <template #body="slotProps">
           {{ formatDate(slotProps.data.createdAt) }}
         </template>
       </Column>
-      <Column field="observations" header="Observaciones"></Column>
+      <Column field="anamnesis" header="Observaciones"></Column>
       <Column header="Actions">
         <template #body="slotProps">
           <Button
@@ -76,7 +76,7 @@
       <template #groupfooter="slotProps">
         <div class="flex justify-end font-bold w-full">
           Registros Totales:
-          {{ calculateClinicalRecordsTotal(slotProps.data.idPatient) }}
+          {{ calculateClinicalRecordsTotal(slotProps.data.patientId) }}
         </div>
       </template>
     </DataTable>
@@ -89,12 +89,12 @@
       :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
     >
       <Card>
-        <template #title>Simple Card</template>
+        <template #title>Información de Paciente</template>
         <template #content>
           <FloatLabel variant="on">
             <Textarea
               id="on_label_nombre"
-              v-model="detailClinicalRecord.Patient.name"
+              v-model="detailClinicalRecord.patient.name"
               rows="5"
               cols="30"
               style="resize: none"
@@ -121,37 +121,37 @@
               cols="30"
               style="resize: none"
             />
-            <label for="othersDetails">othersDetails</label>
+            <label for="othersDetails">Otros Detalles</label>
           </FloatLabel>
         </template>
       </Card>
 
       <Card>
-        <template #title>Simple Card</template>
+        <template #title>Agudeza Visual</template>
         <template #content>
           <!-- visualAcuity -->
           <InputNumber
-            v-model="detailClinicalRecord.VisualAcuity.withoutCorrectionLE"
+            v-model="detailClinicalRecord.visualAcuity.withoutCorrectionLE"
             :invalid="
-              detailClinicalRecord.VisualAcuity.withoutCorrectionLE === null
+              detailClinicalRecord.visualAcuity.withoutCorrectionLE === null
             "
             mode="decimal"
             :minFractionDigits="2"
             placeholder="withoutCorrectionLE"
           />
           <InputNumber
-            v-model="detailClinicalRecord.VisualAcuity.withoutCorrectionRE"
+            v-model="detailClinicalRecord.visualAcuity.withoutCorrectionRE"
             :invalid="
-              detailClinicalRecord.VisualAcuity.withoutCorrectionRE === null
+              detailClinicalRecord.visualAcuity.withoutCorrectionRE === null
             "
             mode="decimal"
             :minFractionDigits="2"
             placeholder="withoutCorrectionRE"
           />
           <InputNumber
-            v-model="detailClinicalRecord.VisualAcuity.withoutCorrectionBI"
+            v-model="detailClinicalRecord.visualAcuity.withoutCorrectionBI"
             :invalid="
-              detailClinicalRecord.VisualAcuity.withoutCorrectionBI === null
+              detailClinicalRecord.visualAcuity.withoutCorrectionBI === null
             "
             mode="decimal"
             :minFractionDigits="2"
@@ -159,27 +159,27 @@
           />
 
           <InputNumber
-            v-model="detailClinicalRecord.VisualAcuity.laserCorrectionLE"
+            v-model="detailClinicalRecord.visualAcuity.laserCorrectionLE"
             :invalid="
-              detailClinicalRecord.VisualAcuity.laserCorrectionLE === null
+              detailClinicalRecord.visualAcuity.laserCorrectionLE === null
             "
             mode="decimal"
             :minFractionDigits="2"
             placeholder="laserCorrectionLE"
           />
           <InputNumber
-            v-model="detailClinicalRecord.VisualAcuity.laserCorrectionRE"
+            v-model="detailClinicalRecord.visualAcuity.laserCorrectionRE"
             :invalid="
-              detailClinicalRecord.VisualAcuity.laserCorrectionRE === null
+              detailClinicalRecord.visualAcuity.laserCorrectionRE === null
             "
             mode="decimal"
             :minFractionDigits="2"
             placeholder="laserCorrectionRE"
           />
           <InputNumber
-            v-model="detailClinicalRecord.VisualAcuity.laserCorrectionBI"
+            v-model="detailClinicalRecord.visualAcuity.laserCorrectionBI"
             :invalid="
-              detailClinicalRecord.VisualAcuity.laserCorrectionBI === null
+              detailClinicalRecord.visualAcuity.laserCorrectionBI === null
             "
             mode="decimal"
             :minFractionDigits="2"
@@ -187,37 +187,37 @@
           />
 
           <InputNumber
-            v-model="detailClinicalRecord.VisualAcuity.pinholeLE"
-            :invalid="detailClinicalRecord.VisualAcuity.pinholeLE === null"
+            v-model="detailClinicalRecord.visualAcuity.pinholeLE"
+            :invalid="detailClinicalRecord.visualAcuity.pinholeLE === null"
             mode="decimal"
             :minFractionDigits="2"
             placeholder="pinholeLE"
           />
           <InputNumber
-            v-model="detailClinicalRecord.VisualAcuity.pinholeRE"
-            :invalid="detailClinicalRecord.VisualAcuity.pinholeRE === null"
+            v-model="detailClinicalRecord.visualAcuity.pinholeRE"
+            :invalid="detailClinicalRecord.visualAcuity.pinholeRE === null"
             mode="decimal"
             :minFractionDigits="2"
             placeholder="pinholeRE"
           />
           <InputNumber
-            v-model="detailClinicalRecord.VisualAcuity.pinholeBI"
-            :invalid="detailClinicalRecord.VisualAcuity.pinholeBI === null"
+            v-model="detailClinicalRecord.visualAcuity.pinholeBI"
+            :invalid="detailClinicalRecord.visualAcuity.pinholeBI === null"
             mode="decimal"
             :minFractionDigits="2"
             placeholder="pinholeBI"
           />
 
           <InputNumber
-            v-model="detailClinicalRecord.VisualAcuity.pupilRedLE"
-            :invalid="detailClinicalRecord.VisualAcuity.pupilRedLE === null"
+            v-model="detailClinicalRecord.visualAcuity.pupilRedLE"
+            :invalid="detailClinicalRecord.visualAcuity.pupilRedLE === null"
             mode="decimal"
             :minFractionDigits="2"
             placeholder="pupilRedLE"
           />
           <InputNumber
-            v-model="detailClinicalRecord.VisualAcuity.pupilRedRE"
-            :invalid="detailClinicalRecord.VisualAcuity.pupilRedRE === null"
+            v-model="detailClinicalRecord.visualAcuity.pupilRedRE"
+            :invalid="detailClinicalRecord.visualAcuity.pupilRedRE === null"
             mode="decimal"
             :minFractionDigits="2"
             placeholder="pupilRedRE"
@@ -226,13 +226,13 @@
       </Card>
 
       <Card>
-        <template #title>Simple Card</template>
+        <template #title>Refracción Subjetiva (Lejos)</template>
         <template #content>
           <!-- FAR -->
           <InputNumber
-            v-model="detailClinicalRecord.SubjectiveRefractionFar.sphereLE"
+            v-model="detailClinicalRecord.subjectiveRefractionFar.sphereLE"
             :invalid="
-              detailClinicalRecord.SubjectiveRefractionFar.sphereLE === null
+              detailClinicalRecord.subjectiveRefractionFar.sphereLE === null
             "
             mode="decimal"
             :minFractionDigits="2"
@@ -240,9 +240,9 @@
           />
 
           <InputNumber
-            v-model="detailClinicalRecord.SubjectiveRefractionFar.sphereRE"
+            v-model="detailClinicalRecord.subjectiveRefractionFar.sphereRE"
             :invalid="
-              detailClinicalRecord.SubjectiveRefractionFar.sphereRE === null
+              detailClinicalRecord.subjectiveRefractionFar.sphereRE === null
             "
             mode="decimal"
             :minFractionDigits="2"
@@ -250,9 +250,9 @@
           />
 
           <InputNumber
-            v-model="detailClinicalRecord.SubjectiveRefractionFar.cylinderLE"
+            v-model="detailClinicalRecord.subjectiveRefractionFar.cylinderLE"
             :invalid="
-              detailClinicalRecord.SubjectiveRefractionFar.cylinderLE === null
+              detailClinicalRecord.subjectiveRefractionFar.cylinderLE === null
             "
             mode="decimal"
             :minFractionDigits="2"
@@ -260,9 +260,9 @@
           />
 
           <InputNumber
-            v-model="detailClinicalRecord.SubjectiveRefractionFar.cylinderRE"
+            v-model="detailClinicalRecord.subjectiveRefractionFar.cylinderRE"
             :invalid="
-              detailClinicalRecord.SubjectiveRefractionFar.cylinderRE === null
+              detailClinicalRecord.subjectiveRefractionFar.cylinderRE === null
             "
             mode="decimal"
             :minFractionDigits="2"
@@ -270,9 +270,9 @@
           />
 
           <InputNumber
-            v-model="detailClinicalRecord.SubjectiveRefractionFar.axisLE"
+            v-model="detailClinicalRecord.subjectiveRefractionFar.axisLE"
             :invalid="
-              detailClinicalRecord.SubjectiveRefractionFar.axisLE === null
+              detailClinicalRecord.subjectiveRefractionFar.axisLE === null
             "
             mode="decimal"
             :minFractionDigits="2"
@@ -280,9 +280,9 @@
           />
 
           <InputNumber
-            v-model="detailClinicalRecord.SubjectiveRefractionFar.axisRE"
+            v-model="detailClinicalRecord.subjectiveRefractionFar.axisRE"
             :invalid="
-              detailClinicalRecord.SubjectiveRefractionFar.axisRE === null
+              detailClinicalRecord.subjectiveRefractionFar.axisRE === null
             "
             mode="decimal"
             :minFractionDigits="2"
@@ -290,9 +290,9 @@
           />
 
           <InputNumber
-            v-model="detailClinicalRecord.SubjectiveRefractionFar.vareachedLE"
+            v-model="detailClinicalRecord.subjectiveRefractionFar.vareachedLE"
             :invalid="
-              detailClinicalRecord.SubjectiveRefractionFar.vareachedLE === null
+              detailClinicalRecord.subjectiveRefractionFar.vareachedLE === null
             "
             mode="decimal"
             :minFractionDigits="2"
@@ -300,9 +300,9 @@
           />
 
           <InputNumber
-            v-model="detailClinicalRecord.SubjectiveRefractionFar.vareachedRE"
+            v-model="detailClinicalRecord.subjectiveRefractionFar.vareachedRE"
             :invalid="
-              detailClinicalRecord.SubjectiveRefractionFar.vareachedRE === null
+              detailClinicalRecord.subjectiveRefractionFar.vareachedRE === null
             "
             mode="decimal"
             :minFractionDigits="2"
@@ -311,23 +311,27 @@
 
           <InputNumber
             v-model="
-              detailClinicalRecord.SubjectiveRefractionFar.pupilarDistance
+              detailClinicalRecord.subjectiveRefractionFar.pupilarDistance
             "
             :invalid="
-              detailClinicalRecord.SubjectiveRefractionFar.pupilarDistance ===
+              detailClinicalRecord.subjectiveRefractionFar.pupilarDistance ===
               null
             "
             mode="decimal"
             :minFractionDigits="2"
             placeholder="SubjectiveRefractionFar.pupilarDistance"
           />
+        </template>
+      </Card>
 
+      <Card>
+        <template #title>Refracción Subjetiva (Cerca)</template>
+        <template #content>
           <!-- NEAR -->
-
           <InputNumber
-            v-model="detailClinicalRecord.SubjectiveRefractionNear.sphereLE"
+            v-model="detailClinicalRecord.subjectiveRefractionNear.sphereLE"
             :invalid="
-              detailClinicalRecord.SubjectiveRefractionNear.sphereLE === null
+              detailClinicalRecord.subjectiveRefractionNear.sphereLE === null
             "
             mode="decimal"
             :minFractionDigits="2"
@@ -335,9 +339,9 @@
           />
 
           <InputNumber
-            v-model="detailClinicalRecord.SubjectiveRefractionNear.sphereRE"
+            v-model="detailClinicalRecord.subjectiveRefractionNear.sphereRE"
             :invalid="
-              detailClinicalRecord.SubjectiveRefractionNear.sphereRE === null
+              detailClinicalRecord.subjectiveRefractionNear.sphereRE === null
             "
             mode="decimal"
             :minFractionDigits="2"
@@ -345,9 +349,9 @@
           />
 
           <InputNumber
-            v-model="detailClinicalRecord.SubjectiveRefractionNear.cylinderLE"
+            v-model="detailClinicalRecord.subjectiveRefractionNear.cylinderLE"
             :invalid="
-              detailClinicalRecord.SubjectiveRefractionNear.cylinderLE === null
+              detailClinicalRecord.subjectiveRefractionNear.cylinderLE === null
             "
             mode="decimal"
             :minFractionDigits="2"
@@ -355,9 +359,9 @@
           />
 
           <InputNumber
-            v-model="detailClinicalRecord.SubjectiveRefractionNear.cylinderRE"
+            v-model="detailClinicalRecord.subjectiveRefractionNear.cylinderRE"
             :invalid="
-              detailClinicalRecord.SubjectiveRefractionNear.cylinderRE === null
+              detailClinicalRecord.subjectiveRefractionNear.cylinderRE === null
             "
             mode="decimal"
             :minFractionDigits="2"
@@ -365,9 +369,9 @@
           />
 
           <InputNumber
-            v-model="detailClinicalRecord.SubjectiveRefractionNear.axisLE"
+            v-model="detailClinicalRecord.subjectiveRefractionNear.axisLE"
             :invalid="
-              detailClinicalRecord.SubjectiveRefractionNear.axisLE === null
+              detailClinicalRecord.subjectiveRefractionNear.axisLE === null
             "
             mode="decimal"
             :minFractionDigits="2"
@@ -375,9 +379,9 @@
           />
 
           <InputNumber
-            v-model="detailClinicalRecord.SubjectiveRefractionNear.axisRE"
+            v-model="detailClinicalRecord.subjectiveRefractionNear.axisRE"
             :invalid="
-              detailClinicalRecord.SubjectiveRefractionNear.axisRE === null
+              detailClinicalRecord.subjectiveRefractionNear.axisRE === null
             "
             mode="decimal"
             :minFractionDigits="2"
@@ -385,9 +389,9 @@
           />
 
           <InputNumber
-            v-model="detailClinicalRecord.SubjectiveRefractionNear.vareachedLE"
+            v-model="detailClinicalRecord.subjectiveRefractionNear.vareachedLE"
             :invalid="
-              detailClinicalRecord.SubjectiveRefractionNear.vareachedLE === null
+              detailClinicalRecord.subjectiveRefractionNear.vareachedLE === null
             "
             mode="decimal"
             :minFractionDigits="2"
@@ -395,9 +399,9 @@
           />
 
           <InputNumber
-            v-model="detailClinicalRecord.SubjectiveRefractionNear.vareachedRE"
+            v-model="detailClinicalRecord.subjectiveRefractionNear.vareachedRE"
             :invalid="
-              detailClinicalRecord.SubjectiveRefractionNear.vareachedRE === null
+              detailClinicalRecord.subjectiveRefractionNear.vareachedRE === null
             "
             mode="decimal"
             :minFractionDigits="2"
@@ -406,10 +410,10 @@
 
           <InputNumber
             v-model="
-              detailClinicalRecord.SubjectiveRefractionNear.pupilarDistance
+              detailClinicalRecord.subjectiveRefractionNear.pupilarDistance
             "
             :invalid="
-              detailClinicalRecord.SubjectiveRefractionNear.pupilarDistance ===
+              detailClinicalRecord.subjectiveRefractionNear.pupilarDistance ===
               null
             "
             mode="decimal"
@@ -420,12 +424,12 @@
       </Card>
 
       <Card>
-        <template #title>Simple Card</template>
+        <template #title>Tonometría de Aplanación</template>
         <template #content>
           <InputNumber
-            v-model="detailClinicalRecord.ApplanationTonometry.leftEye"
+            v-model="detailClinicalRecord.applanationTonometry.leftEye"
             :invalid="
-              detailClinicalRecord.ApplanationTonometry.leftEye === null
+              detailClinicalRecord.applanationTonometry.leftEye === null
             "
             mode="decimal"
             :minFractionDigits="2"
@@ -433,9 +437,9 @@
           />
 
           <InputNumber
-            v-model="detailClinicalRecord.ApplanationTonometry.rightEye"
+            v-model="detailClinicalRecord.applanationTonometry.rightEye"
             :invalid="
-              detailClinicalRecord.ApplanationTonometry.rightEye === null
+              detailClinicalRecord.applanationTonometry.rightEye === null
             "
             mode="decimal"
             :minFractionDigits="2"
@@ -492,13 +496,13 @@ const loading = ref(true);
 const visible = ref(false);
 const detailClinicalRecord = ref({
   id: null,
-  idPatient: null,
+  patientId: null,
   userId: null,
   anamnesis: null,
   othersDetails: null,
   createdAt: null,
   updatedAt: null,
-  Patient: {
+  patient: {
     id: null,
     name: null,
     passport: null,
@@ -512,16 +516,16 @@ const detailClinicalRecord = ref({
     idIsapre: null,
     createdAt: null,
     updatedAt: null,
-    Gender: {
+    gender: {
       id: null,
       value: null,
     },
-    Isapre: {
+    isapre: {
       id: null,
       value: null,
     },
   },
-  User: {
+  user: {
     id: null,
     username: null,
     password: null,
@@ -529,16 +533,16 @@ const detailClinicalRecord = ref({
     status: true,
     createdAt: null,
     updatedAt: null,
-    UserType: {
+    userType: {
       id: null,
       type: null,
       createdAt: null,
       updatedAt: null,
     },
   },
-  VisualAcuity: {
+  visualAcuity: {
     id: null,
-    clinicalrecordId: null,
+    clinicalRecordId: null,
     withoutCorrectionLE: null,
     withoutCorrectionRE: null,
     withoutCorrectionBI: null,
@@ -553,9 +557,9 @@ const detailClinicalRecord = ref({
     createdAt: null,
     updatedAt: null,
   },
-  SubjectiveRefractionFar: {
+  subjectiveRefractionFar: {
     id: null,
-    clinicalrecordId: null,
+    clinicalRecordId: null,
     sphereLE: null,
     sphereRE: null,
     cylinderLE: null,
@@ -568,9 +572,9 @@ const detailClinicalRecord = ref({
     createdAt: null,
     updatedAt: null,
   },
-  SubjectiveRefractionNear: {
+  subjectiveRefractionNear: {
     id: null,
-    clinicalrecordId: null,
+    clinicalRecordId: null,
     sphereLE: null,
     sphereRE: null,
     cylinderLE: null,
@@ -583,14 +587,14 @@ const detailClinicalRecord = ref({
     createdAt: null,
     updatedAt: null,
   },
-  ApplanationTonometry: {
+  applanationTonometry: {
     id: null,
     leftEye: null,
     rightEye: null,
     dateTime: null,
     createdAt: null,
     updatedAt: null,
-    clinicalrecordId: null,
+    clinicalRecordId: null,
   },
 });
 
@@ -620,22 +624,8 @@ const viewRecord = async (record) => {
     const response = await apiClient.get(`/clinicalRecords/detail/${id}`);
     if (response.status === 200) {
       console.log("[viewRecord] API Response:", response.data);
-      detailClinicalRecord.value = response.data.data || [];
+      detailClinicalRecord.value = response.data.data || {};
       visible.value = true;
-
-      // Check if the data structure is as expected
-      if (detailClinicalRecord.value.length > 0) {
-        const sampleRecord = detailClinicalRecord.value[0];
-        console.log("Sample record structure:", sampleRecord);
-
-        // Validate required fields
-        /* if (!sampleRecord.Patient?.name) {
-          console.warn("Warning: Patient.name is missing in records");
-        }
-        if (!sampleRecord.User?.username) {
-          console.warn("Warning: User.username is missing in records");
-        } */
-      }
     }
   } catch (error) {
     console.error("API Error:", error);
@@ -644,20 +634,17 @@ const viewRecord = async (record) => {
       summary: "Error",
       detail:
         error.response?.data?.message ||
-        "Error al cargar los registros clínicos",
+        "Error al cargar los registros clinicos",
       life: 3000,
     });
   }
-
-  visible.value = true;
-  // Implement your view logic here
 };
 
 const onRowGroupExpand = (event) => {
   toast.add({
     severity: "info",
     summary: "Grupo Expandido",
-    detail: "Paciente: " + (event.data.Patient?.name || "Unknown"),
+    detail: "Paciente: " + (event.data.patient?.name || "Unknown"),
     life: 3000,
   });
 };
@@ -666,17 +653,17 @@ const onRowGroupCollapse = (event) => {
   toast.add({
     severity: "success",
     summary: "Grupo Colapsado",
-    detail: "Paciente: " + (event.data.Patient?.name || "Unknown"),
+    detail: "Paciente: " + (event.data.patient?.name || "Unknown"),
     life: 3000,
   });
 };
 
-const calculateClinicalRecordsTotal = (idPatient) => {
+const calculateClinicalRecordsTotal = (patientId) => {
   let total = 0;
 
   if (clinicalRecords.value) {
     for (let clinicalRecord of clinicalRecords.value) {
-      if (clinicalRecord.idPatient === idPatient) {
+      if (clinicalRecord.patientId === patientId) {
         total++;
       }
     }
@@ -699,11 +686,11 @@ const fetchClinicalRecords = async () => {
         console.log("Sample record structure:", sampleRecord);
 
         // Validate required fields
-        if (!sampleRecord.Patient?.name) {
-          console.warn("Warning: Patient.name is missing in records");
+        if (!sampleRecord.patient?.name) {
+          console.warn("Warning: patient.name is missing in records");
         }
-        if (!sampleRecord.User?.username) {
-          console.warn("Warning: User.username is missing in records");
+        if (!sampleRecord.user?.username) {
+          console.warn("Warning: user.username is missing in records");
         }
       }
     }
@@ -714,7 +701,7 @@ const fetchClinicalRecords = async () => {
       summary: "Error",
       detail:
         error.response?.data?.message ||
-        "Error al cargar los registros clínicos",
+        "Error al cargar los registros clinicos",
       life: 3000,
     });
   } finally {

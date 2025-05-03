@@ -138,7 +138,6 @@ const logout = () => {
 
 .layout-sidebar {
   width: 250px;
-  background-color: #f8f9fa;
   border-right: 1px solid #dee2e6;
   display: flex;
   flex-direction: column;
@@ -147,6 +146,8 @@ const logout = () => {
 .sidebar-header {
   padding: 1rem;
   border-bottom: 1px solid #dee2e6;
+  margin-bottom: 10px;
+  margin-top: 10px;
 }
 
 .user-info {

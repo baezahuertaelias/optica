@@ -7,15 +7,19 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true
         },
         leftEye: {
-            type: DataTypes.FLOAT,  // Assuming the tonometry values are numeric (e.g., mmHg)
+            type: DataTypes.FLOAT,
             allowNull: true
         },
         rightEye: {
-            type: DataTypes.FLOAT,  // Assuming the tonometry values are numeric (e.g., mmHg)
+            type: DataTypes.FLOAT,
             allowNull: true
         },
         dateTime: {
             type: DataTypes.DATE,
+            allowNull: false
+        },
+        clinicalRecordId: {  // Renamed for consistency
+            type: DataTypes.INTEGER,
             allowNull: false
         }
     }, {
@@ -24,14 +28,11 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     ApplanationTonometry.associate = (models) => {
-        // Many-to-one relation with ClinicalRecord
         ApplanationTonometry.belongsTo(models.ClinicalRecord, {
-          foreignKey: 'clinicalrecordId',
-          as: 'clinicalRecord'
+            foreignKey: 'clinicalRecordId',
+            as: 'clinicalRecord'
         });
-      };
-
-
+    };
 
     return ApplanationTonometry;
 };

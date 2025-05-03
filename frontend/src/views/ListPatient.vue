@@ -15,7 +15,7 @@
       <Column field="mail" header="Email"></Column>
       <Column field="isapre" header="Isapre">
         <template #body="{ data }">
-          <Tag severity="secondary" :value="data.Isapre.value"></Tag>
+          <Tag severity="secondary" :value="data.isapre.value"></Tag>
         </template>
       </Column>
       <Column header="Actions">
@@ -38,10 +38,10 @@
     <Dialog
       :visible="deleteUserDialog"
       :style="{ width: '300px' }"
-      header="Confirmación"
+      header="Confirmaciin"
       :modal="true"
     >
-      <p>¿Está seguro de que desea eliminar el paciente?</p>
+      <p>Esta seguro de que desea eliminar el paciente?</p>
       <template #footer>
         <Button
           label="No"
@@ -50,7 +50,7 @@
           class="p-button-text"
         />
         <Button
-          label="Sí"
+          label="Si"
           icon="pi pi-check"
           @click="deleteUser(deletePatientId)"
           class="p-button-text"

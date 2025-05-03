@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "postgresebh",
+    "password": "post1gres2EBH3.",
+    "database": "postgres",
+    "host": "192.168.1.95",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "postgresebh",
+    "password": "post1gres2EBH3.",
+    "database": "postgres",
+    "host": "192.168.1.95",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "postgresebh",
+    "password": "post1gres2EBH3.",
+    "database": "postgres",
+    "host": "192.168.1.95",
+    "dialect": "postgres"
+  }
+}

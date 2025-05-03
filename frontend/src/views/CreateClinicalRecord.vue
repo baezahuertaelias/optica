@@ -393,7 +393,7 @@ onMounted(async () => {
     fetchPatientDetails(patientId);
   }
   /* await fetchGenders(); */
-  await fetchPatients();
+  fetchPatients()
 });
 
 const fetchPatientDetails = async (id) => {
@@ -432,7 +432,7 @@ const saveClinicalRecord = async () => {
 
 const fetchPatients = async () => {
   try {
-    const response = await apiClient.get("clinicalRecords/patients/aaa");
+    const response = await apiClient.get("clinicalRecords/patients/list");
     console.log("[fetchPatients]", response.data.patients);
 
     if (response.status === 200) {

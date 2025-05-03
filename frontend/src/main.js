@@ -5,12 +5,13 @@ import ToastService from 'primevue/toastservice';
 import App from './App.vue'
 
 //uncomment to use tailwindcss
-//import './style.css'
+import './style.css'
 
 // PrimeVue imports
 import PrimeVue from 'primevue/config'
 import Aura from '@primeuix/themes/aura'
 import Nora from '@primeuix/themes/nora'
+import Material from '@primeuix/themes/material'
 import 'primeicons/primeicons.css' // icons
 
 // Route components
@@ -138,9 +139,9 @@ router.beforeEach((to, from, next) => {
 const app = createApp(App);
 app.use(PrimeVue, {
   theme: {
-    preset: Aura,
+    preset: Material,
     options: {
-      darkModeSelector: false || 'none',
+      darkModeSelector: false,
     }
 
   },

@@ -1,4 +1,4 @@
-const { Users, UserTypes } = require("../models");
+const { User, UserType } = require("../models"); // Changed from UserTypes to UserType
 const jwt = require("jsonwebtoken");
 const jwtConfig = require("../config/jwt");
 const bcrypt = require("bcryptjs");
@@ -12,7 +12,7 @@ module.exports = {
         return res.status(400).json({ message: "Usuario y clave es requerido" });
       }
 
-      const user = await Users.findOne({ where: { username } });
+      const user = await User.findOne({ where: { username } });
 
       if (!user) {
         return res.status(401).json({ message: "Usuario no encontrado" });
@@ -49,7 +49,7 @@ module.exports = {
 
   async registerUser(req, res) {
     try {
-      const { username, password, userTypeId } = req.body;
+      const { username, password, userTypeId, name } = req.body;
 
       if (!username || !password) {
         return res.status(400).json({ message: "Usuario y clave son requeridos" });
@@ -64,7 +64,7 @@ module.exports = {
         return res.status(400).json({ message: "Tipo usuario es necesario" });
       }
 
-      const existingUser = await Users.findOne({ where: { username } });
+      const existingUser = await User.findOne({ where: { username } });
 
       if (existingUser) {
         return res.status(409).json({ message: "Usuario ya existe" });
@@ -72,7 +72,8 @@ module.exports = {
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      const user = await Users.create({
+      const user = await User.create({
+        name,
         username,
         password: hashedPassword,
         status: 1,
@@ -101,9 +102,9 @@ module.exports = {
 
   async getAllUsers(req, res) {
     try {
-      const users = await Users.findAll({
+      const users = await User.findAll({
         include: [
-          { model: UserTypes, as: 'UserType' }
+          { model: UserType, as: 'userType' } // Changed to singular
         ],
         attributes: { exclude: ['password'] },
       });
@@ -120,9 +121,9 @@ module.exports = {
       const { username, password, userTypeId, status } = req.body;
 
       // Find user by id
-      const user = await Users.findOne({
+      const user = await User.findOne({
         where: { id },
-        include: { model: UserTypes, as: 'UserType' }
+        include: { model: UserType, as: 'userType' } // Changed to singular
       });
 
       if (!user) {
@@ -168,7 +169,7 @@ module.exports = {
       }
 
       // Find user by id
-      const user = await Users.findByPk(id);
+      const user = await User.findByPk(id);
 
       if (!user) {
         return res.status(404).json({ message: "Usuario no encontrado" });
@@ -190,7 +191,7 @@ module.exports = {
       }
 
       // Find user by id
-      const user = await Users.findOne({
+      const user = await User.findOne({
         where: { id }
       });
 
@@ -209,7 +210,7 @@ module.exports = {
   async getAllUserTypes(req, res) {
     try {
       // Check if UserType model exists
-      const userTypes = await UserTypes.findAll();
+      const userTypes = await UserType.findAll();
       if (!userTypes || userTypes.length === 0) {
         return res.status(404).json({ message: "No se encontraron tipos de usuario" });
       }

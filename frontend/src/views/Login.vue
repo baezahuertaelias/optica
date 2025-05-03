@@ -1,21 +1,46 @@
-<!-- src/views/Login.vue -->
 <template>
   <div class="login-container">
     <Toast />
-    <div class="login-card">
-      <h2>Iniciar sesion</h2>
-      <div class="field">
-        <label for="username">Usuario</label>
-        <InputText id="username" v-model="username" class="w-100" />
-      </div>
-      <div class="field">
-        <label for="password">Clave</label>
-        <Password id="password" v-model="password" toggleMask class="w-100" />
-      </div>
-      <div class="field">
-        <Button label="Login" @click="login" class="w-100" />
-      </div>
-    </div>
+    <Card>
+      <form @submit.prevent="login" class="p-6">
+        <h2 class="text-xl font-bold mb-5">Iniciar Sesiin</h2>
+
+        <InputText
+          id="username"
+          v-model.trim="username"
+          placeholder="Nombre de usuario"
+          class="w-full p-input text-sm"
+          aria-label="Username"
+        />
+
+        <Password
+          id="password"
+          v-model.trim="password"
+          placeholder="Contraseña"
+          toggleMask
+          class="w-full mt-4 p-password-text text-sm"
+          :class="{ 'p-error': 'invalidLogin' }"
+          aria-label="Password"
+          @keyup.enter="login"
+        />
+
+        <Button
+          label="Iniciar sesion"
+          @click="login"
+          icon="pi pi-sign-in"
+          class="w-full p-button-login mt-6"
+          data-cy="login-button"
+        />
+
+        <!-- Optional: Add loading state -->
+        <Button
+          v-if="loading"
+          icon="pi pi-spin-pi pi-spinner"
+          aria-label="Loading..."
+          disabled
+        />
+      </form>
+    </Card>
   </div>
 </template>
 
@@ -86,7 +111,6 @@ const login = async () => {
   justify-content: center;
   align-items: center;
   height: 100%;
-  background-color: #f5f5f5;
 }
 
 .login-card {
@@ -94,7 +118,6 @@ const login = async () => {
   max-width: 400px;
   padding: 2rem;
   border-radius: 8px;
-  background-color: white;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 

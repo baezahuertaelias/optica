@@ -1,7 +1,5 @@
-const { DataTypes } = require('sequelize');
-
-module.exports = (sequelize) => {
-    const Genders = sequelize.define('Genders', {
+module.exports = (sequelize, DataTypes) => {
+    const Gender = sequelize.define('Gender', {  // Changed to singular
         id: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -18,11 +16,9 @@ module.exports = (sequelize) => {
         timestamps: false
     });
 
-    Genders.associate = (models) => {
-        // One Gender can have many patients
-        Genders.hasMany(models.Patients, { foreignKey: 'genderId' });
-      };
-      
+    Gender.associate = (models) => {
+        Gender.hasMany(models.Patient, { foreignKey: 'genderId' });
+    };
 
-    return Genders;
+    return Gender;
 };

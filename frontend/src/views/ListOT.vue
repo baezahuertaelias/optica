@@ -44,10 +44,10 @@
     <Dialog
       :visible="deleteUserDialog"
       :style="{ width: '300px' }"
-      header="Confirmación"
+      header="Confirmaciin"
       :modal="true"
     >
-      <p>¿Está seguro de que desea eliminar el usuario?</p>
+      <p>Esta seguro de que desea eliminar el usuario?</p>
       <template #footer>
         <Button
           label="No"
@@ -56,7 +56,7 @@
           class="p-button-text"
         />
         <Button
-          label="Sí"
+          label="Si"
           icon="pi pi-check"
           @click="deleteUser(deleteUserId)"
           class="p-button-text"

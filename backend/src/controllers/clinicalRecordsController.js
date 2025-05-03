@@ -1,13 +1,15 @@
-const { ClinicalRecord, 
-  Patients, 
-  Genders, 
-  Isapres, 
-  Users, 
-  UserTypes, 
+const { 
+  ClinicalRecord, 
+  Patient,  // Changed from Patients to Patient to match model definition
+  Gender,   // Changed from Genders to Gender to match model definition
+  Isapre,   // Changed from Isapres to Isapre to match model definition
+  User,     // Changed from Users to User to match model definition
+  UserType, // Changed from UserTypes to UserType to match model definition
   VisualAcuity, 
   SubjectiveRefractionFar, 
   SubjectiveRefractionNear, 
-  ApplanationTonometry } = require('../models'); // Adjust import if your file structure is different
+  ApplanationTonometry 
+} = require('../models'); // Adjust import if your file structure is different
 
 module.exports = {
   async createClinicalRecordWithRelations(req, res) {
@@ -32,23 +34,25 @@ module.exports = {
     } = req.body;
 
     // Start a transaction to ensure data consistency
-    //const t = await sequelize.transaction();
+    // Uncomment this if you want to use transactions
+    // const t = await sequelize.transaction();
 
     try {
       // 1. Create the Clinical Record first
       const newClinicalRecord = await ClinicalRecord.create({
-        idPatient: patientId,
+        patientId: patientId,
         userId: userId,
         anamnesis: anamnesis,
         othersDetails: othersDetails
-      }/* , { transaction: t } */);
+      });
+
 
       // Get the new clinical record ID
       const clinicalRecordId = newClinicalRecord.id;
 
       // 2. Create Visual Acuity with the clinical record ID
       await VisualAcuity.create({
-        clinicalrecordId: clinicalRecordId,
+        clinicalRecordId: clinicalRecordId, // Fixed: changed from clinicalrecordId to clinicalRecordId
         withoutCorrectionLE: visualAcuity.withoutCorrectionLE,
         withoutCorrectionRE: visualAcuity.withoutCorrectionRE,
         withoutCorrectionBI: visualAcuity.withoutCorrectionBI,
@@ -60,11 +64,12 @@ module.exports = {
         pinholeBI: visualAcuity.pinholeBI,
         pupilRedLE: visualAcuity.pupilRedLE,
         pupilRedRE: visualAcuity.pupilRedRE
-      }/* , { transaction: t } */);
+      });
+
 
       // 3. Create Subjective Refraction Far
       await SubjectiveRefractionFar.create({
-        clinicalrecordId: clinicalRecordId,
+        clinicalRecordId: clinicalRecordId, // Fixed: changed from clinicalrecordId to clinicalRecordId
         sphereLE: subjectiveRefractionFar.sphereLE,
         sphereRE: subjectiveRefractionFar.sphereRE,
         cylinderLE: subjectiveRefractionFar.cylinderLE,
@@ -74,11 +79,12 @@ module.exports = {
         vareachedLE: subjectiveRefractionFar.vareachedLE,
         vareachedRE: subjectiveRefractionFar.vareachedRE,
         pupilarDistance: subjectiveRefractionFar.pupilarDistance
-      }/* , { transaction: t } */);
+      });
+
 
       // 4. Create Subjective Refraction Near
       await SubjectiveRefractionNear.create({
-        clinicalrecordId: clinicalRecordId,
+        clinicalRecordId: clinicalRecordId, // Fixed: changed from clinicalrecordId to clinicalRecordId
         sphereLE: subjectiveRefractionNear.sphereLE,
         sphereRE: subjectiveRefractionNear.sphereRE,
         cylinderLE: subjectiveRefractionNear.cylinderLE,
@@ -88,11 +94,11 @@ module.exports = {
         vareachedLE: subjectiveRefractionNear.vareachedLE,
         vareachedRE: subjectiveRefractionNear.vareachedRE,
         pupilarDistance: subjectiveRefractionNear.pupilarDistance
-      }/* , { transaction: t } */);
+      });
 
       // 5. Create Applanation Tonometry
       await ApplanationTonometry.create({
-        clinicalrecordId: clinicalRecordId,
+        clinicalRecordId: clinicalRecordId, // Fixed: changed from clinicalrecordId to clinicalRecordId
         leftEye: applanationTonometry.leftEye,
         rightEye: applanationTonometry.rightEye,
         dateTime: new Date() // Or use a provided date
@@ -125,25 +131,32 @@ module.exports = {
   async getAllClinicalRecords(req, res) {
     try {
       
-      const records = await ClinicalRecord.findAll({include: [
-        {
-          model: Patients,
-          as: 'Patient',
-          include: [
-            { model: Genders, as: 'Gender' },
-            { model: Isapres, as: 'Isapre' }
-          ]
-        },
-        {
-          model: Users, as: 'User', include: [
-            { model: UserTypes, as: 'UserType' }
-          ]
-        }/* ,
-        { model: VisualAcuity, as: 'VisualAcuity' },
-        { model: SubjectiveRefractionFar, as: 'SubjectiveRefractionFar' },
-        { model: SubjectiveRefractionNear, as: 'SubjectiveRefractionNear' },
-        { model: ApplanationTonometry, as: 'ApplanationTonometry' } */
-      ]});
+      const records = await ClinicalRecord.findAll({
+        include: [
+          {
+            model: Patient, // Fixed: changed from Patients to Patient
+            as: 'patient',  // Fixed: changed from 'Patient' to 'patient' to match model association
+            include: [
+              { model: Gender, as: 'gender' }, // Fixed: changed from Genders to Gender and 'Gender' to 'gender'
+              { model: Isapre, as: 'isapre' }  // Fixed: changed from Isapres to Isapre and 'Isapre' to 'isapre'
+            ]
+          },
+          {
+            model: User, as: 'user', // Fixed: changed from Users to User and 'User' to 'user'
+            include: [
+              { model: UserType, as: 'userType' } // Fixed: changed from UserTypes to UserType and 'UserType' to 'userType'
+            ]
+          }
+          // Commented out in original but fixed naming convention:
+          /* 
+          { model: VisualAcuity, as: 'visualAcuity' }, // Changed from 'VisualAcuity' to match camelCase
+          { model: SubjectiveRefractionFar, as: 'subjectiveRefractionFar' }, // Changed from 'SubjectiveRefractionFar'
+          { model: SubjectiveRefractionNear, as: 'subjectiveRefractionNear' }, // Changed from 'SubjectiveRefractionNear'
+          { model: ApplanationTonometry, as: 'applanationTonometry' } // Changed from 'ApplanationTonometry'
+          */
+        ]
+      });
+      
       return res.status(200).json({ records });
     } catch (error) {
       console.error("Failed to fetch clinical records:", error);
@@ -153,31 +166,29 @@ module.exports = {
 
   async getClinicalRecordWithRelations(req, res) {
     const { id } = req.params;
-
-    console.log('id',id);
     
-
     try {
       // Find the clinical record by ID and include all related models
       const clinicalRecord = await ClinicalRecord.findByPk(id, {
         include: [
           {
-            model: Patients,
-            as: 'Patient',
+            model: Patient, // Fixed: changed from Patients to Patient
+            as: 'patient',  // Fixed: changed from 'Patient' to 'patient'
             include: [
-              { model: Genders, as: 'Gender' },
-              { model: Isapres, as: 'Isapre' }
+              { model: Gender, as: 'gender' }, // Fixed model and alias names
+              { model: Isapre, as: 'isapre' }  // Fixed model and alias names
             ]
           },
           {
-            model: Users, as: 'User', include: [
-              { model: UserTypes, as: 'UserType' }
+            model: User, as: 'user', // Fixed model and alias names
+            include: [
+              { model: UserType, as: 'userType' } // Fixed model and alias names
             ]
           },
-          { model: VisualAcuity, as: 'VisualAcuity' },
-          { model: SubjectiveRefractionFar, as: 'SubjectiveRefractionFar' },
-          { model: SubjectiveRefractionNear, as: 'SubjectiveRefractionNear' },
-          { model: ApplanationTonometry, as: 'ApplanationTonometry' }
+          { model: VisualAcuity, as: 'visualAcuity' }, // Fixed: using camelCase alias
+          { model: SubjectiveRefractionFar, as: 'subjectiveRefractionFar' }, // Fixed: using camelCase alias
+          { model: SubjectiveRefractionNear, as: 'subjectiveRefractionNear' }, // Fixed: using camelCase alias
+          { model: ApplanationTonometry, as: 'applanationTonometry' } // Fixed: using camelCase alias
         ]
       });
 
@@ -231,9 +242,9 @@ module.exports = {
     }
   },
 
-  async getPatientsName(req, res){
+  async getPatientsName(req, res) {
     try {
-      const patients = await Patients.findAll({
+      const patients = await Patient.findAll({ // Fixed: changed from Patients to Patient
         attributes: ['id', 'name'],
       });
       return res.status(200).json({ patients });
@@ -243,59 +254,3 @@ module.exports = {
     }
   }
 };
-
-// Example request body structure
-/*
-{
-  "patientId": 1,
-  "userId": 2,
-  "anamnesis": "Patient complains of blurry vision in the left eye for 2 weeks...",
-  "othersDetails": "Patient has a history of diabetes...",
-  
-  "visualAcuity": {
-    "withoutCorrectionLE": "20/100",
-    "withoutCorrectionRE": "20/40",
-    "withoutCorrectionBI": "20/40",
-    "laserCorrectionLE": "20/40",
-    "laserCorrectionRE": "20/20",
-    "laserCorrectionBI": "20/20",
-    "pinholeLE": "20/30",
-    "pinholeRE": "20/20",
-    "pinholeBI": "20/20",
-    "pupilRedLE": "Normal",
-    "pupilRedRE": "Normal"
-  },
-  
-  "subjectiveRefractionFar": {
-    "sphereLE": -2.5,
-    "sphereRE": -1.0,
-    "cylinderLE": -0.75,
-    "cylinderRE": -0.5,
-    "axisLE": 180,
-    "axisRE": 90,
-    "vareachedLE": "20/30",
-    "vareachedRE": "20/20",
-    "pupilarDistance": 62
-  },
-  
-  "subjectiveRefractionNear": {
-    "sphereLE": -1.5,
-    "sphereRE": -0.5,
-    "cylinderLE": -0.75,
-    "cylinderRE": -0.5,
-    "axisLE": 180,
-    "axisRE": 90,
-    "vareachedLE": "20/25",
-    "vareachedRE": "20/20",
-    "pupilarDistance": 60
-  },
-  
-  "applanationTonometry": {
-    "leftEye": 17.5,
-    "rightEye": 16.2
-  }
-}
-*/
-
-
-

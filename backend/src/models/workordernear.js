@@ -1,12 +1,12 @@
 module.exports = (sequelize, DataTypes) => {
-    const SubjectiveRefractionFar = sequelize.define('SubjectiveRefractionFar', {
+    const WorkOrderNear = sequelize.define('WorkOrderNear', {
         id: {
             type: DataTypes.INTEGER,
             allowNull: false,
             autoIncrement: true,
             primaryKey: true
         },
-        clinicalRecordId: {  // Renamed for consistency
+        workOrderId: {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
@@ -35,11 +35,11 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true
         },
         vareachedLE: {
-            type: DataTypes.STRING,
+            type: DataTypes.FLOAT,
             allowNull: true
         },
         vareachedRE: {
-            type: DataTypes.STRING,
+            type: DataTypes.FLOAT,
             allowNull: true
         },
         pupilarDistance: {
@@ -47,16 +47,16 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         }
     }, {
-        tableName: 'SubjectiveRefractionFar',
+        tableName: 'WorkOrderNear',
         timestamps: true
     });
 
-    SubjectiveRefractionFar.associate = (models) => {
-        SubjectiveRefractionFar.belongsTo(models.ClinicalRecord, {
-            foreignKey: 'clinicalRecordId',
-            as: 'clinicalRecord'
+    WorkOrderNear.associate = (models) => {
+        WorkOrderNear.belongsTo(models.WorkOrder, {
+            foreignKey: 'workOrderId',
+            as: 'workOrder'
         });
     };
 
-    return SubjectiveRefractionFar;
+    return WorkOrderNear;
 };

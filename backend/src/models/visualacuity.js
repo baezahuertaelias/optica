@@ -6,9 +6,9 @@ module.exports = (sequelize, DataTypes) => {
             autoIncrement: true,
             primaryKey: true
         },
-        clinicalrecordId: { // Added foreign key
-          type: DataTypes.INTEGER,
-          allowNull: false,
+        clinicalRecordId: {  // Renamed for consistency
+            type: DataTypes.INTEGER,
+            allowNull: false,
         },
         withoutCorrectionLE: {
             type: DataTypes.STRING,
@@ -60,13 +60,11 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     VisualAcuity.associate = (models) => {
-        // Many-to-one relation with ClinicalRecord
         VisualAcuity.belongsTo(models.ClinicalRecord, {
-          foreignKey: 'clinicalrecordId',
-          as: 'clinicalRecord'
+            foreignKey: 'clinicalRecordId',
+            as: 'clinicalRecord'
         });
-      };
-    
+    };
 
     return VisualAcuity;
 };

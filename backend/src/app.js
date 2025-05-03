@@ -5,7 +5,7 @@ const cors = require("cors");
 const { sequelize } = require("./models");
 // Import routes
 const routes = require("./routes");
-const { insertBasicData, createDummyPatient, createClinicalRecordWithDummyData } = require('./bin/preloadData');
+const { insertBasicData, createDummyPatient, createClinicalRecordWithDummyData, createSampleAppointments } = require('./bin/preloadData');
 
 const app = express();
 
@@ -34,7 +34,8 @@ app.listen(PORT, async () => {
     console.log("Database synced.");
     //await insertBasicData()
     //await createDummyPatient()
-    await createClinicalRecordWithDummyData()
+    await createClinicalRecordWithDummyData();
+    await createSampleAppointments();
   } catch (error) {
     console.error("Unable to connect to the database:", error);
   }

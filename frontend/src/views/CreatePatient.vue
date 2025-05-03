@@ -17,11 +17,11 @@
       <InputText v-model="patient.mail" placeholder="Email" />
       <InputText v-model="patient.occupation" placeholder="Ocupacion" />
       <InputText
-        v-model="patient.legalrepresentative"
+        v-model="patient.legalRepresentative"
         placeholder="Representante legal"
       />
       <Dropdown
-        v-model="patient.idIsapre"
+        v-model="patient.isapreId"
         :options="isapres"
         optionLabel="value"
         optionValue="id"
@@ -67,7 +67,7 @@ const patient = ref({
   mail: "",
   occupation: "",
   legalrepresentative: "",
-  idIsapre: "",
+  isapreId: "",
   // Add other fields as needed
 });
 

@@ -4,6 +4,7 @@
     <h1>{{ isNew ? "Crear Usuario" : "Modificar Usuario" }}</h1>
     <form @submit.prevent="saveUser">
       <InputText v-model="user.username" placeholder="Username" required />
+      <InputText v-model="user.name" placeholder="Nombre" required />
       <Password v-model="user.password" placeholder="Password" />
       <Dropdown
         v-model="user.userTypeId"
@@ -39,6 +40,7 @@ const toast = useToast();
 const user = ref({
   username: "",
   password: "",
+  name: "",
   userTypeId: null,
   status: true,
 });
