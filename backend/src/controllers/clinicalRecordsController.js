@@ -134,7 +134,35 @@ module.exports = {
         data: clinicalRecord
       });
     } catch (error) {
-
+      console.error("Failed to fetch a clinical record:", error);
+      return res.status(500).json({ message: "Internal server error" });
     }
-  }
+  },
+
+  async getAllrecords(req, res) {
+    try {
+      const records = await ClinicalRecord.findAll({
+        include: [
+          { model: Patient, as: 'patient', include: [{ model: Gender, as: 'gender' }, { model: Isapre, as: 'isapre' }] },
+          { model: User, as: 'user', include: [{ model: UserType, as: 'userType' }] },
+          { model: VisualAcuity, as: 'visualAcuity' },
+          { model: SubjectiveRefractionFar, as: 'subjectiveRefractionsFar' }, // Use the correct alias
+          { model: SubjectiveRefractionNear, as: 'subjectiveRefractionsNear' } // Use the correct alias
+        ]
+      });
+
+      if (!records) {
+        return res.status(404).json({
+          success: false,
+          message: 'No clinical records found'
+        });
+      }
+
+      return res.status(200).json({ records });
+    } catch (error) {
+      console.error("Failed to fetch all clinical records:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  },
+
 };

@@ -621,7 +621,7 @@ const viewRecord = async (record) => {
   console.log("Viewing record:", id);
 
   try {
-    const response = await apiClient.get(`/clinicalRecords/detail/${id}`);
+    const response = await apiClient.get(`/clinicalRecords/${id}/with-relations`);
     if (response.status === 200) {
       console.log("[viewRecord] API Response:", response.data);
       detailClinicalRecord.value = response.data.data || {};

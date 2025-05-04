@@ -39,12 +39,19 @@ module.exports = (sequelize, DataTypes) => {
     });
     ClinicalRecord.hasMany(models.SubjectiveRefractionFar, {
       foreignKey: "clinicalRecordId",
+      as: 'subjectiveRefractionsFar'  // Use a consistent alias
     });
     ClinicalRecord.hasMany(models.SubjectiveRefractionNear, {
       foreignKey: "clinicalRecordId",
+      as: 'subjectiveRefractionsNear' // Use a consistent alias
     });
-    ClinicalRecord.hasMany(models.VisualAcuity, {
+    ClinicalRecord.hasOne(models.VisualAcuity, {  // Changed to hasOne and use singular alias
       foreignKey: "clinicalRecordId",
+      as: 'visualAcuity'
+    });
+    ClinicalRecord.hasOne(models.ApplanationTonometry, {  // Changed to hasOne and use singular alias
+      foreignKey: "clinicalRecordId",
+      as: 'applanationTonometry'
     });
   };
 

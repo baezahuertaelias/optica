@@ -8,5 +8,7 @@ router.put('/:id', authMiddleware, clinicalRecordsController.updateClinicalRecor
 router.delete('/:id', authMiddleware, clinicalRecordsController.deleteClinicalRecord);
 router.get('/patients/name', authMiddleware, clinicalRecordsController.getPatientsName);
 router.get('/:id/with-relations', authMiddleware, clinicalRecordsController.getClinicalRecordWithRelations);
+router.get('/', authMiddleware, clinicalRecordsController.getAllrecords);
+
 
 module.exports = router;
