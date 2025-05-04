@@ -1,0 +1,184 @@
+const {
+  ClinicalRecord,
+  Patient,
+  Gender,
+  Isapre,
+  User,
+  UserType,
+  VisualAcuity,
+  SubjectiveRefractionFar,
+  SubjectiveRefractionNear,
+  ApplanationTonometry
+} = require('../models');
+
+module.exports = {
+  async createClinicalRecordWithRelations(req, res) {
+    const {
+      patientId,
+      userId,
+      anamnesis,
+      othersDetails,
+
+      visualAcuity,
+
+      subjectiveRefractionFar,
+
+      subjectiveRefractionNear,
+
+      applanationTonometry
+    } = req.body;
+
+    try {
+      const newClinicalRecord = await ClinicalRecord.create({
+        patientId: patientId,
+        userId: userId,
+        anamnesis: anamnesis,
+        othersDetails: othersDetails
+      });
+
+      const clinicalRecordId = newClinicalRecord.id;
+
+      await VisualAcuity.create({
+        clinicalRecordId: clinicalRecordId,
+        withoutCorrectionLE: visualAcuity.withoutCorrectionLE,
+        withoutCorrectionRE: visualAcuity.withoutCorrectionRE,
+        withoutCorrectionBI: visualAcuity.withoutCorrectionBI,
+        laserCorrectionLE: visualAcuity.laserCorrectionLE,
+        laserCorrectionRE: visualAcuity.laserCorrectionRE,
+        laserCorrectionBI: visualAcuity.laserCorrectionBI,
+        pinholeLE: visualAcuity.pinholeLE,
+        pinholeRE: visualAcuity.pinholeRE,
+        pinholeBI: visualAcuity.pinholeBI,
+        pupilRedLE: visualAcuity.pupilRedLE,
+        pupilRedRE: visualAcuity.pupilRedRE
+      });
+
+      await SubjectiveRefractionFar.create({
+        clinicalRecordId: clinicalRecordId,
+        sphereLE: subjectiveRefractionFar.sphereLE,
+        sphereRE: subjectiveRefractionFar.sphereRE,
+        cylinderLE: subjectiveRefractionFar.cylinderLE,
+        cylinderRE: subjectiveRefractionFar.cylinderRE,
+        axisLE: subjectiveRefractionFar.axisLE,
+        axisRE: subjectiveRefractionFar.axisRE,
+        vareachedLE: subjectiveRefractionFar.vareachedLE,
+        vareachedRE: subjectiveRefractionFar.vareachedRE,
+        pupilarDistance: subjectiveRefractionFar.pupilarDistance
+      });
+
+      await SubjectiveRefractionNear.create({
+        clinicalRecordId: clinicalRecordId,
+        sphereLE: subjectiveRefractionNear.sphereLE,
+        sphereRE: subjectiveRefractionNear.sphereRE,
+        cylinderLE: subjectiveRefractionNear.cylinderLE,
+        cylinderRE: subjectiveRefractionNear.cylinderRE,
+        axisLE: subjectiveRefractionNear.axisLE,
+        axisRE: subjectiveRefractionNear.axisRE,
+        vareachedLE: subjectiveRefractionNear.vareachedLE,
+        vareachedRE: subjectiveRefractionNear.vareachedRE,
+        pupilarDistance: subjectiveRefractionNear.pupilarDistance
+      });
+
+      await ApplanationTonometry.create({
+        clinicalRecordId: clinicalRecordId,
+        leftEye: applanationTonometry.leftEye,
+        rightEye: applanationTonometry.rightEye,
+        dateTime: new Date()
+      });
+
+      return res.status(201).json({
+        success: true,
+        data: {
+          clinicalRecord: newClinicalRecord
+        },
+        message: 'Ficha clinica guardada'
+      });
+    } catch (error) {
+      console.error('Error creating clinical record:', error);
+      return res.status(500).json({
+        success: false,
+        error: error.message || 'An error occurred while creating the clinical record'
+      });
+    }
+  },
+
+  async getAllClinicalRecords(req, res) {
+    try {
+      const records = await ClinicalRecord.findAll({
+        include: [
+          {
+            model: Patient,
+            as: 'patient',
+            include: [
+              { model: Gender, as: 'gender' },
+              { model: Isapre, as: 'isapre' }
+            ]
+          },
+          {
+            model: User, as: 'user',
+            include: [
+              { model: UserType, as: 'userType' }
+            ]
+          },
+          { model: VisualAcuity, as: 'visualAcuity' },
+          { model: SubjectiveRefractionFar, as: 'subjectiveRefractionFar' },
+          { model: SubjectiveRefractionNear, as: 'subjectiveRefractionNear' },
+          { model: ApplanationTonometry, as: 'applanationTonometry' }
+        ]
+      });
+
+      return res.status(200).json({ records });
+    } catch (error) {
+      console.error("Failed to fetch clinical records:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  },
+
+  async getClinicalRecordWithRelations(req, res) {
+    const { id } = req.params;
+
+    try {
+      const clinicalRecord = await ClinicalRecord.findByPk(id, {
+        include: [
+          {
+            model: Patient,
+            as: 'patient',
+            include: [
+              { model: Gender, as: 'gender' },
+              { model: Isapre, as: 'isapre' }
+            ]
+          },
+          {
+            model: User, as: 'user',
+            include: [
+              { model: UserType, as: 'userType' }
+            ]
+          },
+          { model: VisualAcuity, as: 'visualAcuity' },
+          { model: SubjectiveRefractionFar, as: 'subjectiveRefractionFar' },
+          { model: SubjectiveRefractionNear, as: 'subjectiveRefractionNear' },
+          { model: ApplanationTonometry, as: 'applanationTonometry' }
+        ]
+      });
+
+      if (!clinicalRecord) {
+        return res.status(404).json({
+          success: false,
+          message: 'Clinical record not found'
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        data: clinicalRecord
+      });
+
+    } catch (error) {
+      console.error('Error retrieving clinical record:', error);
+      return res.status(500).json({
+        success: false,
+        error: error.message || 'An error occurred while retrieving the clinical record'
+      });
+    }
+  },
+};

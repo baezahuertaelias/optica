@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true
         },
         legalRepresentative: {
-            type: DataTypes.BOOLEAN,
+            type: DataTypes.STRING,
             defaultValue: false,
             allowNull: false
         },
