@@ -432,7 +432,7 @@ const saveClinicalRecord = async () => {
 
 const fetchPatients = async () => {
   try {
-    const response = await apiClient.get("clinicalRecords/patients/list");
+    const response = await apiClient.get("clinicalRecords/patients/name");
     console.log("[fetchPatients]", response.data.patients);
 
     if (response.status === 200) {

@@ -9,6 +9,6 @@ router.delete('/:id', authMiddleware, clinicalRecordsController.deleteClinicalRe
 router.get('/patients/name', authMiddleware, clinicalRecordsController.getPatientsName);
 router.get('/:id/with-relations', authMiddleware, clinicalRecordsController.getClinicalRecordWithRelations);
 router.get('/', authMiddleware, clinicalRecordsController.getAllrecords);
-
+router.post('/', authMiddleware, clinicalRecordsController.createClinicalRecordWithRelations);
 
 module.exports = router;

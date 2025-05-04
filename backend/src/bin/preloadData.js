@@ -10,8 +10,8 @@ module.exports = {
     try {
       // Check if appointments already exist
       const appointmentCount = await Appointment.count();
-      console.log('appoi',appointmentCount);
-      
+      console.log('appointmentCount', appointmentCount);
+
       if (appointmentCount > 0) {
         console.log('Appointments already exist, skipping creation');
         return;
@@ -121,15 +121,15 @@ module.exports = {
 
   async createClinicalRecordWithDummyData() {
     try {
-      const hashedPassword = await bcrypt.hash('123', 10);
+      const hashedPassword = await bcrypt.hash('123.Admin.', 10);
 
       // Step 1: Create UserTypes if they don't exist
       const userTypeCount = await UserType.count();
       if (userTypeCount === 0) {
         await UserType.bulkCreate([
-          { id: 1, type: "Admin" },
-          { id: 2, type: "Vendedor" },
-          { id: 3, type: "Medico" }
+          { type: "Admin" },
+          { type: "Vendedor" },
+          { type: "Medico" }
         ]);
       }
 
@@ -140,7 +140,6 @@ module.exports = {
         // If user with ID 2 doesn't exist, create all users
         await User.bulkCreate([
           {
-            id: 1,
             username: 'admin',
             password: hashedPassword,
             userTypeId: 1,
@@ -148,7 +147,6 @@ module.exports = {
             name: 'ADMINISTRADOR'
           },
           {
-            id: 2,
             username: 'vendedor',
             password: hashedPassword,
             userTypeId: 2,
@@ -156,7 +154,6 @@ module.exports = {
             name: 'VendedorADMIN'
           },
           {
-            id: 3,
             username: 'medico',
             password: hashedPassword,
             userTypeId: 3,
@@ -170,9 +167,9 @@ module.exports = {
       const genderCount = await Gender.count();
       if (genderCount === 0) {
         await Gender.bulkCreate([
-          { id: 1, value: 'Mujer' },
-          { id: 2, value: 'Hombre' },
-          { id: 3, value: 'Otro' }
+          { value: 'Mujer' },
+          { value: 'Hombre' },
+          { value: 'Otro' }
         ]);
       }
 
@@ -181,33 +178,19 @@ module.exports = {
       if (isapreCount === 0) {
         await Isapre.bulkCreate(
           [
-            { id: 1, value: "Banmedica" },
-            { id: 2, value: "Isalud" },
-            { id: 3, value: "Colmena" },
-            { id: 4, value: "Consalud" },
-            { id: 5, value: "Cruz Blanca" },
-            { id: 6, value: "Nueva Masvida" },
-            { id: 7, value: "Fundacion BancoEstado" },
-            { id: 8, value: "Vida tres" },
-            { id: 9, value: "Escencial" }
+            { value: "Banmedica" },
+            { value: "Isalud" },
+            { value: "Colmena" },
+            { value: "Consalud" },
+            { value: "Cruz Blanca" },
+            { value: "Nueva Masvida" },
+            { value: "Fundacion BancoEstado" },
+            { value: "Vida tres" },
+            { value: "Escencial" }
           ]);
       }
 
       // Step 4: Create a Patient with Spanish (Mexico) locale
-
-      console.log({
-        name: fakerES_MX.person.fullName(),
-        passport: `11.111.111-1`,
-        genderId: fakerES_MX.person.sexType() === 'female' ? 1 : 2, // Randomly assign gender from available options
-        tel: fakerES_MX.phone.number(),
-        birthday: new Date(fakerES_MX.date.birthdate()),
-        homeAddress: fakerES_MX.location.streetAddress({ useFullAddress: true }),
-        mail: fakerES_MX.internet.email(),
-        occupation: fakerES_MX.person.jobTitle(),
-        legalRepresentative: fakerES_MX.person.fullName(),
-        isapreId: (Math.floor(Math.random() * 9) + 1) // Random number between 1-9
-      });
-
 
       const patient = await Patient.create({
         name: fakerES_MX.person.fullName(),
@@ -222,8 +205,6 @@ module.exports = {
         isapreId: Math.floor(Math.random() * 9) + 1 // Random number between 1-9
       });
 
-      console.log('patientid', patient.id);
-      
 
       // Step 5: Create the Clinical Record
       const clinicalRecord = await ClinicalRecord.create({
