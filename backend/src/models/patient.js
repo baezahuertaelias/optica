@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-    const Patient = sequelize.define('Patient', {  // Changed to singular
+    const Patient = sequelize.define('Patient', {
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -41,11 +41,11 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true
         },
         legalRepresentative: {
-            type: DataTypes.BOOLEAN,  // Changed to BOOLEAN for consistency
+            type: DataTypes.BOOLEAN,
             defaultValue: false,
             allowNull: false
         },
-        isapreId: {  // Renamed for consistency
+        isapreId: {
             type: DataTypes.INTEGER,
         }
     }, {
@@ -58,7 +58,7 @@ module.exports = (sequelize, DataTypes) => {
         Patient.belongsTo(models.Gender, { foreignKey: 'genderId', as: 'gender' });
         Patient.belongsTo(models.Isapre, { foreignKey: 'isapreId', as: 'isapre' });
         Patient.hasMany(models.Appointment, { foreignKey: 'patientId' });
-        Patient.hasMany(models.WorkOrder, { foreignKey: 'patientId' });  // Added missing association
+        Patient.hasMany(models.WorkOrder, { foreignKey: 'patientId' });
     };
 
     return Patient;

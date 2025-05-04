@@ -6,11 +6,11 @@ module.exports = (sequelize, DataTypes) => {
             autoIncrement: true,
             allowNull: false
         },
-        patientId: {  // Renamed for consistency
+        patientId: {
             type: DataTypes.INTEGER,
             allowNull: false
         },
-        userId: {  // Renamed for consistency
+        userId: {
             type: DataTypes.INTEGER,
             allowNull: false
         },
@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DATE(6),
             allowNull: false
         },
-        typeAppointmentId: {  // Renamed for consistency
+        typeAppointmentId: {
             type: DataTypes.INTEGER,
             allowNull: false
         },
@@ -36,13 +36,14 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true
         }
     }, {
-        tableName: 'Appointments',  // Changed to plural for consistency
+        tableName: 'Appointments',
         timestamps: true
     });
 
     Appointment.associate = (models) => {
-        Appointment.belongsTo(models.TypeAppointment, { foreignKey: 'typeAppointmentId', as: 'typeAppointment' });
+        Appointment.belongsTo(models.TypeAppointment, { foreignKey: 'typeAppointmentId', as: 'appointmentType' });
         Appointment.belongsTo(models.User, { foreignKey: 'userId', as: 'user' });
+        Appointment.belongsTo(models.Patient, { foreignKey: 'patientId', as: 'patient' });
     };
 
     return Appointment;

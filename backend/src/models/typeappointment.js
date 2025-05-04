@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-    const TypeAppointment = sequelize.define('TypeAppointment', {  // Changed to singular
+    const TypeAppointment = sequelize.define('TypeAppointment', {
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
