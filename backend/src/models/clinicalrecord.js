@@ -37,11 +37,11 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "patientId",
       as: "patient",
     });
-    ClinicalRecord.hasMany(models.SubjectiveRefractionFar, {
+    ClinicalRecord.hasOne(models.SubjectiveRefractionFar, {
       foreignKey: "clinicalRecordId",
       as: 'subjectiveRefractionsFar'  // Use a consistent alias
     });
-    ClinicalRecord.hasMany(models.SubjectiveRefractionNear, {
+    ClinicalRecord.hasOne(models.SubjectiveRefractionNear, {
       foreignKey: "clinicalRecordId",
       as: 'subjectiveRefractionsNear' // Use a consistent alias
     });

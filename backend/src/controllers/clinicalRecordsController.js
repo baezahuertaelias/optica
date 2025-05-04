@@ -116,9 +116,9 @@ module.exports = {
             ]
           },
           { model: VisualAcuity, as: 'visualAcuity' }, // Fixed: using camelCase alias
-          { model: SubjectiveRefractionFar, as: 'subjectiveRefractionFar' }, // Fixed: using camelCase alias
-          { model: SubjectiveRefractionNear, as: 'subjectiveRefractionNear' }, // Fixed: using camelCase alias
-          { model: ApplanationTonometry, as: 'applanationTonometry' } // Fixed: using camelCase alias
+          { model: SubjectiveRefractionFar, as: 'subjectiveRefractionsFar' }, // Corrected alias
+          { model: SubjectiveRefractionNear, as: 'subjectiveRefractionsNear' }, // Corrected alias
+          { model: ApplanationTonometry, as: 'applanationTonometry' } // Include ApplanationTonometry
         ]
       });
 
