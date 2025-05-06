@@ -3,7 +3,7 @@
     <h1>{{ isNew ? "Crear Ficha clinica" : "Modificar Ficha clinica" }}</h1>
     <form @submit.prevent="saveClinicalRecord">
       <Card>
-        <template #title>Simple Card</template>
+        <template #title>Paciente</template>
         <template #content>
           <Dropdown
             v-model="clinicalRecord.patientId"
@@ -38,7 +38,7 @@
       </Card>
 
       <Card>
-        <template #title>Simple Card</template>
+        <template #title>Agudeza visual</template>
         <template #content>
           <!-- visualAcuity -->
           <InputNumber
@@ -46,21 +46,21 @@
             :invalid="clinicalRecord.visualAcuity.withoutCorrectionLE === null"
             mode="decimal"
             :minFractionDigits="2"
-            placeholder="withoutCorrectionLE"
+            placeholder="Sin corrección OI"
           />
           <InputNumber
             v-model="clinicalRecord.visualAcuity.withoutCorrectionRE"
             :invalid="clinicalRecord.visualAcuity.withoutCorrectionRE === null"
             mode="decimal"
             :minFractionDigits="2"
-            placeholder="withoutCorrectionRE"
+            placeholder="Sin corrección OD"
           />
           <InputNumber
             v-model="clinicalRecord.visualAcuity.withoutCorrectionBI"
             :invalid="clinicalRecord.visualAcuity.withoutCorrectionBI === null"
             mode="decimal"
             :minFractionDigits="2"
-            placeholder="withoutCorrectionBI"
+            placeholder="Sin corrección Biocular"
           />
 
           <InputNumber
@@ -68,21 +68,21 @@
             :invalid="clinicalRecord.visualAcuity.laserCorrectionLE === null"
             mode="decimal"
             :minFractionDigits="2"
-            placeholder="laserCorrectionLE"
+            placeholder="con corrección laser OI"
           />
           <InputNumber
             v-model="clinicalRecord.visualAcuity.laserCorrectionRE"
             :invalid="clinicalRecord.visualAcuity.laserCorrectionRE === null"
             mode="decimal"
             :minFractionDigits="2"
-            placeholder="laserCorrectionRE"
+            placeholder="con corrección laser OD"
           />
           <InputNumber
             v-model="clinicalRecord.visualAcuity.laserCorrectionBI"
             :invalid="clinicalRecord.visualAcuity.laserCorrectionBI === null"
             mode="decimal"
             :minFractionDigits="2"
-            placeholder="laserCorrectionBI"
+            placeholder="con corrección laser Biocular"
           />
 
           <InputNumber
@@ -90,21 +90,21 @@
             :invalid="clinicalRecord.visualAcuity.pinholeLE === null"
             mode="decimal"
             :minFractionDigits="2"
-            placeholder="pinholeLE"
+            placeholder="CAE OI"
           />
           <InputNumber
             v-model="clinicalRecord.visualAcuity.pinholeRE"
             :invalid="clinicalRecord.visualAcuity.pinholeRE === null"
             mode="decimal"
             :minFractionDigits="2"
-            placeholder="pinholeRE"
+            placeholder="CAE OD"
           />
           <InputNumber
             v-model="clinicalRecord.visualAcuity.pinholeBI"
             :invalid="clinicalRecord.visualAcuity.pinholeBI === null"
             mode="decimal"
             :minFractionDigits="2"
-            placeholder="pinholeBI"
+            placeholder="CAE Biocular"
           />
 
           <InputNumber
@@ -112,199 +112,180 @@
             :invalid="clinicalRecord.visualAcuity.pupilRedLE === null"
             mode="decimal"
             :minFractionDigits="2"
-            placeholder="pupilRedLE"
+            placeholder="pupilRed OI"
           />
           <InputNumber
             v-model="clinicalRecord.visualAcuity.pupilRedRE"
             :invalid="clinicalRecord.visualAcuity.pupilRedRE === null"
             mode="decimal"
             :minFractionDigits="2"
-            placeholder="pupilRedRE"
+            placeholder="pupilRed OD"
           />
         </template>
       </Card>
 
       <Card>
-        <template #title>Simple Card</template>
+        <template #title>Refraccion subjetiva</template>
         <template #content>
-          <!-- FAR -->
-          <InputNumber
-            v-model="clinicalRecord.subjectiveRefractionFar.sphereLE"
-            :invalid="clinicalRecord.subjectiveRefractionFar.sphereLE === null"
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="subjectiveRefractionFar.sphereLE"
-          />
+          <Card>
+            <template #title>Lejos</template>
+            <template #content>
+              <InputNumber
+                v-model="clinicalRecord.subjectiveRefractionFar.sphereLE"
+                :invalid="clinicalRecord.subjectiveRefractionFar.sphereLE === null"
+                mode="decimal"
+                :minFractionDigits="2"
+                placeholder="Esfera OI"
+              />
 
-          <InputNumber
-            v-model="clinicalRecord.subjectiveRefractionFar.sphereRE"
-            :invalid="clinicalRecord.subjectiveRefractionFar.sphereRE === null"
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="subjectiveRefractionFar.sphereRE"
-          />
+              <InputNumber
+                v-model="clinicalRecord.subjectiveRefractionFar.sphereRE"
+                :invalid="clinicalRecord.subjectiveRefractionFar.sphereRE === null " mode="decimal"
+                :minFractionDigits="2"
+                placeholder="Esfera OD"
+              />
 
-          <InputNumber
-            v-model="clinicalRecord.subjectiveRefractionFar.cylinderLE"
-            :invalid="
-              clinicalRecord.subjectiveRefractionFar.cylinderLE === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="subjectiveRefractionFar.cylinderLE"
-          />
+              <InputNumber
+                v-model="clinicalRecord.subjectiveRefractionFar.cylinderLE"
+                :invalid="clinicalRecord.subjectiveRefractionFar.cylinderLE === null " mode="decimal"
+                :minFractionDigits="2"
+                placeholder="Cilindro OI"
+              />
 
-          <InputNumber
-            v-model="clinicalRecord.subjectiveRefractionFar.cylinderRE"
-            :invalid="
-              clinicalRecord.subjectiveRefractionFar.cylinderRE === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="subjectiveRefractionFar.cylinderRE"
-          />
+              <InputNumber
+                v-model="clinicalRecord.subjectiveRefractionFar.cylinderRE"
+                :invalid="clinicalRecord.subjectiveRefractionFar.cylinderRE === null " mode="decimal"
+                :minFractionDigits="2"
+                placeholder="Cilindro OD"
+              />
 
-          <InputNumber
-            v-model="clinicalRecord.subjectiveRefractionFar.axisLE"
-            :invalid="clinicalRecord.subjectiveRefractionFar.axisLE === null"
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="subjectiveRefractionFar.axisLE"
-          />
+              <InputNumber
+                v-model="clinicalRecord.subjectiveRefractionFar.axisLE"
+                :invalid="clinicalRecord.subjectiveRefractionFar.axisLE === null " mode="decimal"
+                :minFractionDigits="2"
+                placeholder="Eje OI"
+              />
 
-          <InputNumber
-            v-model="clinicalRecord.subjectiveRefractionFar.axisRE"
-            :invalid="clinicalRecord.subjectiveRefractionFar.axisRE === null"
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="subjectiveRefractionFar.axisRE"
-          />
+              <InputNumber
+                v-model="clinicalRecord.subjectiveRefractionFar.axisRE"
+                :invalid="clinicalRecord.subjectiveRefractionFar.axisRE === null " mode="decimal"
+                :minFractionDigits="2"
+                placeholder="Eje OD"
+              />
 
-          <InputNumber
-            v-model="clinicalRecord.subjectiveRefractionFar.vareachedLE"
-            :invalid="
-              clinicalRecord.subjectiveRefractionFar.vareachedLE === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="subjectiveRefractionFar.vareachedLE"
-          />
+              <InputNumber
+                v-model="clinicalRecord.subjectiveRefractionFar.vareachedLE"
+                :invalid="clinicalRecord.subjectiveRefractionFar.vareachedLE === null " mode="decimal"
+                :minFractionDigits="2"
+                placeholder="AV alcanzada OI"
+              />
 
-          <InputNumber
-            v-model="clinicalRecord.subjectiveRefractionFar.vareachedRE"
-            :invalid="
-              clinicalRecord.subjectiveRefractionFar.vareachedRE === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="subjectiveRefractionFar.vareachedRE"
-          />
+              <InputNumber
+                v-model="clinicalRecord.subjectiveRefractionFar.vareachedRE"
+                :invalid="clinicalRecord.subjectiveRefractionFar.vareachedRE === null " mode="decimal"
+                :minFractionDigits="2"
+                placeholder="AV alcanzada OD"
+              />
 
-          <InputNumber
-            v-model="clinicalRecord.subjectiveRefractionFar.pupilarDistance"
-            :invalid="
-              clinicalRecord.subjectiveRefractionFar.pupilarDistance === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="subjectiveRefractionFar.pupilarDistance"
-          />
+              <InputNumber
+                v-model="clinicalRecord.subjectiveRefractionFar.pupilarDistance"
+                :invalid="clinicalRecord.subjectiveRefractionFar.pupilarDistance === null"
+                mode="decimal"
+                :minFractionDigits="2"
+                placeholder="Distancia pupilar"
+              />
+            </template>
+          </Card>
 
-          <!-- NEAR -->
+          <Card>
+            <template #title>Cerca</template>
+            <template #content>
+              <InputNumber
+                v-model="clinicalRecord.subjectiveRefractionNear.sphereLE"
+                :invalid="clinicalRecord.subjectiveRefractionNear.sphereLE === null"
+                mode="decimal"
+                :minFractionDigits="2"
+                placeholder="Esfera OI"
+              />
 
-          <InputNumber
-            v-model="clinicalRecord.subjectiveRefractionNear.sphereLE"
-            :invalid="clinicalRecord.subjectiveRefractionNear.sphereLE === null"
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="subjectiveRefractionNear.sphereLE"
-          />
+              <InputNumber
+                v-model="clinicalRecord.subjectiveRefractionNear.sphereRE"
+                :invalid="clinicalRecord.subjectiveRefractionNear.sphereRE === null"
+                mode="decimal"
+                :minFractionDigits="2"
+                placeholder="Esfera OD"
+              />
 
-          <InputNumber
-            v-model="clinicalRecord.subjectiveRefractionNear.sphereRE"
-            :invalid="clinicalRecord.subjectiveRefractionNear.sphereRE === null"
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="subjectiveRefractionNear.sphereRE"
-          />
+              <InputNumber
+                v-model="clinicalRecord.subjectiveRefractionNear.cylinderLE"
+                :invalid="clinicalRecord.subjectiveRefractionNear.cylinderLE === null"
+                mode="decimal"
+                :minFractionDigits="2"
+                placeholder="Cilindro OI"
+              />
 
-          <InputNumber
-            v-model="clinicalRecord.subjectiveRefractionNear.cylinderLE"
-            :invalid="
-              clinicalRecord.subjectiveRefractionNear.cylinderLE === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="subjectiveRefractionNear.cylinderLE"
-          />
+              <InputNumber
+                v-model="clinicalRecord.subjectiveRefractionNear.cylinderRE"
+                :invalid="clinicalRecord.subjectiveRefractionNear.cylinderRE === null"
+                mode="decimal"
+                :minFractionDigits="2"
+                placeholder="Cilindro OD"
+              />
 
-          <InputNumber
-            v-model="clinicalRecord.subjectiveRefractionNear.cylinderRE"
-            :invalid="
-              clinicalRecord.subjectiveRefractionNear.cylinderRE === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="subjectiveRefractionNear.cylinderRE"
-          />
+              <InputNumber
+                v-model="clinicalRecord.subjectiveRefractionNear.axisLE"
+                :invalid="clinicalRecord.subjectiveRefractionNear.axisLE === null"
+                mode="decimal"
+                :minFractionDigits="2"
+                placeholder="Eje OI"
+              />
 
-          <InputNumber
-            v-model="clinicalRecord.subjectiveRefractionNear.axisLE"
-            :invalid="clinicalRecord.subjectiveRefractionNear.axisLE === null"
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="subjectiveRefractionNear.axisLE"
-          />
+              <InputNumber
+                v-model="clinicalRecord.subjectiveRefractionNear.axisRE"
+                :invalid="clinicalRecord.subjectiveRefractionNear.axisRE === null"
+                mode="decimal"
+                :minFractionDigits="2"
+                placeholder="Eje OD"
+              />
 
-          <InputNumber
-            v-model="clinicalRecord.subjectiveRefractionNear.axisRE"
-            :invalid="clinicalRecord.subjectiveRefractionNear.axisRE === null"
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="subjectiveRefractionNear.axisRE"
-          />
+              <InputNumber
+                v-model="clinicalRecord.subjectiveRefractionNear.vareachedLE"
+                :invalid="clinicalRecord.subjectiveRefractionNear.vareachedLE === null"
+                mode="decimal"
+                :minFractionDigits="2"
+                placeholder="AV alcanzada OI"
+              />
 
-          <InputNumber
-            v-model="clinicalRecord.subjectiveRefractionNear.vareachedLE"
-            :invalid="
-              clinicalRecord.subjectiveRefractionNear.vareachedLE === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="subjectiveRefractionNear.vareachedLE"
-          />
+              <InputNumber
+                v-model="clinicalRecord.subjectiveRefractionNear.vareachedRE"
+                :invalid="clinicalRecord.subjectiveRefractionNear.vareachedRE === null"
+                mode="decimal"
+                :minFractionDigits="2"
+                placeholder="AV alcanzada OD"
+              />
 
-          <InputNumber
-            v-model="clinicalRecord.subjectiveRefractionNear.vareachedRE"
-            :invalid="
-              clinicalRecord.subjectiveRefractionNear.vareachedRE === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="subjectiveRefractionNear.vareachedRE"
-          />
+              <InputNumber
+                v-model="clinicalRecord.subjectiveRefractionNear.pupilarDistance"
+                :invalid="clinicalRecord.subjectiveRefractionNear.pupilarDistance === null"
+                mode="decimal"
+                :minFractionDigits="2"
+                placeholder="Distancia pupilar"
+              />
+            </template>
+          </Card>
 
-          <InputNumber
-            v-model="clinicalRecord.subjectiveRefractionNear.pupilarDistance"
-            :invalid="
-              clinicalRecord.subjectiveRefractionNear.pupilarDistance === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="subjectiveRefractionNear.pupilarDistance"
-          />
         </template>
       </Card>
 
       <Card>
-        <template #title>Simple Card</template>
+        <template #title>Tonometria aplanatica</template>
         <template #content>
           <InputNumber
             v-model="clinicalRecord.applanationTonometry.leftEye"
             :invalid="clinicalRecord.applanationTonometry.leftEye === null"
             mode="decimal"
             :minFractionDigits="2"
-            placeholder="applanationTonometry.leftEye"
+            placeholder="OI"
           />
 
           <InputNumber
@@ -312,7 +293,7 @@
             :invalid="clinicalRecord.applanationTonometry.rightEye === null"
             mode="decimal"
             :minFractionDigits="2"
-            placeholder="applanationTonometry.rightEye"
+            placeholder="OD"
           />
         </template>
       </Card>
@@ -393,7 +374,7 @@ onMounted(async () => {
     fetchPatientDetails(patientId);
   }
   /* await fetchGenders(); */
-  fetchPatients()
+  fetchPatients();
 });
 
 const fetchPatientDetails = async (id) => {

@@ -1,28 +1,31 @@
 <template>
   <div class="login-container">
     <Toast />
-    <Card>
+    <Card class="shadow-xl">
       <form @submit.prevent="login" class="p-6">
-        <h2 class="text-xl font-bold mb-5">Iniciar Sesiin</h2>
-
-        <InputText
-          id="username"
-          v-model.trim="username"
-          placeholder="Nombre de usuario"
-          class="w-full p-input text-sm"
-          aria-label="Username"
-        />
-
-        <Password
-          id="password"
-          v-model.trim="password"
-          placeholder="Contraseña"
-          toggleMask
-          class="w-full mt-4 p-password-text text-sm"
-          :class="{ 'p-error': 'invalidLogin' }"
-          aria-label="Password"
-          @keyup.enter="login"
-        />
+        <h2 class="text-xl font-bold mb-5">Optica</h2>
+        <FloatLabel variant="on">
+          <InputText
+            id="username"
+            v-model.trim="username"
+            class="w-full p-input text-sm"
+            aria-label="Username"
+          />
+          <label for="password">Nombre de usuario</label>
+        </FloatLabel>
+        <FloatLabel  class="mt-4" variant="on">
+          <Password
+            id="password"
+            v-model.trim="password"
+            toggleMask
+            class="w-full  p-password-text text-sm"
+            :class="{ 'p-error': 'invalidLogin' }"
+            aria-label="Password"
+            @keyup.enter="login"
+            :feedback="false"
+          />
+          <label for="password">Contraseña</label>
+        </FloatLabel>
 
         <Button
           label="Iniciar sesion"
@@ -55,6 +58,7 @@ import Toast from "primevue/toast";
 
 //nuevos
 import apiClient from "../axios-config";
+import FloatLabel from "primevue/floatlabel";
 
 const router = useRouter();
 const toast = useToast();

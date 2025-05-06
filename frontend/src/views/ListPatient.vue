@@ -1,7 +1,6 @@
 <template>
   <div class="p-3">
     <Toast />
-    <h1>Lista de pacientes</h1>
     <DataTable
       :value="clients"
       :paginator="true"
@@ -11,6 +10,7 @@
       responsiveLayout="scroll"
     >
       <Column field="name" header="Nombre"></Column>
+      <Column field="passport" header="RUT"></Column>
       <Column field="tel" header="Telefono"></Column>
       <Column field="mail" header="Email"></Column>
       <Column field="isapre" header="Isapre">

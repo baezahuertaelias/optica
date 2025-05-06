@@ -1,21 +1,104 @@
 <template>
-  <div class="p-3">
+  <div class="card shadow-2 p-4 mx-auto max-w-3xl">
     <Toast />
-    <h1>{{ isNew ? "Crear Usuario" : "Modificar Usuario" }}</h1>
-    <form @submit.prevent="saveUser">
-      <InputText v-model="user.username" placeholder="Username" required />
-      <InputText v-model="user.name" placeholder="Nombre" required />
-      <Password v-model="user.password" placeholder="Password" />
-      <Dropdown
-        v-model="user.userTypeId"
-        :options="userTypes"
-        optionLabel="type"
-        optionValue="id"
-        placeholder="Select User Type"
-        required
-      />
-      <ToggleSwitch v-model="user.status" />
-      <Button label="Guardar" class="mt-3" type="submit" />
+    <div class="mb-4">
+      <h1 class="text-2xl font-bold text-gray-800">
+        {{ isNew ? "Crear Usuario" : "Modificar Usuario" }}
+      </h1>
+      <p class="text-gray-600 mt-1 text-sm">
+        {{ isNew ? "Crear una nueva cuenta de usuario" : "Actualizar información del usuario" }}
+      </p>
+    </div>
+
+    <form @submit.prevent="saveUser" class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="field">
+          <label for="username" class="block mb-1 font-medium text-gray-700">Usuario</label>
+          <InputText 
+            id="username"
+            v-model="user.username" 
+            class="w-full p-inputtext-sm" 
+            placeholder="Ingrese nombre de usuario"
+            :class="{ 'p-invalid': submitted && !user.username }"
+            required
+          />
+          <small v-if="submitted && !user.username" class="p-error">El nombre de usuario es requerido</small>
+        </div>
+
+        <div class="field">
+          <label for="name" class="block mb-1 font-medium text-gray-700">Nombre Completo</label>
+          <InputText 
+            id="name"
+            v-model="user.name" 
+            class="w-full p-inputtext-sm" 
+            placeholder="Ingrese nombre completo"
+            :class="{ 'p-invalid': submitted && !user.name }"
+            required
+          />
+          <small v-if="submitted && !user.name" class="p-error">El nombre es requerido</small>
+        </div>
+        
+        <div class="field">
+          <label for="password" class="block mb-1 font-medium text-gray-700">Contraseña</label>
+          <Password 
+            id="password"
+            v-model="user.password" 
+            class="w-full" 
+            :feedback="isNew" 
+            :toggleMask="true"
+            :class="{ 'p-invalid': submitted && isNew && !user.password }"
+            placeholder="Ingrese contraseña"
+            :required="isNew"
+          />
+          <small v-if="!isNew" class="text-gray-500 text-xs">Deje en blanco para mantener la contraseña actual</small>
+          <small v-if="submitted && isNew && !user.password" class="p-error">La contraseña es requerida</small>
+        </div>
+
+        <div class="field">
+          <label for="userType" class="">Tipo de Usuario</label>
+          <Dropdown
+            id="userType"
+            v-model="user.userTypeId"
+            :options="userTypes"
+            optionLabel="type"
+            optionValue="id"
+            placeholder="Seleccione un tipo"
+            class="w-full"
+            :class="{ 'p-invalid': submitted && !user.userTypeId }"
+            required
+          />
+          <small v-if="submitted && !user.userTypeId" class="p-error">El tipo de usuario es requerido</small>
+        </div>
+      </div>
+
+      <div class="field flex align-items-center mt-4">
+        <div class="mr-2 font-medium text-gray-700">Estado del usuario:</div>
+        <ToggleButton 
+          v-model="user.status" 
+          onLabel="Activo" 
+          offLabel="Inactivo"
+          onIcon="pi pi-check"
+          offIcon="pi pi-times" 
+          class="p-button-sm"
+        />
+      </div>
+
+      <div class="flex justify-between mt-6">
+        <Button 
+          type="button" 
+          label="Cancelar" 
+          class="p-button-outlined p-button-secondary" 
+          icon="pi pi-times" 
+          @click="goBack"
+        />
+        <Button 
+          type="submit" 
+          label="Guardar" 
+          icon="pi pi-save" 
+          class="p-button-primary" 
+          :loading="loading"
+        />
+      </div>
     </form>
   </div>
 </template>
@@ -28,9 +111,9 @@ import InputText from "primevue/inputtext";
 import Password from "primevue/password";
 import Dropdown from "primevue/dropdown";
 import Button from "primevue/button";
-import ToggleSwitch from "primevue/toggleswitch";
-import apiClient from "../axios-config";
+import ToggleButton from "primevue/togglebutton";
 import Toast from "primevue/toast";
+import apiClient from "../axios-config";
 
 const router = useRouter();
 const route = useRoute();
@@ -47,10 +130,11 @@ const user = ref({
 
 const isNew = ref(true);
 const userTypes = ref([]);
+const loading = ref(false);
+const submitted = ref(false);
 
 onMounted(() => {
-  const userId = route.query.id || route.params.id; // Use query or params to get the ID
-  console.log("onmounted userid", route);
+  const userId = route.query.id || route.params.id;
 
   if (userId) {
     isNew.value = false;
@@ -60,18 +144,26 @@ onMounted(() => {
 });
 
 const fetchUser = async (id) => {
+  loading.value = true;
   try {
     const response = await apiClient.get(`/users/${id}`);
 
     if (response.status === 200) {
       console.log(`fetchUser with ID=${id}`, response.data.user);
-
+      // Clear password for security
       response.data.user.password = "";
-
       user.value = response.data.user;
     }
   } catch (error) {
     console.error("Failed to fetch user:", error);
+    toast.add({
+      severity: "error",
+      summary: "Error",
+      detail: "No se pudo cargar la información del usuario",
+      life: 3000,
+    });
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -84,10 +176,31 @@ const fetchUserTypes = async () => {
     }
   } catch (error) {
     console.error("Failed to fetch user types:", error);
+    toast.add({
+      severity: "error",
+      summary: "Error",
+      detail: "No se pudo cargar los tipos de usuario",
+      life: 3000,
+    });
   }
 };
 
 const saveUser = async () => {
+  submitted.value = true;
+  
+  // Form validation
+  if (!user.value.username || !user.value.name || 
+      !user.value.userTypeId || (isNew.value && !user.value.password)) {
+    toast.add({
+      severity: "warn",
+      summary: "Validación",
+      detail: "Por favor complete todos los campos requeridos",
+      life: 3000,
+    });
+    return;
+  }
+  
+  loading.value = true;
   try {
     const userData = { ...user.value };
 
@@ -99,26 +212,29 @@ const saveUser = async () => {
     }
 
     if (response.status === 200 || response.status === 201) {
-      router.push("/app/listUser");
-    } else {
-      // Show error message using toast when the response is not 200
-      //showErrorMessage(response.data.message || 'Login failed')
       toast.add({
-        severity: "error",
-        summary: "Error",
-        detail: response.data.message || "Algo fallo",
+        severity: "success",
+        summary: "Éxito",
+        detail: isNew.value ? "Usuario creado correctamente" : "Usuario actualizado correctamente",
         life: 3000,
       });
-    }
+      router.push("/app/listUser");
+    } 
   } catch (error) {
     console.error("Failed to save user:", error);
     toast.add({
       severity: "error",
       summary: "Error",
-      detail: error.response.data.message || "Algo fallo",
+      detail: error.response?.data?.message || "Ocurrió un error al guardar los datos",
       life: 3000,
     });
+  } finally {
+    loading.value = false;
   }
+};
+
+const goBack = () => {
+  router.push("/app/listUser");
 };
 </script>
 
