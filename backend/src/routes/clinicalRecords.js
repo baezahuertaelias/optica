@@ -10,5 +10,6 @@ router.get('/patients/name', authMiddleware, clinicalRecordsController.getPatien
 router.get('/:id/with-relations', authMiddleware, clinicalRecordsController.getClinicalRecordWithRelations);
 router.get('/', authMiddleware, clinicalRecordsController.getAllrecords);
 router.post('/', authMiddleware, clinicalRecordsController.createClinicalRecordWithRelations);
+router.post('/generatePDF/:id', authMiddleware, clinicalRecordsController.generatePDF);
 
 module.exports = router;

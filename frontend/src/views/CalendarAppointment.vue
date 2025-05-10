@@ -1,42 +1,43 @@
 <template>
   <div class="calendar-container">
-    <h1>Appointment Calendar</h1>
     <vue-cal
       :events="formattedEvents"
       :time-from="8 * 60"
       :time-to="18 * 60"
-      :time-step="15"
+      :time-step="5"
       :disable-views="['years', 'year']"
       default-view="week"
       @event-click="onEventClick"
-      style="height: 600px"
+      style="height: 100%"
+      :cell-height="100"
+      hide-weekends
+
     >
       <template #event="{ event }">
         <div class="card">
-          <div><strong>Title:</strong> {{ event.title }}</div>
-            <div><strong>Patient:</strong> {{ event.patient }}</div>
+          <div><strong>{{ event.title }}</strong> </div>
+            <div><strong>Paciente:</strong> {{ event.patient }}</div>
             <div><strong>Doctor:</strong> {{ event.doctor }}</div>
-            <div><strong>Type:</strong> {{ event.type }}</div>
         </div>
       </template>
+      
     </vue-cal>
     
     <div v-if="selectedEvent" class="event-details-modal">
-      <h2>Appointment Details</h2>
-      <div><strong>Patient:</strong> {{ selectedEvent.patient }}</div>
+      <h1>Detalles de cita</h1>
+      <div><strong>Paciente:</strong> {{ selectedEvent.patient }}</div>
       <div><strong>Doctor:</strong> {{ selectedEvent.doctor }}</div>
-      <div><strong>Type:</strong> {{ selectedEvent.type }}</div>
-      <div><strong>Date:</strong> {{ formatDate(selectedEvent.start) }}</div>
-      <div><strong>Time:</strong> {{ formatTime(selectedEvent.start) }} - {{ formatTime(selectedEvent.end) }}</div>
-      <div><strong>Duration:</strong> {{ selectedEvent.duration }} minutes</div>
-      <div><strong>Notes:</strong> {{ selectedEvent.notes }}</div>
-      <button @click="selectedEvent = null">Close</button>
+      <div><strong>Tipo atencion:</strong> {{ selectedEvent.type }}</div>
+      <div><strong>Fecha:</strong> {{ formatDate(selectedEvent.start) }}</div>
+      <div><strong>Hora:</strong> {{ formatTime(selectedEvent.start) }} - {{ formatTime(selectedEvent.end) }}</div>
+      <div><strong>Duracion:</strong> {{ selectedEvent.duration }} minutos</div>
+      <div><strong>Notas:</strong> {{ selectedEvent.notes }}</div>
+      <button @click="selectedEvent = null">Cerrar</button>
     </div>
   </div>
 </template>
 
 <script setup>
-import Card from 'primevue/card'
 import { ref, computed, onMounted } from 'vue'
 import VueCal from 'vue-cal'
 import 'vue-cal/dist/vuecal.css'
@@ -93,13 +94,13 @@ const onEventClick = (event) => {
 // Format date for display
 const formatDate = (date) => {
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
-  return new Date(date).toLocaleDateString(undefined, options)
+  return new Date(date).toLocaleDateString('es-CL', options)
 }
 
 // Format time for display
 const formatTime = (date) => {
   const options = { hour: '2-digit', minute: '2-digit' }
-  return new Date(date).toLocaleTimeString(undefined, options)
+  return new Date(date).toLocaleTimeString('es-CL', options)
 }
 
 onMounted(() => {
@@ -108,6 +109,11 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.vuecal__cell {
+  padding: 5px;
+  min-height: 100px !important;
+}
+
 .calendar-container {
   font-family: Arial, sans-serif;
   max-width: 1200px;
@@ -162,5 +168,11 @@ onMounted(() => {
 :deep(.inactive-appointment) {
   border-left: 4px solid #F44336;
   opacity: 0.7;
+}
+
+/* Set fixed height for month view cells */
+.vuecal--month-view .vuecal__cell {
+  height: 200px !important;
+  width: 100px
 }
 </style>

@@ -1,6 +1,18 @@
 <template>
   <div class="p-3">
     <Toast />
+    <div class="pb-4">
+      <h1 class="text-3xl font-bold">
+        {{ isNew ? "Crear Ficha Clínica" : "Modificar Ficha Clínica" }}
+      </h1>
+      <p class="text-gray-600 mt-1">
+        {{
+          isNew
+            ? "Ingrese la información del paciente para crear una nueva ficha clínica"
+            : "Actualice la información de la ficha clínica existente"
+        }}
+      </p>
+    </div>
 
     <!-- Debug section to verify data loading -->
     <div v-if="loading" class="flex justify-center my-4">
@@ -81,392 +93,12 @@
       </template>
     </DataTable>
 
-    <Dialog
+    <!-- Using the new clinical record dialog component -->
+    <ClinicalRecordDialog
       v-model:visible="visible"
-      modal
-      :header="`Ficha clinica ${detailClinicalRecord.id}`"
-      :style="{ width: '50rem' }"
-      :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
-    >
-      <Card>
-        <template #title>Información de Paciente</template>
-        <template #content>
-          <FloatLabel variant="on">
-            <Textarea
-              id="on_label_nombre"
-              v-model="detailClinicalRecord.patient.name"
-              rows="5"
-              cols="30"
-              style="resize: none"
-            />
-            <label for="on_label_nombre">Nombre</label>
-          </FloatLabel>
-
-          <FloatLabel variant="on">
-            <Textarea
-              id="on_label_anamnsis"
-              v-model="detailClinicalRecord.anamnesis"
-              rows="5"
-              cols="30"
-              style="resize: none"
-            />
-            <label for="on_label_anamnsis">Anamnesis</label>
-          </FloatLabel>
-
-          <FloatLabel variant="on">
-            <Textarea
-              id="othersDetails"
-              v-model="detailClinicalRecord.othersDetails"
-              rows="5"
-              cols="30"
-              style="resize: none"
-            />
-            <label for="othersDetails">Otros Detalles</label>
-          </FloatLabel>
-        </template>
-      </Card>
-
-      <Card>
-        <template #title>Agudeza Visual</template>
-        <template #content>
-          <!-- visualAcuity -->
-          <InputNumber
-            v-model="detailClinicalRecord.visualAcuity.withoutCorrectionLE"
-            :invalid="
-              detailClinicalRecord.visualAcuity.withoutCorrectionLE === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="withoutCorrectionLE"
-          />
-          <InputNumber
-            v-model="detailClinicalRecord.visualAcuity.withoutCorrectionRE"
-            :invalid="
-              detailClinicalRecord.visualAcuity.withoutCorrectionRE === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="withoutCorrectionRE"
-          />
-          <InputNumber
-            v-model="detailClinicalRecord.visualAcuity.withoutCorrectionBI"
-            :invalid="
-              detailClinicalRecord.visualAcuity.withoutCorrectionBI === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="withoutCorrectionBI"
-          />
-
-          <InputNumber
-            v-model="detailClinicalRecord.visualAcuity.laserCorrectionLE"
-            :invalid="
-              detailClinicalRecord.visualAcuity.laserCorrectionLE === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="laserCorrectionLE"
-          />
-          <InputNumber
-            v-model="detailClinicalRecord.visualAcuity.laserCorrectionRE"
-            :invalid="
-              detailClinicalRecord.visualAcuity.laserCorrectionRE === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="laserCorrectionRE"
-          />
-          <InputNumber
-            v-model="detailClinicalRecord.visualAcuity.laserCorrectionBI"
-            :invalid="
-              detailClinicalRecord.visualAcuity.laserCorrectionBI === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="laserCorrectionBI"
-          />
-
-          <InputNumber
-            v-model="detailClinicalRecord.visualAcuity.pinholeLE"
-            :invalid="detailClinicalRecord.visualAcuity.pinholeLE === null"
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="pinholeLE"
-          />
-          <InputNumber
-            v-model="detailClinicalRecord.visualAcuity.pinholeRE"
-            :invalid="detailClinicalRecord.visualAcuity.pinholeRE === null"
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="pinholeRE"
-          />
-          <InputNumber
-            v-model="detailClinicalRecord.visualAcuity.pinholeBI"
-            :invalid="detailClinicalRecord.visualAcuity.pinholeBI === null"
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="pinholeBI"
-          />
-
-          <InputNumber
-            v-model="detailClinicalRecord.visualAcuity.pupilRedLE"
-            :invalid="detailClinicalRecord.visualAcuity.pupilRedLE === null"
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="pupilRedLE"
-          />
-          <InputNumber
-            v-model="detailClinicalRecord.visualAcuity.pupilRedRE"
-            :invalid="detailClinicalRecord.visualAcuity.pupilRedRE === null"
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="pupilRedRE"
-          />
-        </template>
-      </Card>
-
-      <Card>
-        <template #title>Refracción Subjetiva (Lejos)</template>
-        <template #content>
-          <!-- FAR -->
-          <InputNumber
-            v-model="detailClinicalRecord.subjectiveRefractionsFar.sphereLE"
-            :invalid="
-              detailClinicalRecord.subjectiveRefractionsFar.sphereLE === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="subjectiveRefractionsFar.sphereLE"
-          />
-
-          <InputNumber
-            v-model="detailClinicalRecord.subjectiveRefractionsFar.sphereRE"
-            :invalid="
-              detailClinicalRecord.subjectiveRefractionsFar.sphereRE === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="subjectiveRefractionsFar.sphereRE"
-          />
-
-          <InputNumber
-            v-model="detailClinicalRecord.subjectiveRefractionsFar.cylinderLE"
-            :invalid="
-              detailClinicalRecord.subjectiveRefractionsFar.cylinderLE === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="subjectiveRefractionsFar.cylinderLE"
-          />
-
-          <InputNumber
-            v-model="detailClinicalRecord.subjectiveRefractionsFar.cylinderRE"
-            :invalid="
-              detailClinicalRecord.subjectiveRefractionsFar.cylinderRE === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="subjectiveRefractionsFar.cylinderRE"
-          />
-
-          <InputNumber
-            v-model="detailClinicalRecord.subjectiveRefractionsFar.axisLE"
-            :invalid="
-              detailClinicalRecord.subjectiveRefractionsFar.axisLE === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="subjectiveRefractionsFar.axisLE"
-          />
-
-          <InputNumber
-            v-model="detailClinicalRecord.subjectiveRefractionsFar.axisRE"
-            :invalid="
-              detailClinicalRecord.subjectiveRefractionsFar.axisRE === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="subjectiveRefractionsFar.axisRE"
-          />
-
-          <InputNumber
-            v-model="detailClinicalRecord.subjectiveRefractionsFar.vareachedLE"
-            :invalid="
-              detailClinicalRecord.subjectiveRefractionsFar.vareachedLE === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="subjectiveRefractionsFar.vareachedLE"
-          />
-
-          <InputNumber
-            v-model="detailClinicalRecord.subjectiveRefractionsFar.vareachedRE"
-            :invalid="
-              detailClinicalRecord.subjectiveRefractionsFar.vareachedRE === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="subjectiveRefractionsFar.vareachedRE"
-          />
-
-          <InputNumber
-            v-model="
-              detailClinicalRecord.subjectiveRefractionsFar.pupilarDistance
-            "
-            :invalid="
-              detailClinicalRecord.subjectiveRefractionsFar.pupilarDistance ===
-              null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="subjectiveRefractionsFar.pupilarDistance"
-          />
-        </template>
-      </Card>
-
-      <Card>
-        <template #title>Refracción Subjetiva (Cerca)</template>
-        <template #content>
-          <!-- NEAR -->
-          <InputNumber
-            v-model="detailClinicalRecord.subjectiveRefractionsNear.sphereLE"
-            :invalid="
-              detailClinicalRecord.subjectiveRefractionsNear.sphereLE === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="SubjectiveRefractionsNear.sphereLE"
-          />
-
-          <InputNumber
-            v-model="detailClinicalRecord.subjectiveRefractionsNear.sphereRE"
-            :invalid="
-              detailClinicalRecord.subjectiveRefractionsNear.sphereRE === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="SubjectiveRefractionsNear.sphereRE"
-          />
-
-          <InputNumber
-            v-model="detailClinicalRecord.subjectiveRefractionsNear.cylinderLE"
-            :invalid="
-              detailClinicalRecord.subjectiveRefractionsNear.cylinderLE === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="SubjectiveRefractionsNear.cylinderLE"
-          />
-
-          <InputNumber
-            v-model="detailClinicalRecord.subjectiveRefractionsNear.cylinderRE"
-            :invalid="
-              detailClinicalRecord.subjectiveRefractionsNear.cylinderRE === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="SubjectiveRefractionsNear.cylinderRE"
-          />
-
-          <InputNumber
-            v-model="detailClinicalRecord.subjectiveRefractionsNear.axisLE"
-            :invalid="
-              detailClinicalRecord.subjectiveRefractionsNear.axisLE === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="SubjectiveRefractionsNear.axisLE"
-          />
-
-          <InputNumber
-            v-model="detailClinicalRecord.subjectiveRefractionsNear.axisRE"
-            :invalid="
-              detailClinicalRecord.subjectiveRefractionsNear.axisRE === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="SubjectiveRefractionsNear.axisRE"
-          />
-
-          <InputNumber
-            v-model="detailClinicalRecord.subjectiveRefractionsNear.vareachedLE"
-            :invalid="
-              detailClinicalRecord.subjectiveRefractionsNear.vareachedLE === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="SubjectiveRefractionsNear.vareachedLE"
-          />
-
-          <InputNumber
-            v-model="detailClinicalRecord.subjectiveRefractionsNear.vareachedRE"
-            :invalid="
-              detailClinicalRecord.subjectiveRefractionsNear.vareachedRE === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="SubjectiveRefractionsNear.vareachedRE"
-          />
-
-          <InputNumber
-            v-model="
-              detailClinicalRecord.subjectiveRefractionsNear.pupilarDistance
-            "
-            :invalid="
-              detailClinicalRecord.subjectiveRefractionsNear.pupilarDistance ===
-              null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="SubjectiveRefractionsNear.pupilarDistance"
-          />
-        </template>
-      </Card>
-
-      <Card>
-        <template #title>Tonometría de Aplanación</template>
-        <template #content>
-          <InputNumber
-            v-model="detailClinicalRecord.applanationTonometry.leftEye"
-            :invalid="
-              detailClinicalRecord.applanationTonometry.leftEye === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="ApplanationTonometry.leftEye"
-          />
-
-          <InputNumber
-            v-model="detailClinicalRecord.applanationTonometry.rightEye"
-            :invalid="
-              detailClinicalRecord.applanationTonometry.rightEye === null
-            "
-            mode="decimal"
-            :minFractionDigits="2"
-            placeholder="ApplanationTonometry.rightEye"
-          />
-        </template>
-      </Card>
-
-      <template #footer>
-        <Button
-          label="Cancel"
-          text
-          severity="secondary"
-          @click="visible = false"
-          autofocus
-        />
-        <Button
-          label="Save"
-          outlined
-          severity="secondary"
-          @click="visible = false"
-          autofocus
-        />
-      </template>
-
-      <div class="flex justify-end gap-2"></div>
-    </Dialog>
+      :clinicalRecord="detailClinicalRecord"
+      @print="handlePrintRecord"
+    />
   </div>
 </template>
   
@@ -476,24 +108,21 @@ import Toast from "primevue/toast";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Button from "primevue/button";
-import Dialog from "primevue/dialog";
 import { useToast } from "primevue/usetoast";
 import apiClient from "../axios-config";
 import { FilterMatchMode } from "@primevue/core/api";
 import InputIcon from "primevue/inputicon";
 import InputText from "primevue/inputtext";
-import InputNumber from "primevue/inputnumber";
 import IconField from "primevue/iconfield";
-import Card from "primevue/card";
-import FloatLabel from "primevue/floatlabel";
-import Textarea from "primevue/textarea";
-import Dropdown from "primevue/dropdown";
+import ClinicalRecordDialog from "../components/ClinicalRecordDialog.vue";
 
 const toast = useToast();
 const clinicalRecords = ref([]);
 const expandedRowGroups = ref([]);
 const loading = ref(true);
 const visible = ref(false);
+
+// Initialize with empty structure matching the expected format
 const detailClinicalRecord = ref({
   id: null,
   patientId: null,
@@ -621,7 +250,9 @@ const viewRecord = async (record) => {
   console.log("Viewing record:", id);
 
   try {
-    const response = await apiClient.get(`/clinicalRecords/${id}/with-relations`);
+    const response = await apiClient.get(
+      `/clinicalRecords/${id}/with-relations`
+    );
     if (response.status === 200) {
       console.log("[viewRecord] API Response:", response.data);
       detailClinicalRecord.value = response.data.data || {};
@@ -637,6 +268,35 @@ const viewRecord = async (record) => {
         "Error al cargar los registros clinicos",
       life: 3000,
     });
+  }
+};
+
+// Function to handle print event from the dialog component
+const handlePrintRecord = async (record) => {
+  console.log("Printing record:", record.id);
+  // Implement printing functionality here
+  // This could be window.print() or a more sophisticated solution
+  toast.add({
+    severity: "info",
+    summary: "Imprimir",
+    detail: `Imprimiendo ficha del paciente: ${record.patient.name}`,
+    life: 3000,
+  });
+
+  ///////////////
+  try {
+    console.log('p1');
+    const payload=  null
+    const response = await apiClient.post("clinicalRecords/generatePDF/1", payload);
+    console.log('p2');
+
+
+    const blob = new Blob([response.data], { type: "application/pdf" });
+    const url = window.URL.createObjectURL(blob);
+    window.open(url, "_blank");
+  } catch (error) {
+    console.error("Error:", error);
+    alert("Failed to generate PDF");
   }
 };
 

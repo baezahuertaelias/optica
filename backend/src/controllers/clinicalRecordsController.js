@@ -1,3 +1,4 @@
+const { createPdfDocument } = require('../helpers/pdf');
 const {
   ClinicalRecord,
   Patient,  // Changed from Patients to Patient to match model definition
@@ -251,5 +252,25 @@ module.exports = {
       return res.status(500).json({ message: "Internal server error" });
     }
   },
+
+  async generatePDF(req, res) {
+    try {
+      // Create the PDF document
+      const pdfDoc = createPdfDocument();
+
+      // Set response headers
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename=orden_trabajo.pdf');
+
+      // Pipe the PDF to the response
+      pdfDoc.pipe(res);
+
+      // End the document
+      pdfDoc.end();
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      res.status(500).send('Error generating PDF');
+    }
+  }
 
 };

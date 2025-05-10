@@ -1,13 +1,15 @@
 <template>
-  <div class="card shadow-2 p-4 mx-auto">
-    <Toast />
-    
-    <div class="flex justify-between items-center mb-4">
-      <div>
-        <h1 class="text-2xl font-bold text-gray-800">Usuarios</h1>
-        <p class="text-gray-600 mt-1 text-sm">Gestione los usuarios del sistema</p>
+  <div class="min-h-screen">
+    <div class="max-w-6xl mx-auto px-4 py-8">
+      <!-- Header Section -->
+      <div class="mb-6  pb-4">
+        <h1 class="text-3xl font-bold ">
+          {{ isNew ? "Crear Ficha Clínica" : "Modificar Ficha Clínica" }}
+        </h1>
+        <p class="text-gray-600 mt-1">
+          {{ isNew ? "Ingrese la información del paciente para crear una nueva ficha clínica" : "Actualice la información de la ficha clínica existente" }}
+        </p>
       </div>
-      
     </div>
     
     <div class="mb-3 flex flex-column sm:flex-row gap-3 justify-content-between">
@@ -109,19 +111,19 @@
               icon="pi pi-pencil"
               @click="editUser(data)"
               class="p-button-rounded p-button-outlined p-button-secondary p-button-sm"
-              v-tooltip.top="'Editar usuario'"
+              label="Editar"
             />
             <Button
               icon="pi pi-trash"
               @click="confirmDelete(data)"
               class="p-button-rounded p-button-outlined p-button-danger p-button-sm"
-              v-tooltip.top="'Eliminar usuario'"
+              label="Eliminar"
             />
             <Button
               icon="pi pi-lock"
               @click="resetPassword(data)"
               class="p-button-rounded p-button-outlined p-button-info p-button-sm"
-              v-tooltip.top="'Resetear contraseña'"
+              label="Resetear contraseña"
             />
           </div>
         </template>

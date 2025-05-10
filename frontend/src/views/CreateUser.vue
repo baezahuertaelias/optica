@@ -1,105 +1,129 @@
 <template>
-  <div class="card shadow-2 p-4 mx-auto max-w-3xl">
-    <Toast />
-    <div class="mb-4">
-      <h1 class="text-2xl font-bold text-gray-800">
-        {{ isNew ? "Crear Usuario" : "Modificar Usuario" }}
-      </h1>
-      <p class="text-gray-600 mt-1 text-sm">
-        {{ isNew ? "Crear una nueva cuenta de usuario" : "Actualizar información del usuario" }}
-      </p>
+  <div class="min-h-screen">
+    <div class="max-w-6xl mx-auto px-4 py-8">
+      <!-- Header Section -->
+      <div class="mb-6 pb-4">
+        <h1 class="text-3xl font-bold">
+          {{ isNew ? "Crear Ficha Clínica" : "Modificar Ficha Clínica" }}
+        </h1>
+        <p class="text-gray-600 mt-1">
+          {{
+            isNew
+              ? "Ingrese la información del paciente para crear una nueva ficha clínica"
+              : "Actualice la información de la ficha clínica existente"
+          }}
+        </p>
+      </div>
+
+      <form @submit.prevent="saveUser" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="field">
+            <label for="username" class="block mb-1 font-medium text-gray-700"
+              >Usuario</label
+            >
+            <InputText
+              id="username"
+              v-model="user.username"
+              class="w-full p-inputtext-sm"
+              placeholder="Ingrese nombre de usuario"
+              :class="{ 'p-invalid': submitted && !user.username }"
+              required
+            />
+            <small v-if="submitted && !user.username" class="p-error"
+              >El nombre de usuario es requerido</small
+            >
+          </div>
+
+          <div class="field">
+            <label for="name" class="block mb-1 font-medium text-gray-700"
+              >Nombre Completo</label
+            >
+            <InputText
+              id="name"
+              v-model="user.name"
+              class="w-full p-inputtext-sm"
+              placeholder="Ingrese nombre completo"
+              :class="{ 'p-invalid': submitted && !user.name }"
+              required
+            />
+            <small v-if="submitted && !user.name" class="p-error"
+              >El nombre es requerido</small
+            >
+          </div>
+
+          <div class="field">
+            <label for="password" class="block mb-1 font-medium text-gray-700"
+              >Contraseña</label
+            >
+            <Password
+              id="password"
+              v-model="user.password"
+              class="w-full"
+              :feedback="isNew"
+              :toggleMask="true"
+              :class="{ 'p-invalid': submitted && isNew && !user.password }"
+              placeholder="Ingrese contraseña"
+              :required="isNew"
+            />
+            <small v-if="!isNew" class="text-gray-500 text-xs"
+              >Deje en blanco para mantener la contraseña actual</small
+            >
+            <small v-if="submitted && isNew && !user.password" class="p-error"
+              >La contraseña es requerida</small
+            >
+          </div>
+
+          <div class="field">
+            <label for="userType" class="">Tipo de Usuario</label>
+            <Dropdown
+              id="userType"
+              v-model="user.userTypeId"
+              :options="userTypes"
+              optionLabel="type"
+              optionValue="id"
+              placeholder="Seleccione un tipo"
+              class="w-full"
+              :class="{ 'p-invalid': submitted && !user.userTypeId }"
+              required
+            />
+            <small v-if="submitted && !user.userTypeId" class="p-error"
+              >El tipo de usuario es requerido</small
+            >
+          </div>
+        </div>
+
+        <div class="field flex align-items-center mt-4">
+          <div class="mt-3 mr-2 font-medium text-gray-700">
+            Estado del usuario:
+          </div>
+          <ToggleButton
+            v-model="user.status"
+            onLabel="Activo"
+            offLabel="Inactivo"
+            onIcon="pi pi-check"
+            offIcon="pi pi-times"
+            class=""
+          />
+        </div>
+
+        <div class="flex justify-between mt-6">
+          <Button
+            type="button"
+            label="Cancelar"
+            class="p-button-outlined p-button-secondary"
+            icon="pi pi-times"
+            @click="goBack"
+          />
+          <Button
+            type="submit"
+            label="Guardar"
+            icon="pi pi-save"
+            class="p-button-primary"
+            :loading="loading"
+          />
+        </div>
+      </form>
     </div>
-
-    <form @submit.prevent="saveUser" class="space-y-4">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="field">
-          <label for="username" class="block mb-1 font-medium text-gray-700">Usuario</label>
-          <InputText 
-            id="username"
-            v-model="user.username" 
-            class="w-full p-inputtext-sm" 
-            placeholder="Ingrese nombre de usuario"
-            :class="{ 'p-invalid': submitted && !user.username }"
-            required
-          />
-          <small v-if="submitted && !user.username" class="p-error">El nombre de usuario es requerido</small>
-        </div>
-
-        <div class="field">
-          <label for="name" class="block mb-1 font-medium text-gray-700">Nombre Completo</label>
-          <InputText 
-            id="name"
-            v-model="user.name" 
-            class="w-full p-inputtext-sm" 
-            placeholder="Ingrese nombre completo"
-            :class="{ 'p-invalid': submitted && !user.name }"
-            required
-          />
-          <small v-if="submitted && !user.name" class="p-error">El nombre es requerido</small>
-        </div>
-        
-        <div class="field">
-          <label for="password" class="block mb-1 font-medium text-gray-700">Contraseña</label>
-          <Password 
-            id="password"
-            v-model="user.password" 
-            class="w-full" 
-            :feedback="isNew" 
-            :toggleMask="true"
-            :class="{ 'p-invalid': submitted && isNew && !user.password }"
-            placeholder="Ingrese contraseña"
-            :required="isNew"
-          />
-          <small v-if="!isNew" class="text-gray-500 text-xs">Deje en blanco para mantener la contraseña actual</small>
-          <small v-if="submitted && isNew && !user.password" class="p-error">La contraseña es requerida</small>
-        </div>
-
-        <div class="field">
-          <label for="userType" class="">Tipo de Usuario</label>
-          <Dropdown
-            id="userType"
-            v-model="user.userTypeId"
-            :options="userTypes"
-            optionLabel="type"
-            optionValue="id"
-            placeholder="Seleccione un tipo"
-            class="w-full"
-            :class="{ 'p-invalid': submitted && !user.userTypeId }"
-            required
-          />
-          <small v-if="submitted && !user.userTypeId" class="p-error">El tipo de usuario es requerido</small>
-        </div>
-      </div>
-
-      <div class="field flex align-items-center mt-4">
-        <div class="mr-2 font-medium text-gray-700">Estado del usuario:</div>
-        <ToggleButton 
-          v-model="user.status" 
-          onLabel="Activo" 
-          offLabel="Inactivo"
-          onIcon="pi pi-check"
-          offIcon="pi pi-times" 
-          class="p-button-sm"
-        />
-      </div>
-
-      <div class="flex justify-between mt-6">
-        <Button 
-          type="button" 
-          label="Cancelar" 
-          class="p-button-outlined p-button-secondary" 
-          icon="pi pi-times" 
-          @click="goBack"
-        />
-        <Button 
-          type="submit" 
-          label="Guardar" 
-          icon="pi pi-save" 
-          class="p-button-primary" 
-          :loading="loading"
-        />
-      </div>
-    </form>
   </div>
 </template>
 
@@ -187,10 +211,14 @@ const fetchUserTypes = async () => {
 
 const saveUser = async () => {
   submitted.value = true;
-  
+
   // Form validation
-  if (!user.value.username || !user.value.name || 
-      !user.value.userTypeId || (isNew.value && !user.value.password)) {
+  if (
+    !user.value.username ||
+    !user.value.name ||
+    !user.value.userTypeId ||
+    (isNew.value && !user.value.password)
+  ) {
     toast.add({
       severity: "warn",
       summary: "Validación",
@@ -199,7 +227,7 @@ const saveUser = async () => {
     });
     return;
   }
-  
+
   loading.value = true;
   try {
     const userData = { ...user.value };
@@ -215,17 +243,21 @@ const saveUser = async () => {
       toast.add({
         severity: "success",
         summary: "Éxito",
-        detail: isNew.value ? "Usuario creado correctamente" : "Usuario actualizado correctamente",
+        detail: isNew.value
+          ? "Usuario creado correctamente"
+          : "Usuario actualizado correctamente",
         life: 3000,
       });
       router.push("/app/listUser");
-    } 
+    }
   } catch (error) {
     console.error("Failed to save user:", error);
     toast.add({
       severity: "error",
       summary: "Error",
-      detail: error.response?.data?.message || "Ocurrió un error al guardar los datos",
+      detail:
+        error.response?.data?.message ||
+        "Ocurrió un error al guardar los datos",
       life: 3000,
     });
   } finally {
