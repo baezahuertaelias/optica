@@ -274,23 +274,19 @@ const viewRecord = async (record) => {
 // Function to handle print event from the dialog component
 const handlePrintRecord = async (record) => {
   console.log("Printing record:", record.id);
-  // Implement printing functionality here
-  // This could be window.print() or a more sophisticated solution
   toast.add({
     severity: "info",
     summary: "Imprimir",
     detail: `Imprimiendo ficha del paciente: ${record.patient.name}`,
     life: 3000,
   });
-
-  ///////////////
+  
   try {
-    console.log('p1');
-    const payload=  null
-    const response = await apiClient.post("clinicalRecords/generatePDF/1", payload);
-    console.log('p2');
-
-
+    // The important change is setting responseType to 'blob'
+    const response = await apiClient.post(`clinicalRecords/generatePDF/${record.id}`, null, {
+      responseType: 'blob' // This is the key change!
+    });
+    
     const blob = new Blob([response.data], { type: "application/pdf" });
     const url = window.URL.createObjectURL(blob);
     window.open(url, "_blank");
