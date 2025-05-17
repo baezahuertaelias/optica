@@ -9,12 +9,12 @@
       default-view="week"
       @event-click="onEventClick"
       style="height: 100%"
-      :cell-height="100"
+      :cell-height="500"
       hide-weekends
-
+      locale="es"
     >
       <template #event="{ event }">
-        <div class="card">
+        <div class="card" :style="{ backgroundColor: event.backgroundColor }">
           <div><strong>{{ event.title }}</strong> </div>
             <div><strong>Paciente:</strong> {{ event.patient }}</div>
             <div><strong>Doctor:</strong> {{ event.doctor }}</div>
@@ -62,10 +62,8 @@ const formattedEvents = computed(() => {
     duration: appointment.appointmentType?.duration || 0,
     notes: appointment.notes || '',
     status: appointment.status,
-    // Class based on appointment status
-    class: appointment.status ? 'active-appointment' : 'inactive-appointment',
-    // Custom color for the event
-    backgroundColor: appointment.status ? '#4CAF50' : '#F44336',
+    // Use the color from the API if available, otherwise fallback to status-based color
+    backgroundColor: appointment.appointmentType.color || (appointment.status ? '#4CAF50' : '#F44336'),
     content: appointment.notes,
     // Store the original data for reference
     originalData: appointment
@@ -121,6 +119,13 @@ onMounted(() => {
   padding: 20px;
 }
 
+.card {
+  padding: 8px;
+  border-radius: 4px;
+  color: white;
+  height: 100%;
+}
+
 .event-content {
   padding: 4px;
   height: 100%;
@@ -160,7 +165,7 @@ onMounted(() => {
   cursor: pointer;
 }
 
-/* Custom styles for the appointment status */
+/* Custom styles for the appointment status - keeping these for reference */
 :deep(.active-appointment) {
   border-left: 4px solid #4CAF50;
 }

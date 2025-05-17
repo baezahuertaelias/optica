@@ -140,6 +140,7 @@
               :events="events"
               :on-event-click="onEventClick"
               style="height: 600px"
+              locale="es"
             />
           </template>
         </Card>
