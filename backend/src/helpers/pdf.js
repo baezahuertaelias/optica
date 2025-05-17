@@ -14,12 +14,15 @@ const fonts = {
 
 const printer = new PdfPrinter(fonts);
 
-function createPdfDocument() {
+function createPdfDocument(data) {
   try {
-     // Read the image file
-     const imagePath = path.join(__dirname, "sampleImage.jpg");
-     const imageBuffer = fs.readFileSync(imagePath);
-     const image = `data:image/jpeg;base64,${imageBuffer.toString('base64')}`;
+
+
+
+    // Read the image file
+    const imagePath = path.join(__dirname, "sampleImage.jpg");
+    const imageBuffer = fs.readFileSync(imagePath);
+    const image = `data:image/jpeg;base64,${imageBuffer.toString('base64')}`;
     const cabecera = {
       columns: [
         {
@@ -34,7 +37,7 @@ function createPdfDocument() {
           margin: [20, 0],
         },
         {
-          text: "Nro 000000",
+          text: "Nro " + data.id,
           style: "idOT",
           width: "auto",
           alignment: "right",
@@ -57,7 +60,7 @@ function createPdfDocument() {
             {
               text: [
                 { text: "Nombre: ", bold: true, style: "descPatient" },
-                { text: "Juanito Lechuga", style: "descPatient" },
+                { text: data.patient.name, style: "descPatient" },
               ],
               colSpan: 2,
             },
@@ -67,13 +70,13 @@ function createPdfDocument() {
             {
               text: [
                 { text: "Rut: ", bold: true, style: "descPatient" },
-                { text: "11.111.111-1", style: "descPatient" },
+                { text: data.patient.passport, style: "descPatient" },
               ],
             },
             {
               text: [
                 { text: "Fono: ", bold: true },
-                { text: "+56945613298", style: "descPatient" },
+                { text: data.patient.tel, style: "descPatient" },
               ],
             },
           ],
@@ -81,13 +84,13 @@ function createPdfDocument() {
             {
               text: [
                 { text: "Lugar: ", bold: true, style: "descPatient" },
-                { text: "Bilbao", style: "descPatient" },
+                { text: "-------", style: "descPatient" },
               ],
             },
             {
               text: [
                 { text: "Fecha: ", bold: true, style: "descPatient" },
-                { text: "02/08/25", style: "descPatient" },
+                { text: data.createdAt.toLocaleString("en-GB", { dateStyle: 'short' }), style: "descPatient" },
               ],
             },
           ],
@@ -108,11 +111,11 @@ function createPdfDocument() {
     const tablaLentes = (data) => {
       // Sample data - replace with actual values from your application
       const sampleData = {
-        OD: { ESF: "-1.75", CYL: "-0.50", EJE: "180", DP: "32" },
-        OI: { ESF: "-2.00", CYL: "-0.25", EJE: "175", DP: "32" },
+        OD: { ESF: data.sphereRE, CYL: data.cylinderRE, EJE: data.axisRE, DP: data.pupilarDistance },
+        OI: { ESF: data.sphereLE, CYL: data.cylinderLE, EJE: data.axisLE, DP: "" },
       };
-
-      return {
+      
+      const aa = {
         table: {
           headerRows: 1,
           widths: ["auto", "*", "*", "*", "*"],
@@ -136,6 +139,17 @@ function createPdfDocument() {
         },
         margin: [0, 0, 0, 15],
       };
+      
+      if (data.add) {
+        aa.table.body.push([
+              "ADD",
+              data.add,
+              "",
+              "",
+              "",
+            ])
+      }
+      return aa
     };
 
     const observaciones = (data) => {
@@ -153,6 +167,7 @@ function createPdfDocument() {
         text: [{ text: data.titulo, bold: true }, { text: data.contenido }],
       };
     };
+
 
     const infoPago = (data) => {
       const paymentData = data || {
@@ -206,14 +221,14 @@ function createPdfDocument() {
         titulo,
         detallePaciente,
         tituloLentes("lejos"),
-        tablaLentes("lejosData"),
+        tablaLentes(data.subjectiveRefractionsFar),
         tituloLentes("cerca"),
-        tablaLentes("cercaData"),
-        observaciones("Cliente requiere lentes anti-reflejo"),
-        infoLentes({ titulo: "Marca de lentes: ", contenido: "Essilor" }),
+        tablaLentes(data.subjectiveRefractionsNear),
+        observaciones(data.otherDetails),
+        infoLentes({ titulo: "Marca de lentes: ", contenido: "-------" }),
         infoLentes({
           titulo: "Modelo de armazon: ",
-          contenido: "Ray-Ban RB3025",
+          contenido: "-----",
         }),
         infoPago(),
       ],
