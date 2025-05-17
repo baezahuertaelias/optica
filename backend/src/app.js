@@ -6,7 +6,6 @@ const { sequelize } = require("./models");
 // Import routes
 const routes = require("./routes");
 const { insertBasicData, createDummyPatient, createClinicalRecordWithDummyData, createSampleAppointments } = require('./bin/preloadData');
-const { createPdfDocument } = require('./helpers/pdf');
 
 const app = express();
 
@@ -30,7 +29,6 @@ app.listen(PORT, async () => {
 
   try {
 
-    await createPdfDocument()
     await sequelize.authenticate();
     console.log("Database connection has been established successfully.");
     await sequelize.sync();
