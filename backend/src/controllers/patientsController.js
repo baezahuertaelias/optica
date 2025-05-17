@@ -18,7 +18,8 @@ module.exports = {
         mail, 
         occupation, 
         legalRepresentative,
-        isapreId            
+        isapreId,
+        countryId
       } = req.body;
       
       if (!name || !genderId || !mail || !birthday) {
@@ -35,7 +36,8 @@ module.exports = {
         mail, 
         occupation, 
         legalRepresentative, 
-        isapreId             
+        isapreId,
+        countryId
       });
       
       return res.status(201).json({ patient });
@@ -99,7 +101,8 @@ module.exports = {
         mail, 
         occupation, 
         legalRepresentative,  
-        isapreId               
+        isapreId,
+        countryId               
       } = req.body;
 
       const patient = await Patient.findByPk(id);  
@@ -117,7 +120,8 @@ module.exports = {
       if (mail !== undefined) patient.mail = mail;
       if (occupation !== undefined) patient.occupation = occupation;
       if (legalRepresentative !== undefined) patient.legalRepresentative = legalRepresentative;  
-      if (isapreId !== undefined) patient.isapreId = isapreId;  
+      if (isapreId !== undefined) patient.isapreId = isapreId;
+      if (countryId !== undefined) patient.countryId = countryId;  
 
       await patient.save();
 

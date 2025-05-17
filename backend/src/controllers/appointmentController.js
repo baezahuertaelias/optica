@@ -219,7 +219,6 @@ module.exports = {
 
     async createAppointment(req, res) {
         try {
-            console.log('createAppointment', req.body);
 
             const { patientId, userId, typeAppointmentId, start, end, notes, status } = req.body;
 

@@ -9,7 +9,8 @@ const {
   VisualAcuity,
   SubjectiveRefractionFar,
   SubjectiveRefractionNear,
-  ApplanationTonometry
+  ApplanationTonometry,
+  SubjectiveRefractionDefects // Added new model
 } = require('../models'); // Adjust import if your file structure is different
 
 module.exports = {
@@ -20,6 +21,7 @@ module.exports = {
       userId,
       anamnesis,
       othersDetails,
+      finalDiagnosis,
 
       // Visual Acuity data
       visualAcuity,
@@ -31,7 +33,10 @@ module.exports = {
       subjectiveRefractionNear,
 
       // Applanation Tonometry data
-      applanationTonometry
+      applanationTonometry,
+
+      // Subjective Refraction Defects data
+      subjectiveRefractionDefects
     } = req.body;
 
     // Start a transaction to ensure data consistency
@@ -44,7 +49,8 @@ module.exports = {
         patientId: patientId,
         userId: userId,
         anamnesis: anamnesis,
-        othersDetails: othersDetails
+        othersDetails: othersDetails,
+        finalDiagnosis: finalDiagnosis
       });
 
 
@@ -104,6 +110,16 @@ module.exports = {
         rightEye: applanationTonometry.rightEye,
         dateTime: new Date() // Or use a provided date
       }/* , { transaction: t } */);
+
+      // 6. Create Subjective Refraction Defects
+      await SubjectiveRefractionDefects.create({
+        clinicalRecordId: clinicalRecordId,
+        myopia: subjectiveRefractionDefects.myopia || false,
+        hyperopia: subjectiveRefractionDefects.hyperopia || false,
+        astigmatism: subjectiveRefractionDefects.astigmatism || false,
+        presbyopia: subjectiveRefractionDefects.presbyopia || false,
+        anisometropia: subjectiveRefractionDefects.anisometropia || false
+      });
 
       // Commit the transaction if all operations succeed
       /* await t.commit(); */
@@ -206,7 +222,8 @@ module.exports = {
           { model: VisualAcuity, as: 'visualAcuity' }, // Fixed: using camelCase alias
           { model: SubjectiveRefractionFar, as: 'subjectiveRefractionsFar' }, // Corrected alias
           { model: SubjectiveRefractionNear, as: 'subjectiveRefractionsNear' }, // Corrected alias
-          { model: ApplanationTonometry, as: 'applanationTonometry' } // Include ApplanationTonometry
+          { model: ApplanationTonometry, as: 'applanationTonometry' }, // Include ApplanationTonometry
+          { model: SubjectiveRefractionDefects, as: 'subjectiveRefractionDefects' } // Include SubjectiveRefractionDefects
         ]
       });
 
@@ -235,7 +252,8 @@ module.exports = {
           { model: User, as: 'user', include: [{ model: UserType, as: 'userType' }] },
           { model: VisualAcuity, as: 'visualAcuity' },
           { model: SubjectiveRefractionFar, as: 'subjectiveRefractionsFar' }, // Use the correct alias
-          { model: SubjectiveRefractionNear, as: 'subjectiveRefractionsNear' } // Use the correct alias
+          { model: SubjectiveRefractionNear, as: 'subjectiveRefractionsNear' }, // Use the correct alias
+          { model: SubjectiveRefractionDefects, as: 'subjectiveRefractionDefects' } // Added to include defects
         ]
       });
 
@@ -255,8 +273,37 @@ module.exports = {
 
   async generatePDF(req, res) {
     try {
+
+      const { id } = req.params;
+
+      const clinicalRecord = await ClinicalRecord.findByPk(id, {
+        include: [
+          {
+            model: Patient, // Fixed: changed from Patients to Patient
+            as: 'patient',  // Fixed: changed from 'Patient' to 'patient'
+            include: [
+              { model: Gender, as: 'gender' }, // Fixed model and alias names
+              { model: Isapre, as: 'isapre' }  // Fixed model and alias names
+            ]
+          },
+          {
+            model: User, as: 'user', // Fixed model and alias names
+            include: [
+              { model: UserType, as: 'userType' } // Fixed model and alias names
+            ]
+          },
+          { model: VisualAcuity, as: 'visualAcuity' }, // Fixed: using camelCase alias
+          { model: SubjectiveRefractionFar, as: 'subjectiveRefractionsFar' }, // Corrected alias
+          { model: SubjectiveRefractionNear, as: 'subjectiveRefractionsNear' }, // Corrected alias
+          { model: ApplanationTonometry, as: 'applanationTonometry' }, // Include ApplanationTonometry
+          { model: SubjectiveRefractionDefects, as: 'subjectiveRefractionDefects' } // Include SubjectiveRefractionDefects
+        ]
+      });
+
+      
+
       // Create the PDF document
-      const pdfDoc = createPdfDocument();
+      const pdfDoc = createPdfDocument(clinicalRecord);
 
       // Set response headers
       res.setHeader('Content-Type', 'application/pdf');
@@ -272,5 +319,4 @@ module.exports = {
       res.status(500).send('Error generating PDF');
     }
   }
-
 };
