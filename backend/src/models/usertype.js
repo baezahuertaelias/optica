@@ -9,6 +9,10 @@ module.exports = (sequelize, DataTypes) => {
       type: {
           type: DataTypes.STRING,
           allowNull: false
+      },
+      color: {
+        type: DataTypes.STRING,
+        allowNull: false
       }
   }, {
       tableName: 'UserTypes',  // Changed to singular for consistency

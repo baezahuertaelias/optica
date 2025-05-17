@@ -7,11 +7,11 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true
         },
         leftEye: {
-            type: DataTypes.FLOAT,
+            type: DataTypes.INTEGER,
             allowNull: true
         },
         rightEye: {
-            type: DataTypes.FLOAT,
+            type: DataTypes.INTEGER,
             allowNull: true
         },
         dateTime: {

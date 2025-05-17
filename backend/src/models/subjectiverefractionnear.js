@@ -27,11 +27,11 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true
         },
         axisLE: {
-            type: DataTypes.FLOAT,
+            type: DataTypes.INTEGER,
             allowNull: true
         },
         axisRE: {
-            type: DataTypes.FLOAT,
+            type: DataTypes.INTEGER,
             allowNull: true
         },
         vareachedLE: {
@@ -43,6 +43,10 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true
         },
         pupilarDistance: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        add: {
             type: DataTypes.FLOAT,
             allowNull: false
         }

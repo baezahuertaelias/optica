@@ -19,6 +19,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
+        countryId: {
+            type: DataTypes.INTEGER,
+            allowNull: true
+        },
         tel: {
             type: DataTypes.STRING,
             allowNull: true
@@ -57,6 +61,7 @@ module.exports = (sequelize, DataTypes) => {
         Patient.hasMany(models.ClinicalRecord, { foreignKey: 'patientId' });
         Patient.belongsTo(models.Gender, { foreignKey: 'genderId', as: 'gender' });
         Patient.belongsTo(models.Isapre, { foreignKey: 'isapreId', as: 'isapre' });
+        Patient.belongsTo(models.Country, { foreignKey: 'countryId', as: 'country' });
         Patient.hasMany(models.Appointment, { foreignKey: 'patientId' });
         Patient.hasMany(models.WorkOrder, { foreignKey: 'patientId' });
     };

@@ -24,6 +24,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: true,
       },
+      finalDiagnosis: {
+        type: DataTypes.TEXT,
+        allowNull: true
+      }
     },
     {
       tableName: "ClinicalRecords",
@@ -52,6 +56,10 @@ module.exports = (sequelize, DataTypes) => {
     ClinicalRecord.hasOne(models.ApplanationTonometry, {  // Changed to hasOne and use singular alias
       foreignKey: "clinicalRecordId",
       as: 'applanationTonometry'
+    });
+    ClinicalRecord.hasOne(models.SubjectiveRefractionDefects, {
+      foreignKey: "clinicalRecordId",
+      as: 'subjectiveRefractionDefects'
     });
   };
 
