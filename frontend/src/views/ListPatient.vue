@@ -87,7 +87,7 @@
         </Column>
         <Column field="isapre" header="Isapre" sortable>
           <template #body="{ data }">
-            <Tag :value="data.isapre.value" :severity="getIsapreSeverity(data.isapre.value)" />
+            <Tag :value="data.isapre.value" :style="'background-color: '+data.isapre.color" />
           </template>
         </Column>
         <Column header="Acciones" bodyStyle="text-align:center" headerStyle="width: 10rem">

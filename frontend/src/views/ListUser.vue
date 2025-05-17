@@ -98,8 +98,8 @@
         <template #body="{ data }">
           <Tag 
             :value="data.userType.type" 
-            :severity="getSeverityForUserType(data.userType.type)"
-            class="text-xs"
+            
+            :style="'background-color: ' + data.userType.color"
           />
         </template>
       </Column>

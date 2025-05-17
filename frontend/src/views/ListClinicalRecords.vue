@@ -3,14 +3,10 @@
     <Toast />
     <div class="pb-4">
       <h1 class="text-3xl font-bold">
-        {{ isNew ? "Crear Ficha Clínica" : "Modificar Ficha Clínica" }}
+        Listado Ficha Clínica
       </h1>
       <p class="text-gray-600 mt-1">
-        {{
-          isNew
-            ? "Ingrese la información del paciente para crear una nueva ficha clínica"
-            : "Actualice la información de la ficha clínica existente"
-        }}
+        
       </p>
     </div>
 
@@ -114,7 +110,7 @@ import { FilterMatchMode } from "@primevue/core/api";
 import InputIcon from "primevue/inputicon";
 import InputText from "primevue/inputtext";
 import IconField from "primevue/iconfield";
-import ClinicalRecordDialog from "../components/ClinicalRecordDialog.vue";
+import ClinicalRecordDialog from "../components/clinicalRecord/ClinicalRecordDialog.vue";
 
 const toast = useToast();
 const clinicalRecords = ref([]);

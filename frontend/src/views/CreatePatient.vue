@@ -1,13 +1,17 @@
 <template>
-  <div class=" min-h-screen">
+  <div class="min-h-screen">
     <div class="max-w-6xl mx-auto px-4 py-8">
       <!-- Header Section -->
       <div class="">
-        <h1 class="text-3xl font-bold ">
+        <h1 class="text-3xl font-bold">
           {{ isNew ? "Crear Paciente" : "Modificar Paciente" }}
         </h1>
         <p class="text-gray-600 mt-1">
-          {{ isNew ? "Ingrese la información del paciente para crear un nuevo paciente" : "Actualice la información del paciente existente" }}
+          {{
+            isNew
+              ? "Ingrese la información del paciente para crear un nuevo paciente"
+              : "Actualice la información del paciente existente"
+          }}
         </p>
       </div>
     </div>
@@ -27,15 +31,32 @@
               />
             </div>
 
+            <!-- Updated template code for the passport/RUT input field -->
             <div class="field">
-              <span class="p-float-label">
-                <label for="passport">Pasaporte / DNI</label>
-                <InputText
-                  class="w-full"
-                  id="passport"
-                  v-model.trim="patient.passport"
-                />
-              </span>
+              <label for="passport">Pasaporte / DNI</label>
+              <InputText
+                class="w-full"
+                id="passport"
+                placeholder="12345678-9"
+                v-model.trim="patient.passport"
+                @input="formatRut"
+                @blur="validateRut"
+                :class="{
+                  'p-invalid': submitted && !isValidRut && patient.passport,
+                }"
+              />
+              <small
+                v-if="submitted && !isValidRut && patient.passport"
+                class="p-error"
+              >
+                RUT no válido. Verifique el formato y dígito verificador.
+              </small>
+              <small
+                v-else-if="isValidRut && patient.passport"
+                class="p-success"
+              >
+                RUT válido
+              </small>
             </div>
 
             <div class="field">
@@ -104,32 +125,34 @@
         <h2 class="text-lg font-medium mb-3">Información Adicional</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="field">
-              <label for="occupation">Ocupación</label>
-              <InputText id="occupation" class="w-full" v-model.trim="patient.occupation" />
+            <label for="occupation">Ocupación</label>
+            <InputText
+              id="occupation"
+              class="w-full"
+              v-model.trim="patient.occupation"
+            />
           </div>
 
           <div class="field">
             <label for="isapre">Isapre / Seguro Médico*</label>
-              <Dropdown
-                id="isapre"
-                v-model="patient.isapreId"
-                :options="isapres"
-                optionLabel="value"
-                optionValue="id"
-                class="w-full"
-                aria-describedby="isapre-error"
-              />
-
+            <Dropdown
+              id="isapre"
+              v-model="patient.isapreId"
+              :options="isapres"
+              optionLabel="value"
+              optionValue="id"
+              class="w-full"
+              aria-describedby="isapre-error"
+            />
           </div>
 
           <div class="field">
-
-              <label for="legalRepresentative">Representante Legal</label>
-              <InputText
-                id="legalRepresentative"
-                v-model.trim="patient.legalRepresentative"
-                class="w-full"
-              />
+            <label for="legalRepresentative">Representante Legal</label>
+            <InputText
+              id="legalRepresentative"
+              v-model.trim="patient.legalRepresentative"
+              class="w-full"
+            />
           </div>
         </div>
       </div>
@@ -185,10 +208,10 @@ const patient = ref({
   isapreId: "",
 });
 
-
 const isNew = ref(true);
 const genders = ref([]);
 const isapres = ref([]);
+const isValidRut = ref(false);
 
 onMounted(async () => {
   try {
@@ -296,6 +319,82 @@ const fetchGenders = async () => {
     console.error("Failed to fetch genders:", error);
   }
 };
+
+/**
+ * Format RUT as the user types (XX.XXX.XXX-X)
+ */
+const formatRut = (event) => {
+  let value = event.target.value;
+
+  // Remove all non-alphanumeric characters
+  value = value.replace(/[^0-9kK]/g, "");
+
+  if (value.length > 1) {
+    // Insert dash before the verification digit
+    const body = value.slice(0, -1);
+    const dv = value.slice(-1);
+    value = body + "-" + dv;
+
+    // Add thousand separators if desired (optional)
+    // Uncomment the next line to format with dots as thousand separators
+    // value = body.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.') + '-' + dv;
+  }
+
+  // Correct the way we're updating the passport value
+  patient.value.passport = value;
+  
+  // Optional: validate on input for immediate feedback
+  validateRut();
+};
+
+/**
+ * Calculate the expected verification digit for a given RUT
+ */
+const calculateDv = (rutBody) => {
+  const reversed = rutBody.split("").reverse().join("");
+  let sum = 0;
+  let multiplier = 0;
+
+  for (let i = 0; i < reversed.length; i++) {
+    multiplier = (i % 6) + 2;
+    sum += parseInt(reversed.charAt(i)) * multiplier;
+  }
+
+  const remainder = sum % 11;
+  const dv = 11 - remainder;
+
+  if (dv === 11) return "0";
+  if (dv === 10) return "K";
+  return dv.toString();
+};
+
+/**
+ * Validate the RUT using the verification digit
+ */
+const validateRut = () => {
+  if (!patient.value.passport) {
+    isValidRut.value = false;
+    return;
+  }
+
+  // Clean the RUT string (remove dots and dash)
+  const cleanRut = patient.value.passport.replace(/[.-]/g, "");
+
+  // RUT should have at least 2 characters (1 digit and verification digit)
+  if (cleanRut.length < 2) {
+    isValidRut.value = false;
+    return;
+  }
+
+  // Extract body and verification digit
+  const body = cleanRut.slice(0, -1);
+  const dv = cleanRut.slice(-1).toUpperCase();
+
+  // Calculate expected verification digit and compare
+  const expectedDv = calculateDv(body);
+  isValidRut.value = dv === expectedDv;
+};
+
 </script>
 
 <style scoped>
