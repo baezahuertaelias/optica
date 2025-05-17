@@ -2,15 +2,93 @@ const bcrypt = require("bcrypt");
 const { faker } = require('@faker-js/faker');
 // Import the Spanish (Mexico) locale
 const { fakerES_MX } = require('@faker-js/faker');
-const { User, UserType, Isapre, Gender, Patient, ClinicalRecord, VisualAcuity, SubjectiveRefractionFar, SubjectiveRefractionNear, ApplanationTonometry, TypeAppointment, Appointment } = require("../models");
+const { User, 
+  UserType, 
+  Isapre, 
+  Gender, 
+  Patient, 
+  ClinicalRecord, 
+  VisualAcuity, 
+  SubjectiveRefractionFar, 
+  SubjectiveRefractionNear, 
+  SubjectiveRefractionDefects,
+  ApplanationTonometry, 
+  TypeAppointment, 
+  Appointment, 
+  Country, } = require("../models");
 const { addHours, addDays } = require('date-fns');
+
+/**
+ * Calculates the verification digit for a Chilean RUT
+ * @param {number} rutNumber - The RUT number without verification digit
+ * @returns {string} The verification digit (0-9 or K)
+ */
+function calculateVerificationDigit(rutNumber) {
+  const rutDigits = rutNumber.toString().split('').reverse();
+
+  // Multipliers sequence: 2, 3, 4, 5, 6, 7, repeat from 2...
+  const multipliers = [2, 3, 4, 5, 6, 7];
+
+  let sum = 0;
+
+  // Calculate the weighted sum
+  for (let i = 0; i < rutDigits.length; i++) {
+    sum += parseInt(rutDigits[i]) * multipliers[i % multipliers.length];
+  }
+
+  // Calculate the verification digit
+  const remainder = sum % 11;
+  const verificationDigit = 11 - remainder;
+
+  // Convert the verification digit to the expected format
+  if (verificationDigit === 11) {
+    return '0';
+  } else if (verificationDigit === 10) {
+    return 'K';
+  } else {
+    return verificationDigit.toString();
+  }
+}
+
+/**
+ * Generates a valid Chilean RUT
+ * @param {boolean} formatted - Whether to return the RUT with formatting (dots and dash)
+ * @param {number} min - Minimum value for the RUT number (default: 1000000)
+ * @param {number} max - Maximum value for the RUT number (default: 25000000)
+ * @returns {string} A valid Chilean RUT
+ */
+function generateChileanRut(formatted = true, min = 1000000, max = 25000000) {
+  // Generate a random number for the RUT (without verification digit)
+  const rutNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+
+  // Calculate the verification digit
+  const verificationDigit = calculateVerificationDigit(rutNumber);
+
+  // Format the RUT if requested
+  if (formatted) {
+    // Convert number to string
+    let rutString = rutNumber.toString();
+
+    // Add dots for thousand separators
+    let formattedRut = '';
+    for (let i = rutString.length - 1, j = 0; i >= 0; i--, j++) {
+      if (j % 3 === 0 && j !== 0) {
+        formattedRut = '.' + formattedRut;
+      }
+      formattedRut = rutString[i] + formattedRut;
+    }
+
+    return `${formattedRut}-${verificationDigit}`;
+  }
+
+  return `${rutNumber}${verificationDigit}`;
+}
 
 module.exports = {
   async createSampleAppointments() {
     try {
       // Check if appointments already exist
       const appointmentCount = await Appointment.count();
-      console.log('appointmentCount', appointmentCount);
 
       if (appointmentCount > 0) {
         console.log('Appointments already exist, skipping creation');
@@ -127,9 +205,9 @@ module.exports = {
       const userTypeCount = await UserType.count();
       if (userTypeCount === 0) {
         await UserType.bulkCreate([
-          { type: "Admin" },
-          { type: "Vendedor" },
-          { type: "Medico" }
+          { color: "blue", type: "Admin" },
+          { color: "green", type: "Vendedor" },
+          { color: "teal", type: "Medico" }
         ]);
       }
 
@@ -178,23 +256,33 @@ module.exports = {
       if (isapreCount === 0) {
         await Isapre.bulkCreate(
           [
-            { value: "Banmedica" },
-            { value: "Isalud" },
-            { value: "Colmena" },
-            { value: "Consalud" },
-            { value: "Cruz Blanca" },
-            { value: "Nueva Masvida" },
-            { value: "Fundacion BancoEstado" },
-            { value: "Vida tres" },
-            { value: "Escencial" }
+            { color: "blue", value: "Banmedica" },
+            { color: "green", value: "Isalud" },
+            { color: "yellow", value: "Colmena" },
+            { color: "cyan", value: "Consalud" },
+            { color: "pink", value: "Cruz Blanca" },
+            { color: "indigo", value: "Nueva Masvida" },
+            { color: "teal", value: "Fundacion BancoEstado" },
+            { color: "orange", value: "Vida tres" },
+            { color: "purple", value: "Escencial" },
+            { color: "bluegray", value: "Otra" },
+          ]);
+      }
+
+      const countryCount = await Country.count();
+      if (countryCount === 0) {
+        await Country.bulkCreate(
+          [
+            { name: "Chile", code: "CL" },
           ]);
       }
 
       // Step 4: Create a Patient with Spanish (Mexico) locale
-
+      // Important: Now calling the function directly, not through this
       const patient = await Patient.create({
         name: fakerES_MX.person.fullName(),
-        passport: `11.111.111-1`,
+        passport: generateChileanRut(), // Fixed: using direct function call
+        countryId: 1,
         genderId: fakerES_MX.person.sexType() === 'female' ? 1 : 2, // Randomly assign gender from available options
         tel: fakerES_MX.phone.number(),
         birthday: new Date(fakerES_MX.date.birthdate()),
@@ -212,6 +300,7 @@ module.exports = {
         userId: 2, // Using vendedor user
         anamnesis: fakerES_MX.lorem.paragraph(2),
         othersDetails: fakerES_MX.lorem.sentence(),
+        finalDiagnosis: fakerES_MX.lorem.sentence(),
       });
 
       // Step 6: Create Visual Acuity data
@@ -237,11 +326,11 @@ module.exports = {
         sphereRE: parseFloat((Math.random() * 10).toFixed(2)),
         cylinderLE: parseFloat((Math.random() * 10).toFixed(2)),
         cylinderRE: parseFloat((Math.random() * 10).toFixed(2)),
-        axisLE: parseFloat((Math.random() * 10).toFixed(2)),
-        axisRE: parseFloat((Math.random() * 10).toFixed(2)),
+        axisLE: Math.floor(Math.random() * 100) + 1,
+        axisRE: Math.floor(Math.random() * 100) + 1,
         vareachedLE: parseFloat((Math.random() * 10).toFixed(2)),
         vareachedRE: parseFloat((Math.random() * 10).toFixed(2)),
-        pupilarDistance: parseFloat((Math.random() * 10).toFixed(2))
+        pupilarDistance: Math.floor(Math.random() * 100) + 1
       });
 
       // Step 8: Create Subjective Refraction Near data
@@ -251,19 +340,30 @@ module.exports = {
         sphereRE: parseFloat((Math.random() * 10).toFixed(2)),
         cylinderLE: parseFloat((Math.random() * 10).toFixed(2)),
         cylinderRE: parseFloat((Math.random() * 10).toFixed(2)),
-        axisLE: parseFloat((Math.random() * 10).toFixed(2)),
-        axisRE: parseFloat((Math.random() * 10).toFixed(2)),
+        axisLE: Math.floor(Math.random() * 100) + 1,
+        axisRE: Math.floor(Math.random() * 100) + 1,
         vareachedLE: parseFloat((Math.random() * 10).toFixed(2)),
         vareachedRE: parseFloat((Math.random() * 10).toFixed(2)),
-        pupilarDistance: parseFloat((Math.random() * 10).toFixed(2))
+        pupilarDistance: Math.floor(Math.random() * 100) + 1,
+        add: Math.floor(Math.random() * 100) + 1
       });
 
       // Step 9: Create Applanation Tonometry data
       await ApplanationTonometry.create({
         clinicalRecordId: clinicalRecord.id,
-        leftEye: parseFloat((Math.random() * 10).toFixed(2)),
-        rightEye: parseFloat((Math.random() * 10).toFixed(2)),
+        leftEye: Math.floor(Math.random() * 100) + 1,
+        rightEye: Math.floor(Math.random() * 100) + 1,
         dateTime: new Date()
+      });
+
+      // Step 10: Create Subjective Refraction Defects data
+      await SubjectiveRefractionDefects.create({
+        clinicalRecordId: clinicalRecord.id,
+        myopia: Math.random() >= 0.5,
+        hyperopia: Math.random() >= 0.5,
+        astigmatism: Math.random() >= 0.5,
+        presbyopia: Math.random() >= 0.5,
+        anisometropia: Math.random() >= 0.5
       });
 
       console.log('Clinical record created successfully with ID:', clinicalRecord.id);
@@ -277,5 +377,9 @@ module.exports = {
       console.error('Error creating clinical record:', error);
       throw error;
     }
-  }
+  },
+
+  // Export the utility functions
+  generateChileanRut,
+  calculateVerificationDigit
 };
