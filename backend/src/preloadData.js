@@ -3,7 +3,7 @@ const { faker } = require('@faker-js/faker');
 // Import the Spanish (Mexico) locale
 const { fakerES_MX } = require('@faker-js/faker');
 const { User, 
-  UserType, 
+  TypeUser, 
   Isapre, 
   Gender, 
   Patient, 
@@ -15,10 +15,10 @@ const { User,
   TypeAppointment, 
   Appointment, 
   Country, 
-  Indication, 
-  Control,
+  TypeIndication, 
+  TypeControl,
   Autorefractometry,
-  Diagnoses,
+  TypeDiagnosis,
   Lensometry } = require("./models"); // Added Indications and Control
 const { addHours, addDays } = require('date-fns');
 
@@ -207,9 +207,9 @@ module.exports = {
       const hashedPassword = await bcrypt.hash('123.Admin.', 10);
 
       // Step 1: Create UserTypes if they don't exist
-      const userTypeCount = await UserType.count();
-      if (userTypeCount === 0) {
-        await UserType.bulkCreate([
+      const typeUserCount = await TypeUser.count();
+      if (typeUserCount === 0) {
+        await TypeUser.bulkCreate([
           { color: "blue", type: "Admin" },
           { color: "green", type: "Vendedor" },
           { color: "teal", type: "Medico" }
@@ -299,9 +299,9 @@ module.exports = {
       });
 
       // Create Indication and Control if they don't exist
-      const indicationCount = await Indication.count();
-      if (indicationCount === 0) {
-        await Indication.bulkCreate([
+      const typeIndicationCount = await TypeIndication.count();
+      if (typeIndicationCount === 0) {
+        await TypeIndication.bulkCreate([
           { value: "Lentes Para Lejos" },
           { value: "Lentes para Cerca" },
           { value: "Lentes para Lejos y Cerca" },
@@ -310,9 +310,9 @@ module.exports = {
         ]);
       }
 
-      const controlCount = await Control.count();
-      if (controlCount === 0) {
-        await Control.bulkCreate([
+      const typeControlCount = await TypeControl.count();
+      if (typeControlCount === 0) {
+        await TypeControl.bulkCreate([
           { value: "Control 1 Año" },
           { value: "Control 6 Meses" },
           { value: "Control 3 Meses" },
@@ -403,7 +403,7 @@ module.exports = {
       });
 
       // Step 11: Create Diagnosis data
-      await Diagnoses.create({
+      await TypeDiagnosis.create({
         clinicalRecordId: clinicalRecord.id,
         myopia: Math.random() >= 0.5,
         hyperopia: Math.random() >= 0.5,

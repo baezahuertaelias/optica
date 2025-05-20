@@ -1,3 +1,4 @@
+
 module.exports = (sequelize, DataTypes) => {
     const User = sequelize.define('User', {
         id: {
@@ -33,7 +34,7 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     User.associate = (models) => {
-        User.belongsTo(models.UserType, { foreignKey: 'userTypeId', as: 'userType' });
+        User.belongsTo(models.TypeUser, { foreignKey: 'userTypeId', as: 'typeUser' }); // Updated here
         User.hasMany(models.ClinicalRecord, { foreignKey: 'userId' });
         User.hasMany(models.Appointment, { foreignKey: 'userId' });
         User.hasMany(models.WorkOrder, { foreignKey: 'userId' });

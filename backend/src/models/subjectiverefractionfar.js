@@ -35,11 +35,11 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true
         },
         vareachedLE: {
-            type: DataTypes.STRING,
+            type: DataTypes.FLOAT,
             allowNull: true
         },
         vareachedRE: {
-            type: DataTypes.STRING,
+            type: DataTypes.FLOAT,
             allowNull: true
         },
         pupilarDistance: {

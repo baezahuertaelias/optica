@@ -1,221 +1,70 @@
-const { createPdfDocument } = require('../helpers/pdf');
 const {
   ClinicalRecord,
-  Patient,  // Changed from Patients to Patient to match model definition
-  Gender,   // Changed from Genders to Gender to match model definition
-  Isapre,   // Changed from Isapres to Isapre to match model definition
-  User,     // Changed from Users to User to match model definition
-  UserType, // Changed from UserTypes to UserType to match model definition
   VisualAcuity,
   SubjectiveRefractionFar,
   SubjectiveRefractionNear,
   ApplanationTonometry,
-  SubjectiveRefractionDefects, // Added new model
-  Lensometry
-} = require('../models'); // Adjust import if your file structure is different
+  Lensometry,
+  Diagnoses,
+  Autorefractometry,
+} = require("../models");
+const {sequelize} = require("../models")
 
 module.exports = {
   async createClinicalRecordWithRelations(req, res) {
-    const {
-      // Clinical Record data
-      patientId,
-      userId,
-      anamnesis,
-      othersDetails,
-      finalDiagnosis,
-      // New Clinical Record fields
-      ophthalmologicalMedicalHistory,
-      familyMedicalHistory,
-      latestClinicalDate,
-      otherExam,
-      observations,
-
-      // Visual Acuity data
-      visualAcuity,
-
-      // Subjective Refraction Far data
-      subjectiveRefractionFar,
-
-      // Subjective Refraction Near data
-      subjectiveRefractionNear,
-
-      // Applanation Tonometry data
-      applanationTonometry,
-
-      // Subjective Refraction Defects data
-      subjectiveRefractionDefects,
-
-      // New related models data
-      lensometry,
-      autorefractometry,
-      generalMedicalHistoryId, // Now this could reference an existing generalMedicalHistoryId or contain data for a new one
-      diagnosis,
-      indication,
-      comebackControl
-    } = req.body;
-
-    // Start a transaction to ensure data consistency
-    const t = await sequelize.transaction();
+    const transaction = await sequelize.transaction();
 
     try {
+
+      console.log('body', req.body);
       
+      const clinicalRecord = await ClinicalRecord.create(
+        req.body.clinicalRecord,
+        { transaction }
+      );
 
-      // 1. Create the Clinical Record first with new fields and the generalMedicalHistoryId
-      const newClinicalRecord = await ClinicalRecord.create({
-        patientId: patientId,
-        userId: userId,
-        anamnesis: anamnesis,
-        othersDetails: othersDetails,
-        finalDiagnosis: finalDiagnosis,
-        // Add new fields
-        ophthalmologicalMedicalHistory: ophthalmologicalMedicalHistory,
-        familyMedicalHistory: familyMedicalHistory,
-        latestClinicalDate: latestClinicalDate ? new Date(latestClinicalDate) : new Date(),
-        otherExam: otherExam,
-        observations: observations,
-        generalMedicalHistoryId: generalMedicalHistoryId
-      }, { transaction: t });
-
-      // Get the new clinical record ID
-      const clinicalRecordId = newClinicalRecord.id;
-
-      // 2. Create Visual Acuity with the clinical record ID
-      await VisualAcuity.create({
-        clinicalRecordId: clinicalRecordId,
-        withoutCorrectionLE: visualAcuity.withoutCorrectionLE,
-        withoutCorrectionRE: visualAcuity.withoutCorrectionRE,
-        withoutCorrectionBI: visualAcuity.withoutCorrectionBI,
-        laserCorrectionLE: visualAcuity.laserCorrectionLE,
-        laserCorrectionRE: visualAcuity.laserCorrectionRE,
-        laserCorrectionBI: visualAcuity.laserCorrectionBI,
-        pinholeLE: visualAcuity.pinholeLE,
-        pinholeRE: visualAcuity.pinholeRE,
-        pinholeBI: visualAcuity.pinholeBI,
-        pupilRedLE: visualAcuity.pupilRedLE,
-        pupilRedRE: visualAcuity.pupilRedRE
-      }, { transaction: t });
-
-      // 3. Create Subjective Refraction Far
-      await SubjectiveRefractionFar.create({
-        clinicalRecordId: clinicalRecordId,
-        sphereLE: subjectiveRefractionFar.sphereLE,
-        sphereRE: subjectiveRefractionFar.sphereRE,
-        cylinderLE: subjectiveRefractionFar.cylinderLE,
-        cylinderRE: subjectiveRefractionFar.cylinderRE,
-        axisLE: subjectiveRefractionFar.axisLE,
-        axisRE: subjectiveRefractionFar.axisRE,
-        vareachedLE: subjectiveRefractionFar.vareachedLE,
-        vareachedRE: subjectiveRefractionFar.vareachedRE,
-        pupilarDistance: subjectiveRefractionFar.pupilarDistance
-      }, { transaction: t });
-
-      // 4. Create Subjective Refraction Near
-      await SubjectiveRefractionNear.create({
-        clinicalRecordId: clinicalRecordId,
-        sphereLE: subjectiveRefractionNear.sphereLE,
-        sphereRE: subjectiveRefractionNear.sphereRE,
-        cylinderLE: subjectiveRefractionNear.cylinderLE,
-        cylinderRE: subjectiveRefractionNear.cylinderRE,
-        axisLE: subjectiveRefractionNear.axisLE,
-        axisRE: subjectiveRefractionNear.axisRE,
-        vareachedLE: subjectiveRefractionNear.vareachedLE,
-        vareachedRE: subjectiveRefractionNear.vareachedRE,
-        pupilarDistance: subjectiveRefractionNear.pupilarDistance
-      }, { transaction: t });
-
-      // 5. Create Applanation Tonometry
-      await ApplanationTonometry.create({
-        clinicalRecordId: clinicalRecordId,
-        leftEye: applanationTonometry.leftEye,
-        rightEye: applanationTonometry.rightEye,
-        dateTime: new Date() // Or use a provided date
-      }, { transaction: t });
-
-      // 6. Create Subjective Refraction Defects
-      await SubjectiveRefractionDefects.create({
-        clinicalRecordId: clinicalRecordId,
-        myopia: subjectiveRefractionDefects.myopia || false,
-        hyperopia: subjectiveRefractionDefects.hyperopia || false,
-        astigmatism: subjectiveRefractionDefects.astigmatism || false,
-        presbyopia: subjectiveRefractionDefects.presbyopia || false,
-        anisometropia: subjectiveRefractionDefects.anisometropia || false
-      }, { transaction: t });
-
-      // 7. Create Lensometry if provided (one-to-one)
-      if (lensometry) {
-        await Lensometry.create({
-          clinicalRecordId: clinicalRecordId,
-          sphereLE: lensometry.sphereLE,
-          sphereRE: lensometry.sphereRE,
-          cylinderLE: lensometry.cylinderLE,
-          cylinderRE: lensometry.cylinderRE,
-          axisLE: lensometry.axisLE,
-          axisRE: lensometry.axisRE,
-          add: lensometry.add
-        }, { transaction: t });
+      if (req.body.visualAcuity) {
+        await VisualAcuity.create(
+          { ...req.body.visualAcuity, clinicalRecordId: clinicalRecord.id },
+          { transaction }
+        );
       }
 
-      // 8. Create Autorefractometry if provided (one-to-one)
-      if (autorefractometry) {
-        await Autorefractometry.create({
-          clinicalRecordId: clinicalRecordId,
-          sphereLE: autorefractometry.sphereLE,
-          sphereRE: autorefractometry.sphereRE,
-          cylinderLE: autorefractometry.cylinderLE,
-          cylinderRE: autorefractometry.cylinderRE,
-          axisLE: autorefractometry.axisLE,
-          axisRE: autorefractometry.axisRE,
-          add: autorefractometry.add
-        }, { transaction: t });
+      if (req.body.subjectiveRefractionFar) {
+        await SubjectiveRefractionFar.create(
+          { ...req.body.subjectiveRefractionFar, clinicalRecordId: clinicalRecord.id },
+          { transaction }
+        );
       }
 
-      // 9. Skip GeneralMedicalHistory creation here as it's now handled above before creating the clinical record
-
-      // 10. Create Diagnosis if provided (one-to-one)
-      if (diagnosis) {
-        await Diagnosis.create({
-          clinicalRecordId: clinicalRecordId,
-          value: diagnosis.value
-        }, { transaction: t });
+      if (req.body.autorefractometry) {
+        await Autorefractometry.create(
+          { ...req.body.autorefractometry, clinicalRecordId: clinicalRecord.id },
+          { transaction }
+        );
       }
 
-      // 11. Create Indication if provided (one-to-one)
-      if (indication) {
-        await Indication.create({
-          clinicalRecordId: clinicalRecordId,
-          value: indication.value
-        }, { transaction: t });
+      if (req.body.applanationTonometry) {
+        await ApplanationTonometry.create(
+          { ...req.body.applanationTonometry, clinicalRecordId: clinicalRecord.id },
+          { transaction }
+        );
       }
 
-      // 12. Create Comeback Control if provided (one-to-one)
-      if (comebackControl) {
-        await ComebackControl.create({
-          clinicalRecordId: clinicalRecordId,
-          value: comebackControl.value
-        }, { transaction: t });
+      if (req.body.lensometry) {
+        await Lensometry.create(
+          { ...req.body.lensometry, clinicalRecordId: clinicalRecord.id },
+          { transaction }
+        );
       }
 
-      // Commit the transaction if all operations succeed
-      await t.commit();
+      // Add other related models here...
 
-      // Return the newly created clinical record with its ID
-      return res.status(201).json({
-        success: true,
-        data: {
-          clinicalRecord: newClinicalRecord
-        },
-        message: 'Ficha clinica guardada'
-      });
-
+      await transaction.commit();
+      res.status(201).send(clinicalRecord);
     } catch (error) {
-      // Rollback the transaction if any operation fails
-      await t.rollback();
-
-      console.error('Error creating clinical record:', error);
-      return res.status(500).json({
-        success: false,
-        error: error.message || 'An error occurred while creating the clinical record'
-      });
+      await transaction.rollback();
+      res.status(400).send(error.message);
     }
   },
 

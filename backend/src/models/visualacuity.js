@@ -11,39 +11,39 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
         withoutCorrectionLE: {
-            type: DataTypes.STRING,
+            type: DataTypes.FLOAT,
             allowNull: true
         },
         withoutCorrectionRE: {
-            type: DataTypes.STRING,
+            type: DataTypes.FLOAT,
             allowNull: true
         },
         withoutCorrectionBI: {
-            type: DataTypes.STRING,
+            type: DataTypes.FLOAT,
             allowNull: true
         },
         laserCorrectionLE: {
-            type: DataTypes.STRING,
+            type: DataTypes.FLOAT,
             allowNull: true
         },
         laserCorrectionRE: {
-            type: DataTypes.STRING,
+            type: DataTypes.FLOAT,
             allowNull: true
         },
         laserCorrectionBI: {
-            type: DataTypes.STRING,
+            type: DataTypes.FLOAT,
             allowNull: true
         },
         pinholeLE: {
-            type: DataTypes.STRING,
+            type: DataTypes.FLOAT,
             allowNull: true
         },
         pinholeRE: {
-            type: DataTypes.STRING,
+            type: DataTypes.FLOAT,
             allowNull: true
         },
         pinholeBI: {
-            type: DataTypes.STRING,
+            type: DataTypes.FLOAT,
             allowNull: true
         },
         pupilRedLE: {
