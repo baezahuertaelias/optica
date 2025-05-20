@@ -293,6 +293,351 @@ function createPdfDocument(data) {
   }
 }
 
+function createPDFClinicalRecord(data){
+  // playground requires you to assign document definition to a variable called dd
+
+var dd = {
+    content: [
+      // Header row with title and number
+      {
+        columns: [
+          { text: 'FICHA CLINICA', style: 'header', bold: true, width: '70%' },
+          { text: 'Nro 1111', style: 'header', bold: true, width: '30%', alignment: 'right' }
+        ],
+        columnGap: 10,
+        margin: [0, 0, 0, 10]
+      },
+      
+      // Horizontal line
+      //{ canvas: [ { type: 'line', x1: 0, y1: 0, x2: 520, y2: 0, lineWidth: 1 } ] },
+      //{ canvas: [ { type: 'line', x1: 0, y1: 2, x2: 520, y2: 2, lineWidth: 1 } ] },
+      
+      // Patient information table
+      {
+        table: {
+          widths: ['35%', '65%'],
+          body: [
+            [
+              { text: 'FECHA DE ATENCION', style: 'tableHeader', bold: true },
+              { text: '11-04-2025' }
+            ],
+            [
+              { text: 'NOMBRE', style: 'tableHeader', bold: true },
+              { text: 'JUANITO PEREZ' }
+            ],
+            [
+              { text: 'RUT', style: 'tableHeader', bold: true },
+              { text: '11.111.111-1' }
+            ],
+            [
+              { text: 'PASAPORTE', style: 'tableHeader', bold: true },
+              { text: '999.999.999-9' }
+            ],
+            [
+              { text: 'SEXO', style: 'tableHeader', bold: true },
+              { text: 'FEMENINO' }
+            ],
+            [
+              { text: 'FONO', style: 'tableHeader', bold: true },
+              { text: '+56 9 1234 1234' }
+            ],
+            [
+              { text: 'EDAD', style: 'tableHeader', bold: true },
+              { text: '53' }
+            ],
+            [
+              { text: 'FECHA DE NACIMIENTO', style: 'tableHeader', bold: true },
+              { text: '1970-05-03' }
+            ],
+            [
+              { text: 'DOMICILIO', style: 'tableHeader', bold: true },
+              { text: 'SIEMPREVIVA 123' }
+            ],
+            [
+              { text: 'CORREO ELECTRÓNICO', style: 'tableHeader', bold: true },
+              { text: 'AAA@AAA.AA' }
+            ],
+            [
+              { text: 'OCUPACIÓN', style: 'tableHeader', bold: true },
+              { text: 'AAA' }
+            ],
+            [
+              { text: 'REPRESENTANTE LEGAL (EN MENORES)', style: 'tableHeader', bold: true },
+              { text: 'AAA' }
+            ],
+            [
+              { text: 'PREVISIÓN', style: 'tableHeader', bold: true },
+              { text: 'AAAA' }
+            ],
+          ]
+        }
+      },
+      
+      // Horizontal line
+      //{ canvas: [ { type: 'line', x1: 0, y1: 0, x2: 520, y2: 0, lineWidth: 1 } ], margin: [0, 5, 0, 5] },
+      
+      // Anamnesis section
+      { text: 'ANAMNESIS:', style: 'sectionHeader', bold: true, margin: [0, 10, 0, 5] },
+      { text: 'Es un texto que puede ser más largo', margin: [0, 0, 0, 10] },
+      
+      { text: 'Ultima receta: 1992/06/05', margin: [0, 0, 0, 5] },
+      { text: 'Antecedente Medico General: Diabetes Mellitus / ', margin: [0, 0, 0, 5] },
+      { text: 'Antecedente Medico Oftamologico: Sin información', margin: [0, 0, 0, 5] },
+      { text: 'Antecedente Familiar: Sin información', margin: [0, 0, 0, 10] },
+      
+      // AV Table with Rojo Pupilar
+      { pageBreak: 'before', text: 'AV', style: 'sectionHeader', bold: true, margin: [0, 5, 0, 5] },
+      {
+        columns: [
+          {
+            width: '70%',
+            table: {
+              widths: ['25%', '25%', '25%', '25%'],
+              body: [
+                [
+                  '',
+                  { text: 'AV sc', alignment: 'center', bold: true },
+                  { text: 'AV csl', alignment: 'center', bold: true },
+                  { text: 'CAE', alignment: 'center', bold: true }
+                ],
+                [
+                  { text: 'OD', bold: true },
+                  { text: '' },
+                  { text: '' },
+                  { text: '' }
+                ],
+                [
+                  { text: 'OI', bold: true },
+                  { text: '' },
+                  { text: '' },
+                  { text: '' }
+                ],
+                [
+                  { text: 'Binocular', bold: true },
+                  { text: '' },
+                  { text: '' },
+                  { text: '' }
+                ]
+              ]
+            }
+          },
+          {
+            width: '30%',
+            stack: [
+              { text: 'Rojo Pupilar', bold: true, margin: [0, 0, 0, 5] },
+              { text: 'OD: Presente', margin: [5, 0, 0, 5] },
+              { text: 'OI: Presente', margin: [5, 0, 0, 0] }
+            ],
+            margin: [10, 0, 0, 0]
+          }
+        ]
+      },
+      
+      // Horizontal line
+      //{ canvas: [ { type: 'line', x1: 0, y1: 0, x2: 520, y2: 0, lineWidth: 2 } ], margin: [0, 10, 0, 10] },
+      //{ canvas: [ { type: 'line', x1: 0, y1: 0, x2: 520, y2: 0, lineWidth: 1 } ], margin: [0, 5, 0, 10] },
+      
+      // Refracción Subjetiva
+      { text: 'REFRACCION SUBJETIVA', style: 'sectionHeader', bold: true, margin: [0, 5, 0, 5] },
+      
+      { text: 'Lejos', bold: true, margin: [0, 5, 0, 5] },
+      {
+        table: {
+          widths: ['15%', '17%', '17%', '17%', '17%', '17%'],
+          body: [
+            [
+              '',
+              { text: 'Esfera', bold: true, alignment: 'center' },
+              { text: 'Cilindro', bold: true, alignment: 'center' },
+              { text: 'Eje', bold: true, alignment: 'center' },
+              { text: 'AV Alcanzada', bold: true, alignment: 'center' },
+              { text: 'DP', bold: true, alignment: 'center' }
+            ],
+            [
+              { text: 'OI', bold: true },
+              { text: '' },
+              { text: '' },
+              { text: '' },
+              { text: '' },
+              { text: '' }
+            ],
+            [
+              { text: 'OD', bold: true },
+              { text: '' },
+              { text: '' },
+              { text: '' },
+              { text: '' },
+              { text: '' }
+            ]
+          ]
+        }
+      },
+      
+      { text: 'Cerca', bold: true, margin: [0, 10, 0, 5] },
+      {
+        table: {
+          widths: ['15%', '17%', '17%', '17%', '17%', '17%'],
+          body: [
+            [
+              '',
+              { text: 'Esfera', bold: true, alignment: 'center' },
+              { text: 'Cilindro', bold: true, alignment: 'center' },
+              { text: 'Eje', bold: true, alignment: 'center' },
+              { text: 'AV Alcanzada', bold: true, alignment: 'center' },
+              { text: 'DP', bold: true, alignment: 'center' }
+            ],
+            [
+              { text: 'OI', bold: true },
+              { text: '' },
+              { text: '' },
+              { text: '' },
+              { text: '' },
+              { text: '' }
+            ],
+            [
+              { text: 'OD', bold: true },
+              { text: '' },
+              { text: '' },
+              { text: '' },
+              { text: '' },
+              { text: '' }
+            ],
+            [
+              { text: 'ADD', bold: true },
+              { text: '' },
+              { text: '' },
+              { text: '' },
+              { text: '' },
+              { text: '' }
+            ]
+          ]
+        },
+        margin: [0, 0, 0, 10]
+      },
+      
+      // Tonometría
+      { text: 'TONOMETRÍA APLANÁTICA', style: 'sectionHeader', bold: true, margin: [0, 10, 0, 5] },
+      {
+        table: {
+          widths: ['35%', '65%'],
+          body: [
+            [
+              { text: 'OD', bold: true },
+              { text: '12 mmHg' }
+            ],
+            [
+              { text: 'OI', bold: true },
+              { text: '12 mmHg' }
+            ],
+            [
+              { text: 'Hora', bold: true },
+              { text: '13:50 hrs' }
+            ]
+          ]
+        },
+        margin: [0, 0, 0, 10]
+      },
+      
+      // Lensometría
+      { text: 'LENSOMETRÍA', style: 'sectionHeader', bold: true, margin: [0, 10, 0, 5] },
+      {
+        table: {
+          widths: ['25%', '25%', '25%', '25%'],
+          body: [
+            [
+              '',
+              { text: 'Esfera', bold: true, alignment: 'center' },
+              { text: 'Cilindro', bold: true, alignment: 'center' },
+              { text: 'Eje', bold: true, alignment: 'center' }
+            ],
+            [
+              { text: 'OI', bold: true },
+              { text: '' },
+              { text: '' },
+              { text: '' }
+            ],
+            [
+              { text: 'OD', bold: true },
+              { text: '' },
+              { text: '' },
+              { text: '' }
+            ],
+            [
+              { text: 'ADD', bold: true },
+              { text: '' },
+              { text: '' },
+              { text: '' }
+            ]
+          ]
+        },
+        margin: [0, 0, 0, 10]
+      },
+      
+      // Autorefractometría
+      { text: 'AUTOREFRACTOMETRÍA', style: 'sectionHeader', bold: true, margin: [0, 10, 0, 5] },
+      {
+        table: {
+          widths: ['25%', '25%', '25%', '25%'],
+          body: [
+            [
+              '',
+              { text: 'Esfera', bold: true, alignment: 'center' },
+              { text: 'Cilindro', bold: true, alignment: 'center' },
+              { text: 'Eje', bold: true, alignment: 'center' }
+            ],
+            [
+              { text: 'OI', bold: true },
+              { text: '' },
+              { text: '' },
+              { text: '' }
+            ],
+            [
+              { text: 'OD', bold: true },
+              { text: '' },
+              { text: '' },
+              { text: '' }
+            ]
+          ]
+        },
+        margin: [0, 0, 0, 10]
+      },
+      
+      // Final sections
+      { text: 'OTROS EXÁMENES: Sin información', style: 'sectionHeader', bold: true, margin: [0, 10, 0, 5] },
+      
+      { text: 'OBSERVACIONES: Sin información', style: 'sectionHeader', bold: true, margin: [0, 10, 0, 5] },
+      
+      { text: 'DIAGNÓSTICO: Aqui van los checkbox de miopia', style: 'sectionHeader', bold: true, margin: [0, 10, 0, 5] },
+      
+      { text: 'INDICACIONES: Datos dropdown tipolentes lagrimasartificiales tiempocontrol', style: 'sectionHeader', bold: true, margin: [0, 10, 0, 5] }
+    ],
+    styles: {
+      header: {
+        fontSize: 16,
+        bold: true,
+        margin: [0, 0, 0, 5]
+      },
+      subheader: {
+        fontSize: 14,
+        bold: true,
+        margin: [0, 10, 0, 5]
+      },
+      sectionHeader: {
+        fontSize: 12,
+        bold: true,
+        margin: [0, 5, 0, 5]
+      },
+      tableHeader: {
+        bold: true,
+        fontSize: 11
+      }
+    },
+    defaultStyle: {
+      fontSize: 11
+    }
+  };
+}
+
 module.exports = {
   createPdfDocument,
 };
