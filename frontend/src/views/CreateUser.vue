@@ -4,13 +4,13 @@
       <!-- Header Section -->
       <div class="mb-6 pb-4">
         <h1 class="text-3xl font-bold">
-          {{ isNew ? "Crear Ficha Clínica" : "Modificar Ficha Clínica" }}
+          {{ isNew ? "Crear Usuario" : "Modificar Usuario" }}
         </h1>
         <p class="text-gray-600 mt-1">
           {{
             isNew
-              ? "Ingrese la información del paciente para crear una nueva ficha clínica"
-              : "Actualice la información de la ficha clínica existente"
+              ? "Ingrese la información para crear un usuario nuevo"
+              : "Actualice la información del usuario existente"
           }}
         </p>
       </div>
@@ -74,19 +74,19 @@
           </div>
 
           <div class="field">
-            <label for="userType" class="">Tipo de Usuario</label>
+            <label for="typeUser" class="">Tipo de Usuario</label>
             <Dropdown
-              id="userType"
-              v-model="user.userTypeId"
-              :options="userTypes"
-              optionLabel="type"
+              id="typeUser"
+              v-model="user.typeUserId"
+              :options="typeUsers"
+              optionLabel="value"
               optionValue="id"
               placeholder="Seleccione un tipo"
               class="w-full"
-              :class="{ 'p-invalid': submitted && !user.userTypeId }"
+              :class="{ 'p-invalid': submitted && !user.typeUserId }"
               required
             />
-            <small v-if="submitted && !user.userTypeId" class="p-error"
+            <small v-if="submitted && !user.typeUserId" class="p-error"
               >El tipo de usuario es requerido</small
             >
           </div>
@@ -148,12 +148,12 @@ const user = ref({
   username: "",
   password: "",
   name: "",
-  userTypeId: null,
+  typeUserId: null,
   status: true,
 });
 
 const isNew = ref(true);
-const userTypes = ref([]);
+const typeUsers = ref([]);
 const loading = ref(false);
 const submitted = ref(false);
 
@@ -164,7 +164,7 @@ onMounted(() => {
     isNew.value = false;
     fetchUser(userId);
   }
-  fetchUserTypes();
+  fetchTypeUsers();
 });
 
 const fetchUser = async (id) => {
@@ -191,12 +191,12 @@ const fetchUser = async (id) => {
   }
 };
 
-const fetchUserTypes = async () => {
+const fetchTypeUsers = async () => {
   try {
-    const response = await apiClient.get("users/types/usertypes");
+    const response = await apiClient.get("users/types/typeusers");
 
     if (response.status === 200) {
-      userTypes.value = response.data.userTypes;
+      typeUsers.value = response.data.typeUsers;
     }
   } catch (error) {
     console.error("Failed to fetch user types:", error);
@@ -210,26 +210,26 @@ const fetchUserTypes = async () => {
 };
 
 const saveUser = async () => {
-  submitted.value = true;
-
-  // Form validation
-  if (
-    !user.value.username ||
-    !user.value.name ||
-    !user.value.userTypeId ||
-    (isNew.value && !user.value.password)
-  ) {
-    toast.add({
-      severity: "warn",
-      summary: "Validación",
-      detail: "Por favor complete todos los campos requeridos",
-      life: 3000,
-    });
-    return;
-  }
-
-  loading.value = true;
   try {
+    submitted.value = true;
+
+    // Form validation
+    if (
+      !user.value.username ||
+      !user.value.name ||
+      !user.value.typeUserId ||
+      (isNew.value && !user.value.password)
+    ) {
+      toast.add({
+        severity: "warn",
+        summary: "Validación",
+        detail: "Por favor complete todos los campos requeridos",
+        life: 3000,
+      });
+      return;
+    }
+
+    loading.value = true;
     const userData = { ...user.value };
 
     let response;
@@ -251,7 +251,6 @@ const saveUser = async () => {
       router.push("/app/listUser");
     }
   } catch (error) {
-    console.error("Failed to save user:", error);
     toast.add({
       severity: "error",
       summary: "Error",
@@ -264,6 +263,7 @@ const saveUser = async () => {
     loading.value = false;
   }
 };
+
 
 const goBack = () => {
   router.push("/app/listUser");

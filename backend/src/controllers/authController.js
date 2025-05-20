@@ -1,4 +1,4 @@
-const { User, UserType } = require("../models"); // Changed from UserTypes to UserType
+const { User, TypeUser } = require("../models");
 const jwt = require("jsonwebtoken");
 const jwtConfig = require("../config/jwt");
 const bcrypt = require("bcryptjs");
@@ -29,7 +29,7 @@ module.exports = {
       const userResponse = {
         id: user.id,
         username: user.username,
-        userTypeId: user.userTypeId,
+        typeUserId: user.typeUserId,
         status: user.status
       };
 
@@ -49,7 +49,10 @@ module.exports = {
 
   async registerUser(req, res) {
     try {
-      const { username, password, userTypeId, name } = req.body;
+      const { username, password, typeUserId, name } = req.body;
+
+      console.log('registerUser req',req.body);
+      
 
       if (!username || !password) {
         return res.status(400).json({ message: "Usuario y clave son requeridos" });
@@ -60,7 +63,7 @@ module.exports = {
         return res.status(400).json({ message: "Contraseña tiene que ser mayor a 8 caracteres" });
       }
 
-      if (userTypeId === null || userTypeId === undefined) {
+      if (typeUserId === null || typeUserId === undefined) {
         return res.status(400).json({ message: "Tipo usuario es necesario" });
       }
 
@@ -77,7 +80,7 @@ module.exports = {
         username,
         password: hashedPassword,
         status: 1,
-        userTypeId
+        typeUserId
       });
 
       // Create a user object without the password for the token payload
@@ -104,7 +107,7 @@ module.exports = {
     try {
       const users = await User.findAll({
         include: [
-          { model: UserType, as: 'userType' } // Changed to singular
+          { model: TypeUser, as: 'typeUser' } // Changed to singular
         ],
         attributes: { exclude: ['password'] },
       });
@@ -118,12 +121,15 @@ module.exports = {
   async updateUser(req, res) {
     try {
       const { id } = req.params;
-      const { username, password, userTypeId, status } = req.body;
+      const { username, password, typeUserId, status } = req.body;
+
+      console.log('updateUser body',req.body);
+      
 
       // Find user by id
       const user = await User.findOne({
         where: { id },
-        include: { model: UserType, as: 'userType' } // Changed to singular
+        include: { model: TypeUser, as: 'typeUser' } // Changed to singular
       });
 
       if (!user) {
@@ -142,7 +148,7 @@ module.exports = {
         user.password = hashedPassword;
       }
 
-      if (userTypeId !== undefined) user.userTypeId = userTypeId;
+      if (typeUserId !== undefined) user.typeUserId = typeUserId;
 
       if (status !== undefined) user.status = status;
 
@@ -151,7 +157,7 @@ module.exports = {
       return res.status(200).json({
         id: user.id,
         username: user.username,
-        userTypeId: user.userTypeId,
+        typeUserId: user.typeUserId,
         status: user.status
       });
     } catch (error) {
@@ -207,15 +213,15 @@ module.exports = {
     }
   },
 
-  async getAllUserTypes(req, res) {
+  async getAllTypeUsers(req, res) {
     try {
-      // Check if UserType model exists
-      const userTypes = await UserType.findAll();
-      if (!userTypes || userTypes.length === 0) {
+      // Check if TypeUser model exists
+      const typeUsers = await TypeUser.findAll();
+      if (!typeUsers || typeUsers.length === 0) {
         return res.status(404).json({ message: "No se encontraron tipos de usuario" });
       }
 
-      return res.status(200).json({ userTypes });
+      return res.status(200).json({ typeUsers });
     } catch (error) {
       console.error("Failed to fetch UserTypes:", error);
       return res.status(500).json({ message: "Internal server error" });

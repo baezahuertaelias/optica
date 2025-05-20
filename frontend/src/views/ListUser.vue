@@ -2,41 +2,38 @@
   <div class="min-h-screen">
     <div class="max-w-6xl mx-auto px-4 py-8">
       <!-- Header Section -->
-      <div class="mb-6  pb-4">
-        <h1 class="text-3xl font-bold ">
-          {{ isNew ? "Crear Ficha Clínica" : "Modificar Ficha Clínica" }}
-        </h1>
-        <p class="text-gray-600 mt-1">
-          {{ isNew ? "Ingrese la información del paciente para crear una nueva ficha clínica" : "Actualice la información de la ficha clínica existente" }}
-        </p>
+      <div class="mb-6 pb-4">
+        <h1 class="text-3xl font-bold">Listado de usuarios</h1>
+        <p class="text-gray-600 mt-1"></p>
       </div>
     </div>
-    
-    <div class="mb-3 flex flex-column sm:flex-row gap-3 justify-content-between">
+
+    <div
+      class="mb-3 flex flex-column sm:flex-row gap-3 justify-content-between"
+    >
       <div class="p-input-icon-left w-full sm:w-auto">
-        
-        <InputText 
-          v-model="globalFilterValue" 
-          placeholder="Buscar..." 
-          class="w-full" 
+        <InputText
+          v-model="globalFilterValue"
+          placeholder="Buscar..."
+          class="w-full"
           @input="onGlobalFilterChange"
         />
       </div>
       <div class="flex gap-2">
-        <Dropdown 
-          v-model="selectedStatus" 
-          :options="statusOptions" 
-          optionLabel="label" 
-          optionValue="value" 
-          placeholder="Estado" 
+        <Dropdown
+          v-model="selectedStatus"
+          :options="statusOptions"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Estado"
           @change="applyFilters"
         />
-        <Dropdown 
-          v-model="selectedType" 
-          :options="typeOptions" 
-          optionLabel="label" 
-          optionValue="value" 
-          placeholder="Tipo" 
+        <Dropdown
+          v-model="selectedType"
+          :options="typeOptions"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Tipo"
           @change="applyFilters"
         />
       </div>
@@ -61,10 +58,12 @@
       <template #empty>
         <div class="text-center p-4">
           <i class="pi pi-search text-3xl text-gray-300"></i>
-          <p class="mt-2 text-gray-500">No se encontraron usuarios que coincidan con la búsqueda</p>
+          <p class="mt-2 text-gray-500">
+            No se encontraron usuarios que coincidan con la búsqueda
+          </p>
         </div>
       </template>
-      
+
       <template #loading>
         <div class="text-center p-4">
           <i class="pi pi-spin pi-spinner text-3xl text-gray-300"></i>
@@ -77,13 +76,13 @@
           <div class="font-medium">{{ data.name }}</div>
         </template>
       </Column>
-      
+
       <Column field="username" header="Nombre de usuario" sortable>
         <template #body="{ data }">
           <div class="text-gray-700">{{ data.username }}</div>
         </template>
       </Column>
-      
+
       <Column field="status" header="Estado" sortable>
         <template #body="{ data }">
           <Tag
@@ -93,18 +92,17 @@
           />
         </template>
       </Column>
-      
-      <Column field="userType.type" header="Tipo usuario" sortable>
+
+      <Column field="typeUser.type" header="Tipo usuario" sortable>
         <template #body="{ data }">
-          <Tag 
-            :value="data.userType.type" 
-            
-            :style="'background-color: ' + data.userType.color"
+          <Tag
+            :value="data.typeUser.value"
+            :style="'background-color: ' + data.typeUser.color"
           />
         </template>
       </Column>
-      
-      <Column header="Acciones" :exportable="false" style="min-width:12rem">
+
+      <Column header="Acciones" :exportable="false" style="min-width: 12rem">
         <template #body="{ data }">
           <div class="flex flex-wrap gap-2 justify-content-center">
             <Button
@@ -142,12 +140,14 @@
       <div class="flex align-items-center justify-content-center">
         <i class="pi pi-exclamation-triangle mr-3 text-3xl text-yellow-500" />
         <span>
-          ¿Está seguro de que desea eliminar el usuario <b>{{ userToDelete?.name }}</b>?
+          ¿Está seguro de que desea eliminar el usuario
+          <b>{{ userToDelete?.name }}</b
+          >?
           <br />
           <small class="text-gray-500">Esta acción no se puede deshacer.</small>
         </span>
       </div>
-      
+
       <template #footer>
         <Button
           label="Cancelar"
@@ -166,7 +166,7 @@
         />
       </template>
     </Dialog>
-    
+
     <!-- Password Reset Dialog -->
     <Dialog
       v-model:visible="resetPasswordDialog"
@@ -176,20 +176,26 @@
       :closable="false"
     >
       <div class="mb-4">
-        <p>Ingrese una nueva contraseña para el usuario <b>{{ userToReset?.name }}</b>:</p>
+        <p>
+          Ingrese una nueva contraseña para el usuario
+          <b>{{ userToReset?.name }}</b
+          >:
+        </p>
       </div>
       <div class="field">
-        <label for="newPassword" class="block mb-1 font-medium">Nueva contraseña</label>
-        <Password 
+        <label for="newPassword" class="block mb-1 font-medium"
+          >Nueva contraseña</label
+        >
+        <Password
           id="newPassword"
-          v-model="newPassword" 
-          toggleMask 
+          v-model="newPassword"
+          toggleMask
           :feedback="true"
           required
           class="w-full"
         />
       </div>
-      
+
       <template #footer>
         <Button
           label="Cancelar"
@@ -235,9 +241,9 @@ const deleteLoading = ref(false);
 const resetLoading = ref(false);
 
 const filters = ref({
-  global: { value: null, matchMode: 'contains' },
+  global: { value: null, matchMode: "contains" },
 });
-const globalFilterValue = ref('');
+const globalFilterValue = ref("");
 
 const selectedStatus = ref(null);
 const selectedType = ref(null);
@@ -245,46 +251,59 @@ const filteredUsers = ref([]);
 
 // Status filter options
 const statusOptions = ref([
-  { label: 'Todos los estados', value: null },
-  { label: 'Activos', value: true },
-  { label: 'Inactivos', value: false },
+  { label: "Todos los estados", value: null },
+  { label: "Activos", value: true },
+  { label: "Inactivos", value: false },
 ]);
 
 // Type filter options (will be populated from the API)
-const typeOptions = ref([
-  { label: 'Todos los tipos', value: null }
-]);
+const typeOptions = ref([{ label: "Todos los tipos", value: null }]);
 
 // Dialog states
 const deleteUserDialog = ref(false);
 const resetPasswordDialog = ref(false);
 const userToDelete = ref(null);
 const userToReset = ref(null);
-const newPassword = ref('');
+const newPassword = ref("");
 
 // Function to fetch users
 const fetchUsers = async () => {
   loading.value = true;
   try {
     const response = await apiClient.get("/users");
-
     if (response.status === 200) {
       users.value = response.data.users;
       filteredUsers.value = [...response.data.users];
-      
+
       // Extract unique user types for filter dropdown
-      const types = [...new Set(response.data.users.map(user => user.userType.type))];
-      typeOptions.value = [
-        { label: 'Todos los tipos', value: null },
-        ...types.map(type => ({ label: type, value: type }))
+      const uniqueTypes = [
+        ...new Set(
+          response.data.users.map((user) => ({
+            id: user.typeUser.id,
+            value: user.typeUser.value,
+          }))
+        ),
       ];
+
+      console.log("uniqueTypes", uniqueTypes);
+
+      typeOptions.value = [
+        { label: "Todos los tipos", value: null }, // Changed from "admin" to null for "all types"
+        ...uniqueTypes.map((type) => ({
+          label: type.value,
+          value: type.value,
+        })),
+      ];
+
+      console.log("aaaaatype", typeOptions.value);
     }
   } catch (error) {
     console.error(error);
     toast.add({
       severity: "error",
       summary: "Error",
-      detail: error.response?.data?.message || "No se pudieron cargar los usuarios",
+      detail:
+        error.response?.data?.message || "No se pudieron cargar los usuarios",
       life: 3000,
     });
   } finally {
@@ -311,7 +330,7 @@ const confirmDelete = (user) => {
 // Reset password dialog
 const resetPassword = (user) => {
   userToReset.value = user;
-  newPassword.value = '';
+  newPassword.value = "";
   resetPasswordDialog.value = true;
 };
 
@@ -324,13 +343,13 @@ const closeDeleteDialog = () => {
 const closeResetDialog = () => {
   resetPasswordDialog.value = false;
   userToReset.value = null;
-  newPassword.value = '';
+  newPassword.value = "";
 };
 
 // Complete the deleteUser method
 const deleteUser = async () => {
   if (!userToDelete.value) return;
-  
+
   deleteLoading.value = true;
   try {
     const response = await apiClient.delete(`/users/${userToDelete.value.id}`);
@@ -368,13 +387,16 @@ const saveNewPassword = async () => {
     });
     return;
   }
-  
+
   resetLoading.value = true;
   try {
-    const response = await apiClient.put(`/users/${userToReset.value.id}/reset-password`, {
-      password: newPassword.value
-    });
-    
+    const response = await apiClient.put(
+      `/users/${userToReset.value.id}/reset-password`,
+      {
+        password: newPassword.value,
+      }
+    );
+
     if (response.status === 200) {
       toast.add({
         severity: "success",
@@ -388,7 +410,8 @@ const saveNewPassword = async () => {
     toast.add({
       severity: "error",
       summary: "Error",
-      detail: error.response?.data?.message || "No se pudo restablecer la contraseña",
+      detail:
+        error.response?.data?.message || "No se pudo restablecer la contraseña",
       life: 3000,
     });
   } finally {
@@ -403,51 +426,64 @@ const onGlobalFilterChange = () => {
 };
 
 const applyFilters = () => {
+  console.log("aca entra");
+
   let result = [...users.value];
-  
+
+  console.log({ result });
+
   // Apply global filter
   if (filters.value.global.value) {
     const searchTerm = filters.value.global.value.toLowerCase();
-    result = result.filter(user => 
-      user.name.toLowerCase().includes(searchTerm) || 
-      user.username.toLowerCase().includes(searchTerm) ||
-      user.userType.type.toLowerCase().includes(searchTerm)
+    console.log("b");
+
+    result = result.filter(
+      (user) =>
+        user.name.toLowerCase().includes(searchTerm) ||
+        user.username.toLowerCase().includes(searchTerm) ||
+        user.typeUser.value.toLowerCase().includes(searchTerm)
     );
   }
-  
   // Apply status filter
   if (selectedStatus.value !== null) {
-    result = result.filter(user => user.status === selectedStatus.value);
+    console.log("c");
+
+    result = result.filter((user) => user.status === selectedStatus.value);
   }
-  
   // Apply type filter
   if (selectedType.value !== null) {
-    result = result.filter(user => user.userType.type === selectedType.value);
+    console.log("D select", selectedType.value);
+    console.log("D result", result);
+
+    result = result.filter(
+      (user) => user.typeUser.value === selectedType.value
+    );
+
+    console.log("D result2", result);
   }
-  
   filteredUsers.value = result;
 };
 
 // Get the severity class for user types
 const getSeverityForUserType = (type) => {
   switch (type.toLowerCase()) {
-    case 'admin':
-      return 'primary';
-    case 'administrador':
-      return 'primary';
-    case 'vendedor':
-      return 'info';
-    case 'supervisor':
-      return 'warning';
+    case "admin":
+      return "primary";
+    case "administrador":
+      return "primary";
+    case "vendedor":
+      return "info";
+    case "supervisor":
+      return "warning";
     default:
-      return 'secondary';
+      return "secondary";
   }
 };
 
 // Row class based on user status
 const rowClass = (data) => {
   return {
-    'opacity-60': !data.status,
+    "opacity-60": !data.status,
   };
 };
 

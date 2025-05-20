@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
-        userTypeId: {
+        typeUserId: {
             type: DataTypes.INTEGER,
             allowNull: false
         },
@@ -34,7 +34,7 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     User.associate = (models) => {
-        User.belongsTo(models.TypeUser, { foreignKey: 'userTypeId', as: 'typeUser' }); // Updated here
+        User.belongsTo(models.TypeUser, { foreignKey: 'typeUserId', as: 'typeUser' }); // Updated here
         User.hasMany(models.ClinicalRecord, { foreignKey: 'userId' });
         User.hasMany(models.Appointment, { foreignKey: 'userId' });
         User.hasMany(models.WorkOrder, { foreignKey: 'userId' });

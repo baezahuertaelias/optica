@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
             autoIncrement: true,
             primaryKey: true
         },
-        type: {
+        value: {
             type: DataTypes.STRING,
             allowNull: false
         },
@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     TypeUser.associate = (models) => { // Updated here
-        TypeUser.hasMany(models.User, { foreignKey: 'userTypeId' });
+        TypeUser.hasMany(models.User, { foreignKey: 'typeUserId' });
     };
 
     return TypeUser;
