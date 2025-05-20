@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-    const Indications = sequelize.define('Indication', {
+    const Control = sequelize.define('Control', {
         id: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -11,16 +11,16 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         }
     }, {
-        tableName: 'Indications',
+        tableName: 'Controls',
         timestamps: true
     });
 
-    Indications.associate = (models) => {
-        Indications.hasOne(models.ClinicalRecord, {
-            foreignKey: 'indicationId',
+    Control.associate = (models) => {
+        Control.hasOne(models.ClinicalRecord, {
+            foreignKey: 'controlId',
             as: 'clinicalRecord'
         });
     };
 
-    return Indications;
+    return Control;
 };

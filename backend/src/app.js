@@ -5,7 +5,7 @@ const cors = require("cors");
 const { sequelize } = require("./models");
 // Import routes
 const routes = require("./routes");
-const { insertBasicData, createDummyPatient, createClinicalRecordWithDummyData, createSampleAppointments } = require('./bin/preloadData');
+const { insertBasicData, createDummyPatient, createClinicalRecordWithDummyData, createSampleAppointments } = require('./preloadData');
 
 const app = express();
 

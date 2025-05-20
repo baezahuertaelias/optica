@@ -11,11 +11,15 @@ const { User,
   VisualAcuity, 
   SubjectiveRefractionFar, 
   SubjectiveRefractionNear, 
-  SubjectiveRefractionDefects,
   ApplanationTonometry, 
   TypeAppointment, 
   Appointment, 
-  Country, } = require("../models");
+  Country, 
+  Indication, 
+  Control,
+  Autorefractometry,
+  Diagnoses,
+  Lensometry } = require("./models"); // Added Indications and Control
 const { addHours, addDays } = require('date-fns');
 
 /**
@@ -85,6 +89,7 @@ function generateChileanRut(formatted = true, min = 1000000, max = 25000000) {
 }
 
 module.exports = {
+
   async createSampleAppointments() {
     try {
       // Check if appointments already exist
@@ -293,14 +298,43 @@ module.exports = {
         isapreId: Math.floor(Math.random() * 9) + 1 // Random number between 1-9
       });
 
+      // Create Indication and Control if they don't exist
+      const indicationCount = await Indication.count();
+      if (indicationCount === 0) {
+        await Indication.bulkCreate([
+          { value: "Lentes Para Lejos" },
+          { value: "Lentes para Cerca" },
+          { value: "Lentes para Lejos y Cerca" },
+          { value: "Lentes Permanentes" },
+          { value: "Lentes Selectivo" },
+        ]);
+      }
+
+      const controlCount = await Control.count();
+      if (controlCount === 0) {
+        await Control.bulkCreate([
+          { value: "Control 1 Año" },
+          { value: "Control 6 Meses" },
+          { value: "Control 3 Meses" },
+          { value: "Control 1 Mes" }
+        ]);
+      }
+
 
       // Step 5: Create the Clinical Record
       const clinicalRecord = await ClinicalRecord.create({
         patientId: patient.id,
         userId: 2, // Using vendedor user
         anamnesis: fakerES_MX.lorem.paragraph(2),
-        othersDetails: fakerES_MX.lorem.sentence(),
-        finalDiagnosis: fakerES_MX.lorem.sentence(),
+        latestClinicalDate: new Date(fakerES_MX.date.birthdate()),
+        ophthalmologicalMedicalHistory: fakerES_MX.lorem.sentence(),
+        familyMedicalHistory: fakerES_MX.lorem.sentence(),
+        generalMedicalHistory: fakerES_MX.lorem.sentence(),
+        otherExam: fakerES_MX.lorem.sentence(),
+        observations: fakerES_MX.lorem.sentence(),
+        artificialTear: Math.random() >= 0.5,
+        indicationId: Math.floor(Math.random() * 5) + 1, // Assuming the Indications table is pre-populated with id=1
+        controlId: Math.floor(Math.random() * 4) + 1     // Assuming the Controls table is pre-populated with id=1
       });
 
       // Step 6: Create Visual Acuity data
@@ -315,8 +349,8 @@ module.exports = {
         pinholeLE: parseFloat((Math.random() * 10).toFixed(2)),
         pinholeRE: parseFloat((Math.random() * 10).toFixed(2)),
         pinholeBI: parseFloat((Math.random() * 10).toFixed(2)),
-        pupilRedLE: parseFloat((Math.random() * 10).toFixed(2)),
-        pupilRedRE: parseFloat((Math.random() * 10).toFixed(2))
+        pupilRedLE: Math.random() >= 0.5,
+        pupilRedRE: Math.random() >= 0.5
       });
 
       // Step 7: Create Subjective Refraction Far data
@@ -356,14 +390,39 @@ module.exports = {
         dateTime: new Date()
       });
 
-      // Step 10: Create Subjective Refraction Defects data
-      await SubjectiveRefractionDefects.create({
+      // Step 10: Create Autorefractometry data
+      await Autorefractometry.create({
+        clinicalRecordId: clinicalRecord.id,
+        sphereLE: parseFloat((Math.random() * 10).toFixed(2)),
+        sphereRE: parseFloat((Math.random() * 10).toFixed(2)),
+        cylinderLE: parseFloat((Math.random() * 10).toFixed(2)),
+        cylinderRE: parseFloat((Math.random() * 10).toFixed(2)),
+        axisLE: Math.floor(Math.random() * 100) + 1,
+        axisRE: Math.floor(Math.random() * 100) + 1,
+        add: parseFloat((Math.random() * 10).toFixed(2))
+      });
+
+      // Step 11: Create Diagnosis data
+      await Diagnoses.create({
         clinicalRecordId: clinicalRecord.id,
         myopia: Math.random() >= 0.5,
         hyperopia: Math.random() >= 0.5,
         astigmatism: Math.random() >= 0.5,
         presbyopia: Math.random() >= 0.5,
-        anisometropia: Math.random() >= 0.5
+        emmetrope: Math.random() >= 0.5,
+        derived: Math.random() >= 0.5
+      });
+
+      // Step 12: Create Lensometry data
+      await Lensometry.create({
+        clinicalRecordId: clinicalRecord.id,
+        sphereLE: parseFloat((Math.random() * 10).toFixed(2)),
+        sphereRE: parseFloat((Math.random() * 10).toFixed(2)),
+        cylinderLE: parseFloat((Math.random() * 10).toFixed(2)),
+        cylinderRE: parseFloat((Math.random() * 10).toFixed(2)),
+        axisLE: Math.floor(Math.random() * 100) + 1,
+        axisRE: Math.floor(Math.random() * 100) + 1,
+        add: parseFloat((Math.random() * 10).toFixed(2))
       });
 
       console.log('Clinical record created successfully with ID:', clinicalRecord.id);
@@ -379,7 +438,4 @@ module.exports = {
     }
   },
 
-  // Export the utility functions
-  generateChileanRut,
-  calculateVerificationDigit
-};
+}
