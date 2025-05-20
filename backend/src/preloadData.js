@@ -146,8 +146,8 @@ module.exports = {
         return;
       }
 
-      // Get a medical user (userTypeId = 3)
-      const medicalUser = await User.findOne({ where: { userTypeId: 3 } });
+      // Get a medical user (typeUserId = 3)
+      const medicalUser = await User.findOne({ where: { typeUserId: 3 } });
       if (!medicalUser) {
         console.log('No medical users found, please run createClinicalRecordWithDummyData first');
         return;
@@ -210,9 +210,9 @@ module.exports = {
       const typeUserCount = await TypeUser.count();
       if (typeUserCount === 0) {
         await TypeUser.bulkCreate([
-          { color: "blue", type: "Admin" },
-          { color: "green", type: "Vendedor" },
-          { color: "teal", type: "Medico" }
+          { color: "blue", value: "Admin" },
+          { color: "green", value: "Vendedor" },
+          { color: "teal", value: "Medico" }
         ]);
       }
 
@@ -225,21 +225,21 @@ module.exports = {
           {
             username: 'admin',
             password: hashedPassword,
-            userTypeId: 1,
+            typeUserId: 1,
             status: true,
             name: 'ADMINISTRADOR'
           },
           {
             username: 'vendedor',
             password: hashedPassword,
-            userTypeId: 2,
+            typeUserId: 2,
             status: true,
             name: 'VendedorADMIN'
           },
           {
             username: 'medico',
             password: hashedPassword,
-            userTypeId: 3,
+            typeUserId: 3,
             status: true,
             name: 'MedicoAdmin'
           }
