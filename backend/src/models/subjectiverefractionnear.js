@@ -54,13 +54,19 @@ module.exports = (sequelize, DataTypes) => {
         tableName: 'SubjectiveRefractionNear',
         timestamps: true
     });
-
+    
     SubjectiveRefractionNear.associate = (models) => {
         SubjectiveRefractionNear.belongsTo(models.ClinicalRecord, {
             foreignKey: 'clinicalRecordId',
             as: 'clinicalRecord'
         });
+    
+        // Add this line to associate ClinicalRecord with SubjectiveRefractionNear
+        models.ClinicalRecord.hasOne(SubjectiveRefractionNear, {
+            foreignKey: 'clinicalRecordId',
+            as: 'subjectiveRefractionNear'
+        });
     };
-
+    
     return SubjectiveRefractionNear;
 };

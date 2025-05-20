@@ -7,24 +7,33 @@
           {{ isNew ? "Crear Ficha Clínica" : "Modificar Ficha Clínica" }}
         </h1>
         <p class="text-gray-600 mt-1">
-          {{ isNew ? "Ingrese la información del paciente para crear una nueva ficha clínica" : "Actualice la información de la ficha clínica existente" }}
+          {{
+            isNew
+              ? "Ingrese la información del paciente para crear una nueva ficha clínica"
+              : "Actualice la información de la ficha clínica existente"
+          }}
         </p>
       </div>
 
       <form @submit.prevent="saveClinicalRecord" class="space-y-6">
-
         <Card class="shadow-sm">
           <template #title>
             <div class="flex items-center">
               <i class="pi pi-user mr-2"></i>
-              <span class="text-xl font-semibold">Información del Paciente</span>
+              <span class="text-xl font-semibold"
+                >Información del Paciente</span
+              >
             </div>
           </template>
           <template #content>
             <div class="grid grid-cols-1 gap-6">
               <!-- Patient Selection -->
               <div>
-                <label for="patient" class="block text-sm font-medium text-gray-700 mb-1">Paciente *</label>
+                <label
+                  for="patient"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Paciente *</label
+                >
                 <Dropdown
                   id="patient"
                   v-model="clinicalRecord.patientId"
@@ -33,14 +42,24 @@
                   optionValue="id"
                   placeholder="Seleccione un paciente"
                   class="w-full"
-                  :class="{'p-invalid': submitted && !clinicalRecord.patientId}"
+                  :class="{
+                    'p-invalid': submitted && !clinicalRecord.patientId,
+                  }"
                 />
-                <small v-if="submitted && !clinicalRecord.patientId" class="p-error">El paciente es requerido.</small>
+                <small
+                  v-if="submitted && !clinicalRecord.patientId"
+                  class="p-error"
+                  >El paciente es requerido.</small
+                >
               </div>
-              
+
               <!-- Anamnesis -->
               <div>
-                <label for="anamnesis" class="block text-sm font-medium text-gray-700 mb-1">Anamnesis</label>
+                <label
+                  for="anamnesis"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Anamnesis</label
+                >
                 <Textarea
                   id="anamnesis"
                   v-model="clinicalRecord.anamnesis"
@@ -50,34 +69,124 @@
                   placeholder="Ingrese la anamnesis del paciente"
                 />
               </div>
-              
-              <!-- Other Details -->
-              <div>
-                <label for="othersDetails" class="block text-sm font-medium text-gray-700 mb-1">Otros Detalles</label>
+
+              <div class="field">
+                <label for="latestClinicalDate">Latest Clinical Date</label>
+                <Calendar
+                  id="latestClinicalDate"
+                  v-model="clinicalRecord.latestClinicalDate"
+                  :showIcon="true"
+                />
+              </div>
+
+              <div class="field">
+                <label for="ophthalmologicalMedicalHistory"
+                  >Ophthalmological Medical History</label
+                >
                 <Textarea
-                  id="othersDetails"
-                  v-model="clinicalRecord.othersDetails"
+                  id="ophthalmologicalMedicalHistory"
+                  v-model="clinicalRecord.ophthalmologicalMedicalHistory"
                   rows="4"
                   autoResize
                   class="w-full"
-                  placeholder="Ingrese otros detalles relevantes"
+                />
+              </div>
+
+              <div class="field">
+                <label for="familyMedicalHistory">Family Medical History</label>
+                <Textarea
+                  id="familyMedicalHistory"
+                  v-model="clinicalRecord.familyMedicalHistory"
+                  rows="5"
+                />
+              </div>
+
+              <div class="field">
+                <label for="generalMedicalHistory"
+                  >General Medical History</label
+                >
+                <Textarea
+                  id="generalMedicalHistory"
+                  v-model="clinicalRecord.generalMedicalHistory"
+                  rows="5"
+                />
+              </div>
+
+              <!-- VisualAcuity -->
+              <VisualAcuity
+                :modelValue="clinicalRecord.visualAcuity"
+                @update:modelValue="clinicalRecord.visualAcuity = $event"
+              />
+
+              <!-- Lensometry -->
+              <Lensometry
+                :modelValue="clinicalRecord.lensometry"
+                @update:modelValue="clinicalRecord.lensometry = $event"
+              />
+
+              <!-- Autorefractometria -->
+              <Autorefractometria
+                :modelValue="clinicalRecord.autorefractometria"
+                @update:modelValue="clinicalRecord.autorefractometria = $event"
+              />
+
+              <div class="field">
+                <label for="otherExam">Other Exam</label>
+                <Textarea
+                  id="otherExam"
+                  v-model="clinicalRecord.otherExam"
+                  rows="5"
+                />
+              </div>
+
+              <div class="field">
+                <label for="observations">Observations</label>
+                <Textarea
+                  id="observations"
+                  v-model="clinicalRecord.observations"
+                  rows="5"
+                />
+              </div>
+
+              <div class="field">
+                <label for="indicationId">Indication ID</label>
+                <Dropdown
+                  id="indicationId"
+                  v-model="clinicalRecord.indicationId"
+                  :options="indications"
+                  optionLabel="name"
+                  placeholder="Select Indication"
+                />
+              </div>
+
+              <div class="field">
+                <label for="controlId">Control ID</label>
+                <Dropdown
+                  id="controlId"
+                  v-model="clinicalRecord.controlId"
+                  :options="controls"
+                  optionLabel="name"
+                  placeholder="Select Control"
                 />
               </div>
             </div>
           </template>
         </Card>
 
-
         <!-- Visual Acuity Section using the component -->
         <VisualAcuity v-model="clinicalRecord.visualAcuity" />
-        
+
         <!-- Subjective Refraction Section using the component -->
         <SubjectiveRefraction
-          v-model:subjectiveRefractionFar="clinicalRecord.subjectiveRefractionFar"
-          v-model:subjectiveRefractionNear="clinicalRecord.subjectiveRefractionNear"
+          v-model:subjectiveRefractionFar="
+            clinicalRecord.subjectiveRefractionFar
+          "
+          v-model:subjectiveRefractionNear="
+            clinicalRecord.subjectiveRefractionNear
+          "
           v-model:diagnosis="clinicalRecord.diagnosis"
         />
-        
+
         <!-- Tonometry Section -->
         <Card class="shadow-sm">
           <template #title>
@@ -89,7 +198,9 @@
           <template #content>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Ojo Derecho (OD)</label>
+                <label class="block text-sm font-medium text-gray-700"
+                  >Ojo Derecho (OD)</label
+                >
                 <InputNumber
                   v-model="clinicalRecord.applanationTonometry.rightEye"
                   mode="decimal"
@@ -101,7 +212,9 @@
                 />
               </div>
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Ojo Izquierdo (OI)</label>
+                <label class="block text-sm font-medium text-gray-700"
+                  >Ojo Izquierdo (OI)</label
+                >
                 <InputNumber
                   v-model="clinicalRecord.applanationTonometry.leftEye"
                   mode="decimal"
@@ -126,7 +239,11 @@
           </template>
           <template #content>
             <div>
-              <label for="finalDiagnosis" class="block text-sm font-medium text-gray-700 mb-1">Diagnóstico</label>
+              <label
+                for="finalDiagnosis"
+                class="block text-sm font-medium text-gray-700 mb-1"
+                >Diagnóstico</label
+              >
               <Textarea
                 id="finalDiagnosis"
                 v-model="clinicalRecord.finalDiagnosis"
@@ -141,20 +258,19 @@
 
         <!-- Form Actions -->
         <div class="flex justify-end space-x-3">
-          <Button 
-            label="Cancelar" 
-            icon="pi pi-times" 
-            class="p-button-secondary" 
-            @click="router.push('/app/listClinicalRecord')" 
+          <Button
+            label="Cancelar"
+            icon="pi pi-times"
+            class="p-button-secondary"
+            @click="router.push('/app/listClinicalRecord')"
           />
-          <Button 
-            label="Guardar" 
-            icon="pi pi-save" 
-            type="submit" 
-            class="p-button-primary" 
+          <Button
+            label="Guardar"
+            icon="pi pi-save"
+            type="submit"
+            class="p-button-primary"
           />
         </div>
-
       </form>
     </div>
   </div>
@@ -163,14 +279,18 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import InputNumber from "primevue/inputnumber"
+import InputNumber from "primevue/inputnumber";
 import Card from "primevue/card";
-import Button from "primevue/button"
-import Textarea from "primevue/textarea"
-import Dropdown from "primevue/dropdown"
+import Button from "primevue/button";
+import Textarea from "primevue/textarea";
+import Dropdown from "primevue/dropdown";
+import Calendar from "primevue/calendar";
 import apiClient from "../axios-config";
 import VisualAcuity from "../components/clinicalRecord/VisualAcuity.vue";
-import SubjectiveRefraction from "../components/clinicalRecord/SubjetiveRefraction.vue";
+import Lensometry from "../components/clinicalRecord/Lensometry.vue";
+import Autorefractometria from "../components/clinicalRecord/Autorefractometria.vue";
+/* import Lensometry from "./Lensometry.vue";
+import Autorefractometria from "./.vue"; */
 
 const router = useRouter();
 const route = useRoute();
@@ -183,10 +303,17 @@ const clinicalRecord = ref({
   patientId: null,
   userId: parseInt(localStorage.getItem("iduser")),
   anamnesis: null,
-  othersDetails: null,
-  diagnosis: {
-    conditions: []
-  },
+  latestClinicalDate: null,
+  ophthalmologicalMedicalHistory: "",
+  familyMedicalHistory: "",
+  generalMedicalHistory: "",
+  visualAcuity: {},
+  lensometry: {},
+  autorefractometria: {},
+  otherExam: "",
+  observations: "",
+  indicationId: null,
+  controlId: null,
   finalDiagnosis: null,
   visualAcuity: {
     withoutCorrectionLE: null,
@@ -256,12 +383,12 @@ const fetchClinicalRecordDetails = async (id) => {
 
 const saveClinicalRecord = async () => {
   submitted.value = true;
-  
+
   // Validate required fields
   if (!clinicalRecord.value.patientId) {
     return;
   }
-  
+
   try {
     if (isNew.value) {
       await apiClient.post("/clinicalRecords", clinicalRecord.value);
@@ -278,6 +405,18 @@ const saveClinicalRecord = async () => {
 };
 
 const fetchPatients = async () => {
+  try {
+    const response = await apiClient.get("clinicalRecords/patients/name");
+    if (response.status === 200) {
+      console.log("[fetchPatients]", response.data.patients);
+      patients.value = response.data.patients;
+    }
+  } catch (error) {
+    console.error("Failed to fetch patients:", error);
+  }
+};
+
+const fetchIndications = async () => {
   try {
     const response = await apiClient.get("clinicalRecords/patients/name");
     if (response.status === 200) {

@@ -45,17 +45,17 @@
             </div>
 
             <div class="field">
-            <label for="isapre">Pais</label>
-            <Dropdown
-              id="country"
-              v-model="patient.countryId"
-              :options="countries"
-              optionLabel="name"
-              optionValue="id"
-              class="w-full"
-              aria-describedby="country-error"
-            />
-          </div>
+              <label for="country">Pais</label>
+              <Dropdown
+                id="country"
+                v-model="patient.countryId"
+                :options="countries"
+                optionLabel="name"
+                optionValue="id"
+                class="w-full"
+                aria-describedby="country-error"
+              />
+            </div>
 
             <!-- Updated template code for the passport/RUT input field -->
             <div class="field">
@@ -84,9 +84,6 @@
                 RUT válido
               </small>
             </div>
-
-            
-
 
             <div class="field">
               <label for="birthday">Fecha de Nacimiento*</label>
@@ -221,20 +218,24 @@ const patient = ref({
   mail: "",
   occupation: "",
   legalRepresentative: "",
-  isapreId: "",
-  countryId: ""
+  /* isapreId: "", */
+  countryId: "",
 });
 
 const isNew = ref(true);
 const genders = ref([]);
-const isapres = ref([]);
+/* const isapres = ref([]); */
 const countries = ref([]);
 const isValidRut = ref(false);
 
 onMounted(async () => {
   try {
     // Load reference data
-    await Promise.all([fetchGenders(), fetchIsapres(), fetchCountries()]);
+    await Promise.all([
+      fetchGenders() /* fetchIsapres() */,
+      ,
+      fetchCountries(),
+    ]);
 
     // Check if we're editing an existing patient
     const patientId = route.query.id || route.params.id;
@@ -300,7 +301,8 @@ const savePatient = async () => {
         life: 3000,
       });
     }
-    router.push("/app/listPatient");
+
+    //router.push("/app/listPatient");
   } catch (error) {
     console.error("Error saving patient:", error);
     toast.add({
@@ -316,7 +318,7 @@ const savePatient = async () => {
   }
 };
 
-const fetchIsapres = async () => {
+/* const fetchIsapres = async () => {
   try {
     const response = await apiClient.get("patients/isapres");
     if (response.status === 200) {
@@ -325,7 +327,7 @@ const fetchIsapres = async () => {
   } catch (error) {
     console.error("Failed to fetch isapres:", error);
   }
-};
+}; */
 
 const fetchGenders = async () => {
   try {
@@ -371,7 +373,7 @@ const formatRut = (event) => {
 
   // Correct the way we're updating the passport value
   patient.value.passport = value;
-  
+
   // Optional: validate on input for immediate feedback
   validateRut();
 };
@@ -423,7 +425,6 @@ const validateRut = () => {
   const expectedDv = calculateDv(body);
   isValidRut.value = dv === expectedDv;
 };
-
 </script>
 
 <style scoped>

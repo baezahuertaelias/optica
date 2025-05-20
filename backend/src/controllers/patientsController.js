@@ -1,46 +1,43 @@
-const { 
-  Patient,  
-  Isapre,   
-  Gender,
-  Country    
-} = require("../models");
+const { Patient, Isapre, Gender, Country } = require("../models");
 // ... rest of code here ...
 
 module.exports = {
   async createPatient(req, res) {
     try {
-      const { 
-        name, 
-        passport, 
-        genderId, 
-        tel, 
-        birthday, 
-        homeAddress, 
-        mail, 
-        occupation, 
+      const {
+        name,
+        passport,
+        genderId,
+        tel,
+        birthday,
+        homeAddress,
+        mail,
+        occupation,
         legalRepresentative,
         isapreId,
-        countryId
+        countryId,
       } = req.body;
-      
+
+      console.log("createpatient body", req.body);
+
       if (!name || !genderId || !mail || !birthday) {
         return res.status(400).json({ message: "Required fields missing" });
       }
 
-      const patient = await Patient.create({ 
-        name, 
-        passport, 
-        genderId, 
-        tel, 
-        birthday, 
-        homeAddress, 
-        mail, 
-        occupation, 
-        legalRepresentative, 
+      const patient = await Patient.create({
+        name,
+        passport,
+        genderId,
+        tel,
+        birthday,
+        homeAddress,
+        mail,
+        occupation,
+        legalRepresentative,
         isapreId,
-        countryId
+        countryId,
       });
-      
+
       return res.status(201).json({ patient });
     } catch (error) {
       console.error("Error creating patient:", error);
@@ -50,13 +47,14 @@ module.exports = {
 
   async getAllPatients(req, res) {
     try {
-      const patients = await Patient.findAll({  
+      const patients = await Patient.findAll({
         include: [
           { model: Gender, as: 'gender' },  
-          { model: Isapre, as: 'isapre' }   
+          { model: Isapre, as: 'isapre' },
+          { model: ClinicalRecord, as: 'clinicalRecords' } // Include clinical records
         ]
       });
-      
+
       return res.status(200).json({ patients });
     } catch (error) {
       console.error("Failed to fetch patients:", error);
@@ -71,13 +69,13 @@ module.exports = {
         return res.status(400).json({ message: "Patient ID is required" });
       }
 
-      const patient = await Patient.findByPk(id, {  
+      const patient = await Patient.findByPk(id, {
         include: [
-          { model: Gender, as: 'gender' },  
-          { model: Isapre, as: 'isapre' }
-        ]
+          { model: Gender, as: "gender" },
+          { model: Isapre, as: "isapre" },
+        ],
       });
-      
+
       if (!patient) {
         return res.status(404).json({ message: "Patient not found" });
       }
@@ -92,21 +90,21 @@ module.exports = {
   async updatePatient(req, res) {
     try {
       const { id } = req.params;
-      const { 
-        name, 
-        passport, 
-        genderId, 
-        tel, 
-        birthday, 
-        homeAddress,   
-        mail, 
-        occupation, 
-        legalRepresentative,  
+      const {
+        name,
+        passport,
+        genderId,
+        tel,
+        birthday,
+        homeAddress,
+        mail,
+        occupation,
+        legalRepresentative,
         isapreId,
-        countryId               
+        countryId,
       } = req.body;
 
-      const patient = await Patient.findByPk(id);  
+      const patient = await Patient.findByPk(id);
       if (!patient) {
         return res.status(404).json({ message: "Patient not found" });
       }
@@ -117,12 +115,13 @@ module.exports = {
       if (genderId !== undefined) patient.genderId = genderId;
       if (tel !== undefined) patient.tel = tel;
       if (birthday !== undefined) patient.birthday = birthday;
-      if (homeAddress !== undefined) patient.homeAddress = homeAddress;  
+      if (homeAddress !== undefined) patient.homeAddress = homeAddress;
       if (mail !== undefined) patient.mail = mail;
       if (occupation !== undefined) patient.occupation = occupation;
-      if (legalRepresentative !== undefined) patient.legalRepresentative = legalRepresentative;  
+      if (legalRepresentative !== undefined)
+        patient.legalRepresentative = legalRepresentative;
       if (isapreId !== undefined) patient.isapreId = isapreId;
-      if (countryId !== undefined) patient.countryId = countryId;  
+      if (countryId !== undefined) patient.countryId = countryId;
 
       await patient.save();
 
@@ -140,7 +139,7 @@ module.exports = {
         return res.status(400).json({ message: "Patient ID is required" });
       }
 
-      const patient = await Patient.findByPk(id);  
+      const patient = await Patient.findByPk(id);
       if (!patient) {
         return res.status(404).json({ message: "Patient not found" });
       }
@@ -155,7 +154,7 @@ module.exports = {
 
   async getIsapres(req, res) {
     try {
-      const isapres = await Isapre.findAll();  
+      const isapres = await Isapre.findAll();
       return res.status(200).json({ isapres });
     } catch (error) {
       console.error("Failed to fetch ISAPREs:", error);
@@ -165,7 +164,7 @@ module.exports = {
 
   async getGenders(req, res) {
     try {
-      const genders = await Gender.findAll();  
+      const genders = await Gender.findAll();
       return res.status(200).json({ genders });
     } catch (error) {
       console.error("Failed to fetch genders:", error);
@@ -175,7 +174,7 @@ module.exports = {
 
   async getCountries(req, res) {
     try {
-      const countries = await Country.findAll();  
+      const countries = await Country.findAll();
       return res.status(200).json({ countries });
     } catch (error) {
       console.error("Failed to fetch countries:", error);

@@ -68,37 +68,17 @@ module.exports = (sequelize, DataTypes) => {
 
   ClinicalRecord.associate = (models) => {
     ClinicalRecord.belongsTo(models.User, { foreignKey: "userId", as: "user" });
-    
-
-    ClinicalRecord.hasOne(models.TypeControl, {
-      foreignKey: "controlId",
-      as: "control",
-    });
-    ClinicalRecord.hasOne(models.TypeDiagnosis, {
-      foreignKey: "diagnosisId",
-      as: "typeDiagnosis",
-    });
-
-    ClinicalRecord.hasOne(models.TypeIndication, {
-      foreignKey: "indicationId",
-      as: "typeIndication",
-    });
-    
-    ClinicalRecord.hasOne(models.VisualAcuity, {
-      foreignKey: "clinicalRecordId",
-      as: "visualAcuity",
-    });
-
-    ClinicalRecord.hasOne(models.Lensometry, {
-      foreignKey: "clinicalRecordId",
-      as: "lensometry",
-    });
-
-    ClinicalRecord.hasOne(models.Autorefractometry, {
-      foreignKey: "clinicalRecordId",
-      as: "autorefractometry",
-    });
+    ClinicalRecord.hasOne(models.TypeControl, { foreignKey: "controlId", as: "control" });
+    ClinicalRecord.hasOne(models.TypeDiagnosis, { foreignKey: "diagnosisId", as: "typeDiagnosis" });
+    ClinicalRecord.hasOne(models.TypeIndication, { foreignKey: "indicationId", as: "typeIndication" });
+    ClinicalRecord.hasOne(models.VisualAcuity, { foreignKey: "clinicalRecordId", as: "visualAcuity" });
+    ClinicalRecord.hasOne(models.Lensometry, { foreignKey: "clinicalRecordId", as: "lensometry" });
+    ClinicalRecord.hasOne(models.Autorefractometry, { foreignKey: "clinicalRecordId", as: "autorefractometry" });
+    ClinicalRecord.belongsTo(models.Patient, { foreignKey: "patientId", as: "patient" });
+    ClinicalRecord.hasOne(models.SubjectiveRefractionFar, { foreignKey: "clinicalRecordId", as: "subjectiveRefractionsFar" }); // Updated alias
+    ClinicalRecord.hasOne(models.SubjectiveRefractionNear, { foreignKey: "clinicalRecordId", as: "subjectiveRefractionsNear" }); // Updated alias
   };
+
 
   return ClinicalRecord;
 };
