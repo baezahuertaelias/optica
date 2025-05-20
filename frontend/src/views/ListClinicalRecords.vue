@@ -161,7 +161,7 @@ const detailClinicalRecord = ref({
     id: null,
     username: null,
     password: null,
-    userTypeId: null,
+    typeUserId: null,
     status: true,
     createdAt: null,
     updatedAt: null,

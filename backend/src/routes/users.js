@@ -14,6 +14,6 @@ router.put('/:id', authMiddleware, authController.updateUser); // Update a user
 router.delete('/:id', authMiddleware, authController.deleteUser); // Delete a user
 
 // New route to get all UserTypes
-router.get('/types/usertypes', authMiddleware, authController.getAllUserTypes);
+router.get('/types/typeusers', authMiddleware, authController.getAllTypeUsers);
 
 module.exports = router;

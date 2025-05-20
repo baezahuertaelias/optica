@@ -62,7 +62,7 @@ module.exports = {
         try {
             const doctors = await User.findAll({
                 attributes: ['id', 'name'],
-                where: { userTypeId: 3 }
+                where: { typeUserId: 3 }
             });
             return res.status(200).json({ doctors });
         } catch (error) {
@@ -163,7 +163,7 @@ module.exports = {
             }
 
             // Check if doctor exists and is a user with type 2 (doctor)
-            const doctor = await User.findByPk(userId, { where: { userTypeId: 2 } });
+            const doctor = await User.findByPk(userId, { where: { typeUserId: 2 } });
             if (!doctor) {
                 return res.status(404).json({ message: "Doctor not found" });
             }
@@ -235,7 +235,7 @@ module.exports = {
 
             // Check if doctor exists
             const doctor = await User.findByPk(userId);
-            if (!doctor || doctor.userTypeId !== 3) {
+            if (!doctor || doctor.typeUserId !== 3) {
                 return res.status(404).json({ message: "Doctor not found" });
             }
 
