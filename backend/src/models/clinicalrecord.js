@@ -16,18 +16,43 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
+
+      ///////
       anamnesis: {
         type: DataTypes.TEXT,
         allowNull: true,
       },
-      othersDetails: {
+      latestClinicalDate: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      ophthalmologicalMedicalHistory: {
         type: DataTypes.TEXT,
         allowNull: true,
       },
-      finalDiagnosis: {
+      familyMedicalHistory: {
         type: DataTypes.TEXT,
-        allowNull: true
-      }
+        allowNull: true,
+      },
+      ///////
+      generalMedicalHistoryId:{
+        type: DataTypes.INTEGER,
+        allowNull: false
+      },
+
+
+      ///////
+
+      
+      
+      otherExam: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      observations: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
     },
     {
       tableName: "ClinicalRecords",
@@ -43,23 +68,49 @@ module.exports = (sequelize, DataTypes) => {
     });
     ClinicalRecord.hasOne(models.SubjectiveRefractionFar, {
       foreignKey: "clinicalRecordId",
-      as: 'subjectiveRefractionsFar'  // Use a consistent alias
+      as: 'subjectiveRefractionsFar'
     });
     ClinicalRecord.hasOne(models.SubjectiveRefractionNear, {
       foreignKey: "clinicalRecordId",
-      as: 'subjectiveRefractionsNear' // Use a consistent alias
+      as: 'subjectiveRefractionsNear'
     });
-    ClinicalRecord.hasOne(models.VisualAcuity, {  // Changed to hasOne and use singular alias
+    ClinicalRecord.hasOne(models.VisualAcuity, {
       foreignKey: "clinicalRecordId",
       as: 'visualAcuity'
     });
-    ClinicalRecord.hasOne(models.ApplanationTonometry, {  // Changed to hasOne and use singular alias
+    ClinicalRecord.hasOne(models.ApplanationTonometry, {
       foreignKey: "clinicalRecordId",
       as: 'applanationTonometry'
     });
     ClinicalRecord.hasOne(models.SubjectiveRefractionDefects, {
       foreignKey: "clinicalRecordId",
       as: 'subjectiveRefractionDefects'
+    });
+    
+    // New associations for the new tables
+    ClinicalRecord.hasOne(models.Lensometry, {
+      foreignKey: "clinicalRecordId",
+      as: 'lensometries'
+    });
+    ClinicalRecord.hasOne(models.Autorefractometry, {
+      foreignKey: "clinicalRecordId",
+      as: 'autorefractometries'
+    });
+    ClinicalRecord.hasOne(models.GeneralMedicalHistory, {
+      foreignKey: "clinicalRecordId",
+      as: 'generalMedicalHistories'
+    });
+    ClinicalRecord.hasOne(models.Diagnosis, {
+      foreignKey: "clinicalRecordId",
+      as: 'diagnoses'
+    });
+    ClinicalRecord.hasOne(models.Indication, {
+      foreignKey: "clinicalRecordId",
+      as: 'indications'
+    });
+    ClinicalRecord.hasOne(models.ComebackControl, {
+      foreignKey: "clinicalRecordId",
+      as: 'comebackControls'
     });
   };
 

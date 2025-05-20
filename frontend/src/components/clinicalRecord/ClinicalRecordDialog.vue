@@ -3,386 +3,71 @@
     :visible="visible"
     @update:visible="$emit('update:visible', $event)"
     modal
-    :header="`Ficha clinica ${clinicalRecord.id}`"
+    :header="`Ficha clinica ${clinicalRecord?.id || ''}`"
     :style="{ width: '50rem' }"
     :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
   >
-    <Card>
-      <template #title>Información de Paciente</template>
-      <template #content>
-        <FloatLabel variant="on">
-          <Textarea
-            id="on_label_nombre"
-            v-model="clinicalRecord.patient.name"
-            rows="3"
-            cols="60"
-            style="resize: none"
-            readonly
-          />
-          <label for="on_label_nombre">Nombre</label>
-        </FloatLabel>
-
-        <FloatLabel variant="on">
-          <Textarea
-            id="on_label_anamnsis"
-            v-model="clinicalRecord.anamnesis"
-            rows="3"
-            cols="60"
-            style="resize: none"
-            readonly
-          />
-          <label for="on_label_anamnsis">Anamnesis</label>
-        </FloatLabel>
-
-        <FloatLabel variant="on">
-          <Textarea
-            id="othersDetails"
-            v-model="clinicalRecord.othersDetails"
-            rows="3"
-            cols="60"
-            style="resize: none"
-            readonly
-          />
-          <label for="othersDetails">Otros Detalles</label>
-        </FloatLabel>
-      </template>
-    </Card>
-
-    <Card>
-      <template #title>Agudeza Visual</template>
-      <template #content>
-        <div class="grid grid-cols-3 gap-2">
-          <div class="col-span-1 mt-5">
-            <label class="block text-sm font-medium mb-1">Sin Corrección</label>
-            <div class="grid">
-              <div class="field">
-                <small class="block text-gray-500">OI</small>
-                <InputNumber
-                  v-model="clinicalRecord.visualAcuity.withoutCorrectionLE"
-                  readonly
-                  mode="decimal"
-                  :minFractionDigits="2"
-                />
-              </div>
-              <div class="field">
-                <small class="block text-gray-500">OD</small>
-                <InputNumber
-                  v-model="clinicalRecord.visualAcuity.withoutCorrectionRE"
-                  readonly
-                  mode="decimal"
-                  :minFractionDigits="2"
-                />
-              </div>
-              <div class="field">
-                <small class="block text-gray-500">AO</small>
-                <InputNumber
-                  v-model="clinicalRecord.visualAcuity.withoutCorrectionBI"
-                  readonly
-                  mode="decimal"
-                  :minFractionDigits="2"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div class="col-span-1 mt-5">
-            <label class="block text-sm font-medium mb-1">Con Corrección</label>
-            <div class="grid">
-              <div>
-                <small class="block text-gray-500">OI</small>
-                <InputNumber
-                  v-model="clinicalRecord.visualAcuity.laserCorrectionLE"
-                  readonly
-                  mode="decimal"
-                  :minFractionDigits="2"
-                />
-              </div>
-              <div>
-                <small class="block text-gray-500">OD</small>
-                <InputNumber
-                  v-model="clinicalRecord.visualAcuity.laserCorrectionRE"
-                  readonly
-                  mode="decimal"
-                  :minFractionDigits="2"
-                />
-              </div>
-              <div>
-                <small class="block text-gray-500">AO</small>
-                <InputNumber
-                  v-model="clinicalRecord.visualAcuity.laserCorrectionBI"
-                  readonly
-                  mode="decimal"
-                  :minFractionDigits="2"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div class="col-span-1 mt-5">
-            <label class="block text-sm font-medium mb-1"
-              >Agujero Estenopeico</label
-            >
-            <div class="grid">
-              <div>
-                <small class="block text-gray-500">OI</small>
-                <InputNumber
-                  v-model="clinicalRecord.visualAcuity.pinholeLE"
-                  readonly
-                  mode="decimal"
-                  :minFractionDigits="2"
-                />
-              </div>
-              <div>
-                <small class="block text-gray-500">OD</small>
-                <InputNumber
-                  v-model="clinicalRecord.visualAcuity.pinholeRE"
-                  readonly
-                  mode="decimal"
-                  :minFractionDigits="2"
-                />
-              </div>
-              <div>
-                <small class="block text-gray-500">AO</small>
-                <InputNumber
-                  v-model="clinicalRecord.visualAcuity.pinholeBI"
-                  readonly
-                  mode="decimal"
-                  :minFractionDigits="2"
-                />
-              </div>
-            </div>
-          </div>
+    <Card class="shadow-sm">
+      <template #title>
+        <div class="flex items-center">
+          <i class="pi pi-user mr-2"></i>
+          <span class="text-xl font-semibold">Información del Paciente</span>
         </div>
-
-        <div class="grid grid-cols-2 gap-2 mt-2">
+      </template>
+      <template #content>
+        <div class="grid grid-cols-1 gap-6">
           <div>
-            <label class="block text-sm font-medium mb-1">Pupila Roja OI</label>
-            <InputNumber
-              v-model="clinicalRecord.visualAcuity.pupilRedLE"
-              readonly
-              mode="decimal"
-              :minFractionDigits="2"
-            />
+            <FloatLabel variant="on">
+              <InputText
+                id="on_label_nombre"
+                v-model="safePatientName"
+                class="w-full"
+                style="resize: none"
+                readonly
+              />
+              <label for="on_label_nombre">Nombre</label>
+            </FloatLabel>
           </div>
+
           <div>
-            <label class="block text-sm font-medium mb-1">Pupila Roja OD</label>
-            <InputNumber
-              v-model="clinicalRecord.visualAcuity.pupilRedRE"
-              readonly
-              mode="decimal"
-              :minFractionDigits="2"
-            />
+            <FloatLabel variant="on">
+              <Textarea
+                id="on_label_anamnsis"
+                v-model="clinicalRecord.anamnesis"
+                rows="3"
+                style="resize: none"
+                readonly
+                fluid
+              />
+              <label for="on_label_anamnsis">Anamnesis</label>
+            </FloatLabel>
+          </div>
+
+          <div>
+            <FloatLabel variant="on">
+              <Textarea
+                id="othersDetails"
+                v-model="clinicalRecord.othersDetails"
+                rows="3"
+                style="resize: none"
+                readonly
+                fluid
+              />
+              <label for="othersDetails">Otros Detalles</label>
+            </FloatLabel>
           </div>
         </div>
       </template>
     </Card>
 
-    <Card>
-      <template #title>Refracción Subjetiva (Lejos)</template>
-      <template #content>
-        <div class="grid">
-          <div>
-            <h3 class="text-lg font-medium mb-2">Ojo Izquierdo (OI)</h3>
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block text-sm font-medium mb-1">Esfera</label>
-                <InputNumber
-                  v-model="clinicalRecord.subjectiveRefractionsFar.sphereLE"
-                  readonly
-                  mode="decimal"
-                  :minFractionDigits="2"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium mb-1">Cilindro</label>
-                <InputNumber
-                  v-model="clinicalRecord.subjectiveRefractionsFar.cylinderLE"
-                  readonly
-                  mode="decimal"
-                  :minFractionDigits="2"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium mb-1">Eje</label>
-                <InputNumber
-                  v-model="clinicalRecord.subjectiveRefractionsFar.axisLE"
-                  readonly
-                  mode="decimal"
-                  :minFractionDigits="2"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium mb-1">AV</label>
-                <InputNumber
-                  v-model="clinicalRecord.subjectiveRefractionsFar.vareachedLE"
-                  readonly
-                  mode="decimal"
-                  :minFractionDigits="2"
-                />
-              </div>
-            </div>
-          </div>
+    <!-- Visual Acuity Section using the component -->
+    <VisualAcuity v-model="safeVisualAcuity" />
 
-          <div>
-            <h3 class="text-lg font-medium mb-2">Ojo Derecho (OD)</h3>
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block text-sm font-medium mb-1">Esfera</label>
-                <InputNumber
-                  v-model="clinicalRecord.subjectiveRefractionsFar.sphereRE"
-                  readonly
-                  mode="decimal"
-                  :minFractionDigits="2"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium mb-1">Cilindro</label>
-                <InputNumber
-                  v-model="clinicalRecord.subjectiveRefractionsFar.cylinderRE"
-                  readonly
-                  mode="decimal"
-                  :minFractionDigits="2"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium mb-1">Eje</label>
-                <InputNumber
-                  v-model="clinicalRecord.subjectiveRefractionsFar.axisRE"
-                  readonly
-                  mode="decimal"
-                  :minFractionDigits="2"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium mb-1">AV</label>
-                <InputNumber
-                  v-model="clinicalRecord.subjectiveRefractionsFar.vareachedRE"
-                  readonly
-                  mode="decimal"
-                  :minFractionDigits="2"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="mt-3">
-          <label class="block text-sm font-medium mb-1"
-            >Distancia Pupilar</label
-          >
-          <InputNumber
-            v-model="clinicalRecord.subjectiveRefractionsFar.pupilarDistance"
-            readonly
-            mode="decimal"
-            :minFractionDigits="2"
-          />
-        </div>
-      </template>
-    </Card>
-
-    <Card>
-      <template #title>Refracción Subjetiva (Cerca)</template>
-      <template #content>
-        <div class="grid">
-          <div>
-            <h3 class="text-lg font-medium mb-2">Ojo Izquierdo (OI)</h3>
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block text-sm font-medium mb-1">Esfera</label>
-                <InputNumber
-                  v-model="clinicalRecord.subjectiveRefractionsNear.sphereLE"
-                  readonly
-                  mode="decimal"
-                  :minFractionDigits="2"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium mb-1">Cilindro</label>
-                <InputNumber
-                  v-model="clinicalRecord.subjectiveRefractionsNear.cylinderLE"
-                  readonly
-                  mode="decimal"
-                  :minFractionDigits="2"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium mb-1">Eje</label>
-                <InputNumber
-                  v-model="clinicalRecord.subjectiveRefractionsNear.axisLE"
-                  readonly
-                  mode="decimal"
-                  :minFractionDigits="2"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium mb-1">AV</label>
-                <InputNumber
-                  v-model="clinicalRecord.subjectiveRefractionsNear.vareachedLE"
-                  readonly
-                  mode="decimal"
-                  :minFractionDigits="2"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <h3 class="text-lg font-medium mb-2">Ojo Derecho (OD)</h3>
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block text-sm font-medium mb-1">Esfera</label>
-                <InputNumber
-                  v-model="clinicalRecord.subjectiveRefractionsNear.sphereRE"
-                  readonly
-                  mode="decimal"
-                  :minFractionDigits="2"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium mb-1">Cilindro</label>
-                <InputNumber
-                  v-model="clinicalRecord.subjectiveRefractionsNear.cylinderRE"
-                  readonly
-                  mode="decimal"
-                  :minFractionDigits="2"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium mb-1">Eje</label>
-                <InputNumber
-                  v-model="clinicalRecord.subjectiveRefractionsNear.axisRE"
-                  readonly
-                  mode="decimal"
-                  :minFractionDigits="2"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium mb-1">AV</label>
-                <InputNumber
-                  v-model="clinicalRecord.subjectiveRefractionsNear.vareachedRE"
-                  readonly
-                  mode="decimal"
-                  :minFractionDigits="2"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-medium mb-1"
-                  >Distancia Pupilar</label
-                >
-                <InputNumber
-                  v-model="
-                    clinicalRecord.subjectiveRefractionsNear.pupilarDistance
-                  "
-                  readonly
-                  mode="decimal"
-                  :minFractionDigits="2"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </template>
-    </Card>
+    <SubjectiveRefraction
+      v-model:subjectiveRefractionFar="safeSubjectiveRefractionFar"
+      v-model:subjectiveRefractionNear="safeSubjectiveRefractionNear"
+      v-model:subjectiveRefractionDefects="safeRefractionDefects"
+    />
 
     <Card>
       <template #title>Tonometría de Aplanación</template>
@@ -393,10 +78,11 @@
               >Ojo Izquierdo (OI)</label
             >
             <InputNumber
-              v-model="clinicalRecord.applanationTonometry.leftEye"
+              v-model="safeTonometryLeftEye"
               readonly
               mode="decimal"
-              :minFractionDigits="2"
+              :minFractionDigits="0"
+              :maxFractionDigits="0"
             />
           </div>
           <div>
@@ -404,10 +90,11 @@
               >Ojo Derecho (OD)</label
             >
             <InputNumber
-              v-model="clinicalRecord.applanationTonometry.rightEye"
+              v-model="safeTonometryRightEye"
               readonly
               mode="decimal"
-              :minFractionDigits="2"
+              :minFractionDigits="0"
+              :maxFractionDigits="0"
             />
           </div>
         </div>
@@ -433,14 +120,17 @@
   </Dialog>
 </template>
   
-  <script setup>
-import { defineProps, defineEmits } from "vue";
+<script setup>
+import { defineProps, defineEmits, computed } from "vue";
 import Dialog from "primevue/dialog";
 import Card from "primevue/card";
 import FloatLabel from "primevue/floatlabel";
 import Textarea from "primevue/textarea";
 import InputNumber from "primevue/inputnumber";
 import Button from "primevue/button";
+import InputText from "primevue/inputtext";
+import VisualAcuity from "../clinicalRecord/VisualAcuity.vue";
+import SubjectiveRefraction from "../clinicalRecord/SubjetiveRefraction.vue";
 
 const props = defineProps({
   visible: {
@@ -455,6 +145,13 @@ const props = defineProps({
       patient: { name: null },
       anamnesis: null,
       othersDetails: null,
+      subjectiveRefractionDefects: {
+        myopia: null,
+        hyperopia: null,
+        astigmatism: null,
+        presbyopia: null,
+        anisometropia: null,
+      },
       visualAcuity: {
         withoutCorrectionLE: null,
         withoutCorrectionRE: null,
@@ -501,16 +198,69 @@ const props = defineProps({
 
 const emit = defineEmits(["update:visible", "print"]);
 
+// Add computed properties to ensure data safety
+const safePatientName = computed(() => props.clinicalRecord?.patient?.name || "");
+
+const safeVisualAcuity = computed(() => props.clinicalRecord?.visualAcuity || {
+  withoutCorrectionLE: null,
+  withoutCorrectionRE: null,
+  withoutCorrectionBI: null,
+  laserCorrectionLE: null,
+  laserCorrectionRE: null,
+  laserCorrectionBI: null,
+  pinholeLE: null,
+  pinholeRE: null,
+  pinholeBI: null,
+  pupilRedLE: null,
+  pupilRedRE: null,
+});
+
+const safeSubjectiveRefractionFar = computed(() => props.clinicalRecord?.subjectiveRefractionsFar || {
+  sphereLE: null,
+  sphereRE: null,
+  cylinderLE: null,
+  cylinderRE: null,
+  axisLE: null,
+  axisRE: null,
+  vareachedLE: null,
+  vareachedRE: null,
+  pupilarDistance: null,
+});
+
+const safeSubjectiveRefractionNear = computed(() => props.clinicalRecord?.subjectiveRefractionsNear || {
+  sphereLE: null,
+  sphereRE: null,
+  cylinderLE: null,
+  cylinderRE: null,
+  axisLE: null,
+  axisRE: null,
+  vareachedLE: null,
+  vareachedRE: null,
+  pupilarDistance: null,
+  add: null,
+});
+
+const safeRefractionDefects = computed(() => props.clinicalRecord?.subjectiveRefractionDefects || {
+  myopia: null,
+  hyperopia: null,
+  astigmatism: null,
+  presbyopia: null,
+  anisometropia: null
+});
+
+const safeTonometryLeftEye = computed(() => props.clinicalRecord?.applanationTonometry?.leftEye || null);
+const safeTonometryRightEye = computed(() => props.clinicalRecord?.applanationTonometry?.rightEye || null);
+
 const closeDialog = () => {
   emit("update:visible", false);
 };
 
-const printRecord = () => {
+const printRecord = () => {  
   emit("print", props.clinicalRecord);
 };
 </script>
   
-  <style scoped>
+<style scoped>
 .p-card {
   margin-bottom: 1rem;
 }

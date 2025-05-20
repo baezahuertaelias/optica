@@ -51,6 +51,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         isapreId: {
             type: DataTypes.INTEGER,
+            allowNull: true
         }
     }, {
         tableName: 'Patients',

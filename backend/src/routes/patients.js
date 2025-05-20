@@ -6,6 +6,7 @@ const patientsController = require('../controllers/patientsController');
 
 router.get('/isapres', authMiddleware, patientsController.getIsapres);
 router.get('/genders', authMiddleware, patientsController.getGenders);
+router.get('/countries', authMiddleware, patientsController.getCountries);
 router.post('/', authMiddleware, patientsController.createPatient);
 router.get('/', authMiddleware, patientsController.getAllPatients); // Fetch a single user by ID
 router.get('/:id', authMiddleware, patientsController.getPatientById);

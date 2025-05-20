@@ -31,6 +31,32 @@
               />
             </div>
 
+            <div class="field">
+              <label for="gender">Sexo*</label>
+              <Dropdown
+                id="gender"
+                v-model="patient.genderId"
+                :options="genders"
+                optionLabel="value"
+                optionValue="id"
+                class="w-full"
+                aria-describedby="gender-error"
+              />
+            </div>
+
+            <div class="field">
+            <label for="isapre">Pais</label>
+            <Dropdown
+              id="country"
+              v-model="patient.countryId"
+              :options="countries"
+              optionLabel="name"
+              optionValue="id"
+              class="w-full"
+              aria-describedby="country-error"
+            />
+          </div>
+
             <!-- Updated template code for the passport/RUT input field -->
             <div class="field">
               <label for="passport">Pasaporte / DNI</label>
@@ -59,18 +85,8 @@
               </small>
             </div>
 
-            <div class="field">
-              <label for="gender">Sexo*</label>
-              <Dropdown
-                id="gender"
-                v-model="patient.genderId"
-                :options="genders"
-                optionLabel="value"
-                optionValue="id"
-                class="w-full"
-                aria-describedby="gender-error"
-              />
-            </div>
+            
+
 
             <div class="field">
               <label for="birthday">Fecha de Nacimiento*</label>
@@ -133,7 +149,7 @@
             />
           </div>
 
-          <div class="field">
+          <!-- <div class="field">
             <label for="isapre">Isapre / Seguro Médico*</label>
             <Dropdown
               id="isapre"
@@ -144,10 +160,10 @@
               class="w-full"
               aria-describedby="isapre-error"
             />
-          </div>
+          </div> -->
 
           <div class="field">
-            <label for="legalRepresentative">Representante Legal</label>
+            <label for="legalRepresentative">Tutor (Adulto responsable)</label>
             <InputText
               id="legalRepresentative"
               v-model.trim="patient.legalRepresentative"
@@ -206,17 +222,19 @@ const patient = ref({
   occupation: "",
   legalRepresentative: "",
   isapreId: "",
+  countryId: ""
 });
 
 const isNew = ref(true);
 const genders = ref([]);
 const isapres = ref([]);
+const countries = ref([]);
 const isValidRut = ref(false);
 
 onMounted(async () => {
   try {
     // Load reference data
-    await Promise.all([fetchGenders(), fetchIsapres()]);
+    await Promise.all([fetchGenders(), fetchIsapres(), fetchCountries()]);
 
     // Check if we're editing an existing patient
     const patientId = route.query.id || route.params.id;
@@ -314,6 +332,17 @@ const fetchGenders = async () => {
     const response = await apiClient.get("patients/genders");
     if (response.status === 200) {
       genders.value = response.data.genders;
+    }
+  } catch (error) {
+    console.error("Failed to fetch genders:", error);
+  }
+};
+
+const fetchCountries = async () => {
+  try {
+    const response = await apiClient.get("patients/countries");
+    if (response.status === 200) {
+      countries.value = response.data.countries;
     }
   } catch (error) {
     console.error("Failed to fetch genders:", error);

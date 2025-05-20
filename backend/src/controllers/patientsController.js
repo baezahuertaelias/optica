@@ -1,7 +1,8 @@
 const { 
   Patient,  
   Isapre,   
-  Gender    
+  Gender,
+  Country    
 } = require("../models");
 // ... rest of code here ...
 
@@ -168,6 +169,16 @@ module.exports = {
       return res.status(200).json({ genders });
     } catch (error) {
       console.error("Failed to fetch genders:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  },
+
+  async getCountries(req, res) {
+    try {
+      const countries = await Country.findAll();  
+      return res.status(200).json({ countries });
+    } catch (error) {
+      console.error("Failed to fetch countries:", error);
       return res.status(500).json({ message: "Internal server error" });
     }
   },

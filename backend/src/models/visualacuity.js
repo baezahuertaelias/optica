@@ -47,11 +47,11 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true
         },
         pupilRedLE: {
-            type: DataTypes.STRING,
+            type: DataTypes.BOOLEAN,
             allowNull: true
         },
         pupilRedRE: {
-            type: DataTypes.STRING,
+            type: DataTypes.BOOLEAN,
             allowNull: true
         }
     }, {

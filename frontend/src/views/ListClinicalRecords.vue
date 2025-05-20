@@ -125,6 +125,13 @@ const detailClinicalRecord = ref({
   userId: null,
   anamnesis: null,
   othersDetails: null,
+  subjectiveRefractionDefects: {
+    myopia: null,
+    hyperopia: null,
+    astigmatism: null,
+    presbyopia: null,
+    anisometropia: null,
+  },
   createdAt: null,
   updatedAt: null,
   patient: {
@@ -251,7 +258,21 @@ const viewRecord = async (record) => {
     );
     if (response.status === 200) {
       console.log("[viewRecord] API Response:", response.data);
-      detailClinicalRecord.value = response.data.data || {};
+      const recordData = response.data.data || {};
+      
+      // Transform diagnosis conditions into refractionDefects format if needed
+      if (recordData.diagnosis && recordData.diagnosis.conditions && !recordData.subjectiveRefractionDefects) {
+        // Convert array of conditions to object format
+        recordData.subjectiveRefractionDefects = {
+          myopia: recordData.diagnosis.conditions.includes('myopia'),
+          hyperopia: recordData.diagnosis.conditions.includes('hyperopia'),
+          astigmatism: recordData.diagnosis.conditions.includes('astigmatism'),
+          presbyopia: recordData.diagnosis.conditions.includes('presbyopia'),
+          anisometropia: recordData.diagnosis.conditions.includes('anisometropia')
+        };
+      }
+      
+      detailClinicalRecord.value = recordData;
       visible.value = true;
     }
   } catch (error) {
@@ -278,9 +299,9 @@ const handlePrintRecord = async (record) => {
   });
   
   try {
-    // The important change is setting responseType to 'blob'
+    // Setting responseType to 'blob'
     const response = await apiClient.post(`clinicalRecords/generatePDF/${record.id}`, null, {
-      responseType: 'blob' // This is the key change!
+      responseType: 'blob'
     });
     
     const blob = new Blob([response.data], { type: "application/pdf" });

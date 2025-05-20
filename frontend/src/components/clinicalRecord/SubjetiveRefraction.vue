@@ -7,17 +7,17 @@
       </div>
     </template>
     <template #content>
-      <!-- Diagnosis Checkboxes -->
+      <!-- Refraction Defects Checkboxes -->
       <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700 mb-2">Diagnóstico</label>
         <div class="flex flex-wrap gap-4">
-          <div v-for="option in diagnosisOptions" :key="option.value" class="flex items-center">
+          <div v-for="key in defectKeys" :key="key" class="flex items-center">
             <Checkbox 
-              v-model="diagnosis.conditions" 
-              :value="option.value" 
-              :inputId="option.value" 
+              :binary="true"
+              :modelValue="getDefectValue(key)"
+              :inputId="key" 
             />
-            <label :for="option.value" class="ml-2">{{ option.label }}</label>
+            <label :for="key" class="ml-2">{{ defectLabels[key] }}</label>
           </div>
         </div>
       </div>
@@ -49,44 +49,104 @@ import NearVisionTab from "./NearVisionTab.vue";
 const props = defineProps({
   subjectiveRefractionFar: {
     type: Object,
-    required: true
+    required: true,
+    default: () => ({
+      sphereLE: null,
+      sphereRE: null,
+      cylinderLE: null,
+      cylinderRE: null,
+      axisLE: null,
+      axisRE: null,
+      vareachedLE: null,
+      vareachedRE: null,
+      pupilarDistance: null
+    })
   },
   subjectiveRefractionNear: {
     type: Object,
-    required: true
+    required: true,
+    default: () => ({
+      sphereLE: null,
+      sphereRE: null,
+      cylinderLE: null,
+      cylinderRE: null,
+      axisLE: null,
+      axisRE: null,
+      vareachedLE: null,
+      vareachedRE: null,
+      pupilarDistance: null,
+      add: null
+    })
   },
-  diagnosis: {
+  subjectiveRefractionDefects: {
     type: Object,
-    required: true
+    required: false,
+    default: () => ({
+      myopia: null,
+      hyperopia: null,
+      astigmatism: null,
+      presbyopia: null,
+      anisometropia: null
+    })
   }
 });
 
-const emit = defineEmits(['update:subjectiveRefractionFar', 'update:subjectiveRefractionNear', 'update:diagnosis']);
+const emit = defineEmits([
+  'update:subjectiveRefractionFar', 
+  'update:subjectiveRefractionNear', 
+  'update:subjectiveRefractionDefects'
+]);
 
 // Create computed properties for two-way binding
 const refractionFar = computed({
-  get: () => props.subjectiveRefractionFar,
+  get: () => props.subjectiveRefractionFar || { 
+    sphereLE: null, 
+    sphereRE: null, 
+    cylinderLE: null, 
+    cylinderRE: null, 
+    axisLE: null, 
+    axisRE: null, 
+    vareachedLE: null, 
+    vareachedRE: null, 
+    pupilarDistance: null 
+  },
   set: (value) => emit('update:subjectiveRefractionFar', value)
 });
 
 const refractionNear = computed({
-  get: () => props.subjectiveRefractionNear,
+  get: () => props.subjectiveRefractionNear || { 
+    sphereLE: null, 
+    sphereRE: null, 
+    cylinderLE: null, 
+    cylinderRE: null, 
+    axisLE: null, 
+    axisRE: null, 
+    vareachedLE: null, 
+    vareachedRE: null, 
+    pupilarDistance: null, 
+    add: null 
+  },
   set: (value) => emit('update:subjectiveRefractionNear', value)
 });
 
-const diagnosis = computed({
-  get: () => props.diagnosis,
-  set: (value) => emit('update:diagnosis', value)
-});
+// Define the keys that represent boolean defects
+const defectKeys = ['myopia', 'hyperopia', 'astigmatism', 'presbyopia', 'anisometropia'];
 
-// Sample diagnosis options - these should come from your data store or API
-const diagnosisOptions = ref([
-  { label: 'Miopía', value: 'myopia' },
-  { label: 'Hipermetropía', value: 'hyperopia' },
-  { label: 'Astigmatismo', value: 'astigmatism' },
-  { label: 'Presbicia', value: 'presbyopia' },
-  { label: 'Anisometropía', value: 'anisometropia' }
-]);
+// Define human-friendly labels for the defects
+const defectLabels = {
+  myopia: 'Miopía',
+  hyperopia: 'Hipermetropía',
+  astigmatism: 'Astigmatismo',
+  presbyopia: 'Presbicia',
+  anisometropia: 'Anisometropía'
+};
+
+// Helper function to safely get defect values
+const getDefectValue = (key) => {
+  if (!props.subjectiveRefractionDefects) return false;
+  const value = props.subjectiveRefractionDefects[key];
+  return value === true; // Ensure it's a boolean true
+};
 </script>
 
 <style scoped>

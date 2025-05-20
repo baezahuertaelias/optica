@@ -14,7 +14,7 @@
         mode="decimal"
         :minFractionDigits="2"
         :maxFractionDigits="2"
-        locale="es-CL"
+        locale="en-US"
         class="w-full"
         placeholder="Esfera OD"
       />
@@ -26,7 +26,7 @@
         mode="decimal"
         :minFractionDigits="2"
         :maxFractionDigits="2"
-        locale="es-CL"
+        locale="en-US"
         class="w-full"
         placeholder="Esfera OI"
       />
@@ -40,7 +40,7 @@
         mode="decimal"
         :minFractionDigits="2"
         :maxFractionDigits="2"
-        locale="es-CL"
+        locale="en-US"
         class="w-full"
         placeholder="Cilindro OD"
       />
@@ -52,7 +52,7 @@
         mode="decimal"
         :minFractionDigits="2"
         :maxFractionDigits="2"
-        locale="es-CL"
+        locale="en-US"
         class="w-full"
         placeholder="Cilindro OI"
       />
@@ -66,7 +66,7 @@
         mode="decimal"
         :minFractionDigits="0"
         :maxFractionDigits="0"
-        locale="es-CL"
+        locale="en-US"
         class="w-full"
         placeholder="Eje OD"
       />
@@ -78,7 +78,7 @@
         mode="decimal"
         :minFractionDigits="0"
         :maxFractionDigits="0"
-        locale="es-CL"
+        locale="en-US"
         class="w-full"
         placeholder="Eje OI"
       />
@@ -92,7 +92,7 @@
         mode="decimal"
         :minFractionDigits="2"
         :maxFractionDigits="2"
-        locale="es-CL"
+        locale="en-US"
         class="w-full"
         placeholder="AV alcanzada OD"
       />
@@ -104,7 +104,7 @@
         mode="decimal"
         :minFractionDigits="2"
         :maxFractionDigits="2"
-        locale="es-CL"
+        locale="en-US"
         class="w-full"
         placeholder="AV alcanzada OI"
       />
@@ -119,7 +119,7 @@
         mode="decimal"
         :minFractionDigits="0"
         :maxFractionDigits="0"
-        locale="es-CL"
+        locale="en-US"
         class="w-full"
         placeholder="Distancia pupilar"
       />
