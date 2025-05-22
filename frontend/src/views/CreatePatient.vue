@@ -302,7 +302,7 @@ const savePatient = async () => {
       });
     }
 
-    //router.push("/app/listPatient");
+    router.push("/app/listPatient");
   } catch (error) {
     console.error("Error saving patient:", error);
     toast.add({

@@ -2,31 +2,27 @@ const bcrypt = require("bcrypt");
 const { faker } = require('@faker-js/faker');
 // Import the Spanish (Mexico) locale
 const { fakerES_MX } = require('@faker-js/faker');
-const { User, 
-  TypeUser, 
-  Isapre, 
-  Gender, 
-  Patient, 
-  ClinicalRecord, 
-  VisualAcuity, 
-  SubjectiveRefractionFar, 
-  SubjectiveRefractionNear, 
-  ApplanationTonometry, 
-  TypeAppointment, 
-  Appointment, 
-  Country, 
-  TypeIndication, 
+const { User,
+  TypeUser,
+  Isapre,
+  Gender,
+  Patient,
+  ClinicalRecord,
+  VisualAcuity,
+  SubjectiveRefractionFar,
+  SubjectiveRefractionNear,
+  ApplanationTonometry,
+  TypeAppointment,
+  Appointment,
+  Country,
+  TypeIndication,
   TypeControl,
   Autorefractometry,
   TypeDiagnosis,
-  Lensometry } = require("./models"); // Added Indications and Control
+  Lensometry } = require("../models"); // Added Indications and Control
 const { addHours, addDays } = require('date-fns');
 
-/**
- * Calculates the verification digit for a Chilean RUT
- * @param {number} rutNumber - The RUT number without verification digit
- * @returns {string} The verification digit (0-9 or K)
- */
+
 function calculateVerificationDigit(rutNumber) {
   const rutDigits = rutNumber.toString().split('').reverse();
 
@@ -54,13 +50,6 @@ function calculateVerificationDigit(rutNumber) {
   }
 }
 
-/**
- * Generates a valid Chilean RUT
- * @param {boolean} formatted - Whether to return the RUT with formatting (dots and dash)
- * @param {number} min - Minimum value for the RUT number (default: 1000000)
- * @param {number} max - Maximum value for the RUT number (default: 25000000)
- * @returns {string} A valid Chilean RUT
- */
 function generateChileanRut(formatted = true, min = 1000000, max = 25000000) {
   // Generate a random number for the RUT (without verification digit)
   const rutNumber = Math.floor(Math.random() * (max - min + 1)) + min;
@@ -89,119 +78,6 @@ function generateChileanRut(formatted = true, min = 1000000, max = 25000000) {
 }
 
 module.exports = {
-
-  async createSampleAppointments() {
-    try {
-      // Check if appointments already exist
-      const appointmentCount = await Appointment.count();
-
-      if (appointmentCount > 0) {
-        console.log('Appointments already exist, skipping creation');
-        return;
-      }
-
-      // Make sure TypeAppointments exist
-      const typeAppointmentCount = await TypeAppointment.count();
-      if (typeAppointmentCount === 0) {
-        await TypeAppointment.bulkCreate([
-          {
-            name: "Receta de lentes",
-            duration: 45,
-            color: "green",
-            description: "nada"
-          },
-          {
-            name: "Agudeza visual",
-            duration: 30,
-            color: "blue",
-            description: "pronto"
-          },
-          {
-            name: "Tonometria",
-            duration: 15,
-            color: "yellow",
-            description: "pronto"
-          },
-          {
-            name: "Retinografia sin dilatacion",
-            duration: 15,
-            color: "teal",
-            description: "pronto"
-          },
-          {
-            name: "Retinografia con dilatacion",
-            duration: 30,
-            color: "cyan",
-            description: "pronto"
-          }
-        ]);
-        //console.log('No TypeAppointments found, please run createTypeAppointments first');
-        //return;
-      }
-
-      // Get a patient
-      const patient = await Patient.findOne();
-      if (!patient) {
-        console.log('No patients found, please run createClinicalRecordWithDummyData first');
-        return;
-      }
-
-      // Get a medical user (typeUserId = 3)
-      const medicalUser = await User.findOne({ where: { typeUserId: 3 } });
-      if (!medicalUser) {
-        console.log('No medical users found, please run createClinicalRecordWithDummyData first');
-        return;
-      }
-
-      // Get appointment types
-      const appointmentTypes = await TypeAppointment.findAll();
-
-      // Create appointments for the next 7 days
-      const today = new Date();
-      today.setHours(9, 0, 0, 0); // Start at 9 AM
-
-      const appointments = [];
-
-      // Create 3 appointments per day for the next 7 days
-      for (let day = 0; day < 7; day++) {
-        const dayBase = addDays(today, day);
-
-        // Create appointments at 9 AM, 11 AM, and 2 PM
-        const appointmentTimes = [
-          dayBase,
-          addHours(dayBase, 2),
-          addHours(dayBase, 5)
-        ];
-
-        for (let i = 0; i < appointmentTimes.length; i++) {
-          const startTime = appointmentTimes[i];
-          const appointmentType = appointmentTypes[i % appointmentTypes.length];
-
-          // Calculate end time based on appointment type duration
-          const endTime = addHours(startTime, appointmentType.duration / 60);
-
-          appointments.push({
-            patientId: patient.id,
-            userId: medicalUser.id,
-            start: startTime,
-            end: endTime,
-            typeAppointmentId: appointmentType.id,
-            status: true,
-            notes: `Sample appointment ${i + 1} for day ${day + 1}`
-          });
-        }
-      }
-
-      // Create all appointments
-      await Appointment.bulkCreate(appointments);
-
-      console.log(`Created ${appointments.length} sample appointments`);
-    } catch (error) {
-      console.error('Error creating sample appointments:', error);
-      throw error;
-    }
-  },
-
   async createClinicalRecordWithDummyData() {
     try {
       const hashedPassword = await bcrypt.hash('123.Admin.', 10);
@@ -332,7 +208,6 @@ module.exports = {
         generalMedicalHistory: fakerES_MX.lorem.sentence(),
         otherExam: fakerES_MX.lorem.sentence(),
         observations: fakerES_MX.lorem.sentence(),
-        artificialTear: Math.random() >= 0.5,
         indicationId: Math.floor(Math.random() * 5) + 1, // Assuming the Indications table is pre-populated with id=1
         controlId: Math.floor(Math.random() * 4) + 1     // Assuming the Controls table is pre-populated with id=1
       });
@@ -399,7 +274,9 @@ module.exports = {
         cylinderRE: parseFloat((Math.random() * 10).toFixed(2)),
         axisLE: Math.floor(Math.random() * 100) + 1,
         axisRE: Math.floor(Math.random() * 100) + 1,
-        add: parseFloat((Math.random() * 10).toFixed(2))
+        vareachedLE: parseFloat((Math.random() * 10).toFixed(2)),
+        vareachedRE: parseFloat((Math.random() * 10).toFixed(2)),
+        pupilarDistance: Math.floor(Math.random() * 100) + 1,
       });
 
       // Step 11: Create Diagnosis data
@@ -410,7 +287,8 @@ module.exports = {
         astigmatism: Math.random() >= 0.5,
         presbyopia: Math.random() >= 0.5,
         emmetrope: Math.random() >= 0.5,
-        derived: Math.random() >= 0.5
+        derived: Math.random() >= 0.5,
+        artificialTear: Math.random() >= 0.5
       });
 
       // Step 12: Create Lensometry data
@@ -422,7 +300,10 @@ module.exports = {
         cylinderRE: parseFloat((Math.random() * 10).toFixed(2)),
         axisLE: Math.floor(Math.random() * 100) + 1,
         axisRE: Math.floor(Math.random() * 100) + 1,
-        add: parseFloat((Math.random() * 10).toFixed(2))
+        vareachedLE: parseFloat((Math.random() * 10).toFixed(2)),
+        vareachedRE: parseFloat((Math.random() * 10).toFixed(2)),
+        pupilarDistance: Math.floor(Math.random() * 100) + 1,
+        add: Math.floor(Math.random() * 100) + 1
       });
 
       console.log('Clinical record created successfully with ID:', clinicalRecord.id);
@@ -437,5 +318,115 @@ module.exports = {
       throw error;
     }
   },
+  async createSampleAppointments() {
+    try {
+      // Check if appointments already exist
+      const appointmentCount = await Appointment.count();
 
+      if (appointmentCount > 0) {
+        console.log('Appointments already exist, skipping creation');
+        return;
+      }
+
+      // Make sure TypeAppointments exist
+      const typeAppointmentCount = await TypeAppointment.count();
+      if (typeAppointmentCount === 0) {
+        await TypeAppointment.bulkCreate([
+          {
+            name: "Receta de lentes",
+            duration: 45,
+            color: "green",
+            description: "nada"
+          },
+          {
+            name: "Agudeza visual",
+            duration: 30,
+            color: "blue",
+            description: "pronto"
+          },
+          {
+            name: "Tonometria",
+            duration: 15,
+            color: "yellow",
+            description: "pronto"
+          },
+          {
+            name: "Retinografia sin dilatacion",
+            duration: 15,
+            color: "teal",
+            description: "pronto"
+          },
+          {
+            name: "Retinografia con dilatacion",
+            duration: 30,
+            color: "cyan",
+            description: "pronto"
+          }
+        ]);
+        //console.log('No TypeAppointments found, please run createTypeAppointments first');
+        //return;
+      }
+
+      // Get a patient
+      const patient = await Patient.findOne();
+      if (!patient) {
+        console.log('No patients found, please run createClinicalRecordWithDummyData first');
+        return;
+      }
+
+      // Get a medical user (typeUserId = 3)
+      const medicalUser = await User.findOne({ where: { typeUserId: 3 } });
+      if (!medicalUser) {
+        console.log('No medical users found, please run createClinicalRecordWithDummyData first');
+        return;
+      }
+
+      // Get appointment types
+      const appointmentTypes = await TypeAppointment.findAll();
+
+      // Create appointments for the next 7 days
+      const today = new Date();
+      today.setHours(9, 0, 0, 0); // Start at 9 AM
+
+      const appointments = [];
+
+      // Create 3 appointments per day for the next 7 days
+      for (let day = 0; day < 7; day++) {
+        const dayBase = addDays(today, day);
+
+        // Create appointments at 9 AM, 11 AM, and 2 PM
+        const appointmentTimes = [
+          dayBase,
+          addHours(dayBase, 2),
+          addHours(dayBase, 5)
+        ];
+
+        for (let i = 0; i < appointmentTimes.length; i++) {
+          const startTime = appointmentTimes[i];
+          const appointmentType = appointmentTypes[i % appointmentTypes.length];
+
+          // Calculate end time based on appointment type duration
+          const endTime = addHours(startTime, appointmentType.duration / 60);
+
+          appointments.push({
+            patientId: patient.id,
+            userId: medicalUser.id,
+            start: startTime,
+            end: endTime,
+            typeAppointmentId: appointmentType.id,
+            status: true,
+            notes: `Sample appointment ${i + 1} for day ${day + 1}`
+          });
+        }
+      }
+
+      // Create all appointments
+      await Appointment.bulkCreate(appointments);
+
+      console.log(`Created ${appointments.length} sample appointments`);
+    } catch (error) {
+      console.error('Error creating sample appointments:', error);
+      throw error;
+    }
+  },
 }

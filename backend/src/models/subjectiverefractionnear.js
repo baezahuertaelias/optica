@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
             autoIncrement: true,
             primaryKey: true
         },
-        clinicalRecordId: {  // Renamed for consistency
+        clinicalRecordId: {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
@@ -54,19 +54,14 @@ module.exports = (sequelize, DataTypes) => {
         tableName: 'SubjectiveRefractionNear',
         timestamps: true
     });
-    
+
     SubjectiveRefractionNear.associate = (models) => {
+        // One-to-one relationship with ClinicalRecord
         SubjectiveRefractionNear.belongsTo(models.ClinicalRecord, {
             foreignKey: 'clinicalRecordId',
             as: 'clinicalRecord'
         });
-    
-        // Add this line to associate ClinicalRecord with SubjectiveRefractionNear
-        models.ClinicalRecord.hasOne(SubjectiveRefractionNear, {
-            foreignKey: 'clinicalRecordId',
-            as: 'subjectiveRefractionNear'
-        });
     };
-    
+
     return SubjectiveRefractionNear;
 };

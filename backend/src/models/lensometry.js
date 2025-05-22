@@ -6,41 +6,48 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
-        primaryKey: true,
+        primaryKey: true
+      },
+      clinicalRecordId: {  // Renamed for consistency
+        type: DataTypes.INTEGER,
+        allowNull: false,
       },
       sphereLE: {
         type: DataTypes.FLOAT,
-        allowNull: true,
+        allowNull: true
       },
       sphereRE: {
         type: DataTypes.FLOAT,
-        allowNull: true,
+        allowNull: true
       },
       cylinderLE: {
         type: DataTypes.FLOAT,
-        allowNull: true,
+        allowNull: true
       },
       cylinderRE: {
         type: DataTypes.FLOAT,
-        allowNull: true,
+        allowNull: true
       },
       axisLE: {
         type: DataTypes.INTEGER,
-        allowNull: true,
+        allowNull: true
       },
       axisRE: {
         type: DataTypes.INTEGER,
-        allowNull: true,
+        allowNull: true
+      },
+      vareachedLE: {
+        type: DataTypes.FLOAT,
+        allowNull: true
+      },
+      vareachedRE: {
+        type: DataTypes.FLOAT,
+        allowNull: true
       },
       add: {
         type: DataTypes.FLOAT,
-        allowNull: true,
+        allowNull: true
       },
-      clinicalRecordId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        unique: true, // Ensures one-to-one relationship
-      }
     },
     {
       tableName: "Lensometries",

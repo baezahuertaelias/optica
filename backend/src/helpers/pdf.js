@@ -11,14 +11,27 @@ const fonts = {
     bolditalics: path.join(__dirname, "/fonts/Roboto/Roboto-MediumItalic.ttf"),
   },
 };
-
 const printer = new PdfPrinter(fonts);
+
+function createTextDiagnosis(data) {
+
+  const eyeConditions = {
+    Miopia: data.myopia,
+    Hipermetropia: data.hyperopia,
+    Astigmatismo: data.astigmatism,
+    Presbicia: data.presbyopia,
+    Emetrope: data.emmetrope,
+    Derivado: data.derived,
+  };
+
+  return Object.entries(eyeConditions)
+    .filter(([key, value]) => value === true)
+    .map(([key, value]) => key)
+    .join(', ');
+}
 
 function createPdfDocument(data) {
   try {
-
-
-
     // Read the image file
     const imagePath = path.join(__dirname, "sampleImage.jpg");
     const imageBuffer = fs.readFileSync(imagePath);
@@ -114,7 +127,7 @@ function createPdfDocument(data) {
         OD: { ESF: data.sphereRE, CYL: data.cylinderRE, EJE: data.axisRE, DP: data.pupilarDistance },
         OI: { ESF: data.sphereLE, CYL: data.cylinderLE, EJE: data.axisLE, DP: "" },
       };
-      
+
       const aa = {
         table: {
           headerRows: 1,
@@ -139,15 +152,15 @@ function createPdfDocument(data) {
         },
         margin: [0, 0, 0, 15],
       };
-      
+
       if (data.add) {
         aa.table.body.push([
-              "ADD",
-              data.add,
-              "",
-              "",
-              "",
-            ])
+          "ADD",
+          data.add,
+          "",
+          "",
+          "",
+        ])
       }
       return aa
     };
@@ -167,7 +180,6 @@ function createPdfDocument(data) {
         text: [{ text: data.titulo, bold: true }, { text: data.contenido }],
       };
     };
-
 
     const infoPago = (data) => {
       const paymentData = data || {
@@ -274,44 +286,37 @@ function createPdfDocument(data) {
     };
 
     // Create and return the PDF document
-    console.log("Termino");
-
     return printer.createPdfKitDocument(docDefinition);
-    // Create and return the PDF document
-    /* const pdfDoc = printer.createPdfKitDocument(docDefinition);
 
-    // Pipe the output to a writable stream (e.g., file)
-    const outputPath = path.join(__dirname, "output.pdf");
-    pdfDoc.pipe(fs.createWriteStream(outputPath));
-
-    // Finalize the PDF and write it to the specified path
-    pdfDoc.end();
-
-    console.log(`PDF created at ${outputPath}`); */
   } catch (error) {
     console.log("errorPDF", error);
   }
 }
 
-function createPDFClinicalRecord(data){
+function createPDFClinicalRecord(data) {
   // playground requires you to assign document definition to a variable called dd
+  //console.log('[createPDFClinicalRecord] start', data);
+  console.log('[createPDFClinicalRecord] lensometry', data.typeDiagnosis);
+  console.log('[createPDFClinicalRecord] typeControl', data.control);
+  console.log('[createPDFClinicalRecord] typeIndication', data.typeIndication);
 
-var dd = {
+
+  let docDefinition = {
     content: [
       // Header row with title and number
       {
         columns: [
           { text: 'FICHA CLINICA', style: 'header', bold: true, width: '70%' },
-          { text: 'Nro 1111', style: 'header', bold: true, width: '30%', alignment: 'right' }
+          { text: 'Nro: ' + data.id, style: 'header', bold: true, width: '30%', alignment: 'right' }
         ],
         columnGap: 10,
         margin: [0, 0, 0, 10]
       },
-      
+
       // Horizontal line
       //{ canvas: [ { type: 'line', x1: 0, y1: 0, x2: 520, y2: 0, lineWidth: 1 } ] },
       //{ canvas: [ { type: 'line', x1: 0, y1: 2, x2: 520, y2: 2, lineWidth: 1 } ] },
-      
+
       // Patient information table
       {
         table: {
@@ -319,72 +324,67 @@ var dd = {
           body: [
             [
               { text: 'FECHA DE ATENCION', style: 'tableHeader', bold: true },
-              { text: '11-04-2025' }
+              { text: data.createdAt.toLocaleString('es-US') }
             ],
             [
               { text: 'NOMBRE', style: 'tableHeader', bold: true },
-              { text: 'JUANITO PEREZ' }
+              { text: data.patient.name }
             ],
             [
-              { text: 'RUT', style: 'tableHeader', bold: true },
-              { text: '11.111.111-1' }
+              { text: 'RUT / Pasaporte', style: 'tableHeader', bold: true },
+              { text: data.patient.passport }
             ],
-            [
-              { text: 'PASAPORTE', style: 'tableHeader', bold: true },
-              { text: '999.999.999-9' }
-            ],
+
             [
               { text: 'SEXO', style: 'tableHeader', bold: true },
-              { text: 'FEMENINO' }
+              { text: data.patient.gender.value }
             ],
             [
               { text: 'FONO', style: 'tableHeader', bold: true },
-              { text: '+56 9 1234 1234' }
+              { text: data.patient.tel }
             ],
             [
+
               { text: 'EDAD', style: 'tableHeader', bold: true },
-              { text: '53' }
+              { text: Math.floor((new Date() - new Date(data.patient.birthday).getTime()) / 3.15576e+10) }
             ],
             [
               { text: 'FECHA DE NACIMIENTO', style: 'tableHeader', bold: true },
-              { text: '1970-05-03' }
+              { text: new Date(data.patient.birthday).toLocaleString('es-US') }
             ],
             [
               { text: 'DOMICILIO', style: 'tableHeader', bold: true },
-              { text: 'SIEMPREVIVA 123' }
+              { text: data.patient.homeAddress }
             ],
             [
               { text: 'CORREO ELECTRÓNICO', style: 'tableHeader', bold: true },
-              { text: 'AAA@AAA.AA' }
+              { text: data.patient.mail }
             ],
             [
               { text: 'OCUPACIÓN', style: 'tableHeader', bold: true },
-              { text: 'AAA' }
+              { text: data.patient.occupation }
             ],
             [
-              { text: 'REPRESENTANTE LEGAL (EN MENORES)', style: 'tableHeader', bold: true },
-              { text: 'AAA' }
+              { text: 'REPRESENTANTE LEGAL (TUTOR)', style: 'tableHeader', bold: true },
+              { text: data.patient.legalRepresentative }
             ],
-            [
-              { text: 'PREVISIÓN', style: 'tableHeader', bold: true },
-              { text: 'AAAA' }
-            ],
+
           ]
         }
       },
-      
+
       // Horizontal line
       //{ canvas: [ { type: 'line', x1: 0, y1: 0, x2: 520, y2: 0, lineWidth: 1 } ], margin: [0, 5, 0, 5] },
-      
+
       // Anamnesis section
       { text: 'ANAMNESIS:', style: 'sectionHeader', bold: true, margin: [0, 10, 0, 5] },
-      { text: 'Es un texto que puede ser más largo', margin: [0, 0, 0, 10] },
-      
-      { text: 'Ultima receta: 1992/06/05', margin: [0, 0, 0, 5] },
-      { text: 'Antecedente Medico General: Diabetes Mellitus / ', margin: [0, 0, 0, 5] },
-      { text: 'Antecedente Medico Oftamologico: Sin información', margin: [0, 0, 0, 5] },
-      { text: 'Antecedente Familiar: Sin información', margin: [0, 0, 0, 10] },
-      
+      { text: data.anamnesis, margin: [0, 0, 0, 10] },
+
+      { text: 'Ultima receta: ' + new Date(data.latestClinicalDate).toLocaleString('es-US'), margin: [0, 0, 0, 5] },
+      { text: 'Antecedente Medico General: ' + data.generalMedicalHistory, margin: [0, 0, 0, 5] },
+      { text: 'Antecedente Medico Oftamologico: ' + data.ophthalmologicalMedicalHistory, margin: [0, 0, 0, 5] },
+      { text: 'Antecedente Familiar: ' + data.familyMedicalHistory, margin: [0, 0, 0, 10] },
+
       // AV Table with Rojo Pupilar
       { pageBreak: 'before', text: 'AV', style: 'sectionHeader', bold: true, margin: [0, 5, 0, 5] },
       {
@@ -402,21 +402,21 @@ var dd = {
                 ],
                 [
                   { text: 'OD', bold: true },
-                  { text: '' },
-                  { text: '' },
-                  { text: '' }
+                  { text: data.visualAcuity.withoutCorrectionRE },
+                  { text: data.visualAcuity.laserCorrectionRE },
+                  { text: data.visualAcuity.pinholeRE }
                 ],
                 [
                   { text: 'OI', bold: true },
-                  { text: '' },
-                  { text: '' },
-                  { text: '' }
+                  { text: data.visualAcuity.withoutCorrectionLE },
+                  { text: data.visualAcuity.laserCorrectionLE },
+                  { text: data.visualAcuity.pinholeLE }
                 ],
                 [
                   { text: 'Binocular', bold: true },
-                  { text: '' },
-                  { text: '' },
-                  { text: '' }
+                  { text: data.visualAcuity.withoutCorrectionBI },
+                  { text: data.visualAcuity.laserCorrectionBI },
+                  { text: data.visualAcuity.pinholeBI }
                 ]
               ]
             }
@@ -425,21 +425,21 @@ var dd = {
             width: '30%',
             stack: [
               { text: 'Rojo Pupilar', bold: true, margin: [0, 0, 0, 5] },
-              { text: 'OD: Presente', margin: [5, 0, 0, 5] },
-              { text: 'OI: Presente', margin: [5, 0, 0, 0] }
+              { text: 'OD: ' + (data.visualAcuity.pupilRedRE === true ? 'Presente' : 'No presente'), margin: [5, 0, 0, 5] },
+              { text: 'OI: ' + (data.visualAcuity.pupilRedLE === true ? 'Presente' : 'No presente'), margin: [5, 0, 0, 0] }
             ],
             margin: [10, 0, 0, 0]
           }
         ]
       },
-      
+
       // Horizontal line
       //{ canvas: [ { type: 'line', x1: 0, y1: 0, x2: 520, y2: 0, lineWidth: 2 } ], margin: [0, 10, 0, 10] },
       //{ canvas: [ { type: 'line', x1: 0, y1: 0, x2: 520, y2: 0, lineWidth: 1 } ], margin: [0, 5, 0, 10] },
-      
+
       // Refracción Subjetiva
       { text: 'REFRACCION SUBJETIVA', style: 'sectionHeader', bold: true, margin: [0, 5, 0, 5] },
-      
+
       { text: 'Lejos', bold: true, margin: [0, 5, 0, 5] },
       {
         table: {
@@ -455,24 +455,24 @@ var dd = {
             ],
             [
               { text: 'OI', bold: true },
-              { text: '' },
-              { text: '' },
-              { text: '' },
-              { text: '' },
-              { text: '' }
+              { text: data.subjectiveRefractionsFar.sphereLE },
+              { text: data.subjectiveRefractionsFar.cylinderLE },
+              { text: data.subjectiveRefractionsFar.axisLE },
+              { text: data.subjectiveRefractionsFar.vareachedLE },
+              { text: data.subjectiveRefractionsFar.pupilarDistance }
             ],
             [
               { text: 'OD', bold: true },
-              { text: '' },
-              { text: '' },
-              { text: '' },
-              { text: '' },
+              { text: data.subjectiveRefractionsFar.sphereRE },
+              { text: data.subjectiveRefractionsFar.cylinderRE },
+              { text: data.subjectiveRefractionsFar.axisRE },
+              { text: data.subjectiveRefractionsFar.vareachedRE },
               { text: '' }
             ]
           ]
         }
       },
-      
+
       { text: 'Cerca', bold: true, margin: [0, 10, 0, 5] },
       {
         table: {
@@ -488,23 +488,23 @@ var dd = {
             ],
             [
               { text: 'OI', bold: true },
-              { text: '' },
-              { text: '' },
-              { text: '' },
-              { text: '' },
-              { text: '' }
+              { text: data.subjectiveRefractionsFar.sphereLE },
+              { text: data.subjectiveRefractionsFar.cylinderLE },
+              { text: data.subjectiveRefractionsFar.axisLE },
+              { text: data.subjectiveRefractionsFar.vareachedLE },
+              { text: data.subjectiveRefractionsFar.pupilarDistance }
             ],
             [
               { text: 'OD', bold: true },
-              { text: '' },
-              { text: '' },
-              { text: '' },
-              { text: '' },
+              { text: data.subjectiveRefractionsNear.sphereRE },
+              { text: data.subjectiveRefractionsNear.cylinderRE },
+              { text: data.subjectiveRefractionsNear.axisRE },
+              { text: data.subjectiveRefractionsNear.vareachedRE },
               { text: '' }
             ],
             [
               { text: 'ADD', bold: true },
-              { text: '' },
+              { text: data.subjectiveRefractionsNear.add },
               { text: '' },
               { text: '' },
               { text: '' },
@@ -514,7 +514,7 @@ var dd = {
         },
         margin: [0, 0, 0, 10]
       },
-      
+
       // Tonometría
       { text: 'TONOMETRÍA APLANÁTICA', style: 'sectionHeader', bold: true, margin: [0, 10, 0, 5] },
       {
@@ -523,21 +523,21 @@ var dd = {
           body: [
             [
               { text: 'OD', bold: true },
-              { text: '12 mmHg' }
+              { text: data.applanationTonometry.rightEye + ' mmHg' }
             ],
             [
               { text: 'OI', bold: true },
-              { text: '12 mmHg' }
+              { text: data.applanationTonometry.leftEye + ' mmHg' }
             ],
             [
               { text: 'Hora', bold: true },
-              { text: '13:50 hrs' }
+              { text: new Date(data.latestClinicalDate).toLocaleString('es-US') }
             ]
           ]
         },
         margin: [0, 0, 0, 10]
       },
-      
+
       // Lensometría
       { text: 'LENSOMETRÍA', style: 'sectionHeader', bold: true, margin: [0, 10, 0, 5] },
       {
@@ -552,19 +552,19 @@ var dd = {
             ],
             [
               { text: 'OI', bold: true },
-              { text: '' },
-              { text: '' },
-              { text: '' }
+              { text: data.lensometry.sphereLE },
+              { text: data.lensometry.cylinderLE },
+              { text: data.lensometry.axisLE }
             ],
             [
               { text: 'OD', bold: true },
-              { text: '' },
-              { text: '' },
-              { text: '' }
+              { text: data.lensometry.sphereRE },
+              { text: data.lensometry.cylinderRE },
+              { text: data.lensometry.axisRE }
             ],
             [
               { text: 'ADD', bold: true },
-              { text: '' },
+              { text: data.lensometry.add },
               { text: '' },
               { text: '' }
             ]
@@ -572,7 +572,7 @@ var dd = {
         },
         margin: [0, 0, 0, 10]
       },
-      
+
       // Autorefractometría
       { text: 'AUTOREFRACTOMETRÍA', style: 'sectionHeader', bold: true, margin: [0, 10, 0, 5] },
       {
@@ -587,29 +587,29 @@ var dd = {
             ],
             [
               { text: 'OI', bold: true },
-              { text: '' },
-              { text: '' },
-              { text: '' }
+              { text: data.autorefractometry.sphereLE },
+              { text: data.autorefractometry.cylinderLE },
+              { text: data.autorefractometry.axisLE }
             ],
             [
               { text: 'OD', bold: true },
-              { text: '' },
-              { text: '' },
-              { text: '' }
+              { text: data.autorefractometry.sphereRE },
+              { text: data.autorefractometry.cylinderRE },
+              { text: data.autorefractometry.axisRE }
             ]
           ]
         },
         margin: [0, 0, 0, 10]
       },
-      
+
       // Final sections
-      { text: 'OTROS EXÁMENES: Sin información', style: 'sectionHeader', bold: true, margin: [0, 10, 0, 5] },
-      
-      { text: 'OBSERVACIONES: Sin información', style: 'sectionHeader', bold: true, margin: [0, 10, 0, 5] },
-      
-      { text: 'DIAGNÓSTICO: Aqui van los checkbox de miopia', style: 'sectionHeader', bold: true, margin: [0, 10, 0, 5] },
-      
-      { text: 'INDICACIONES: Datos dropdown tipolentes lagrimasartificiales tiempocontrol', style: 'sectionHeader', bold: true, margin: [0, 10, 0, 5] }
+      { text: 'OTROS EXÁMENES: ' + data.otherExam, style: 'sectionHeader', bold: true, margin: [0, 10, 0, 5] },
+
+      { text: 'OBSERVACIONES: ' + data.observations, style: 'sectionHeader', bold: true, margin: [0, 10, 0, 5] },
+
+      { text: 'DIAGNÓSTICO: ' + createTextDiagnosis(data.typeDiagnosis), style: 'sectionHeader', bold: true, margin: [0, 10, 0, 5] },
+
+      { text: 'INDICACIONES: ' + data.typeIndication.value + (data.typeDiagnosis.artificialTear ? '. Lagrimas artificiales' : ''), style: 'sectionHeader', bold: true, margin: [0, 10, 0, 5] }
     ],
     styles: {
       header: {
@@ -636,8 +636,11 @@ var dd = {
       fontSize: 11
     }
   };
+  // Create and return the PDF document
+  return printer.createPdfKitDocument(docDefinition);
 }
 
 module.exports = {
   createPdfDocument,
+  createPDFClinicalRecord
 };

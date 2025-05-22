@@ -16,167 +16,17 @@
       </div>
 
       <form @submit.prevent="saveClinicalRecord" class="space-y-6">
-        <Card class="shadow-sm">
-          <template #title>
-            <div class="flex items-center">
-              <i class="pi pi-user mr-2"></i>
-              <span class="text-xl font-semibold"
-                >Información del Paciente</span
-              >
-            </div>
-          </template>
-          <template #content>
-            <div class="grid grid-cols-1 gap-6">
-              <!-- Patient Selection -->
-              <div>
-                <label
-                  for="patient"
-                  class="block text-sm font-medium text-gray-700 mb-1"
-                  >Paciente *</label
-                >
-                <Dropdown
-                  id="patient"
-                  v-model="clinicalRecord.patientId"
-                  :options="patients"
-                  optionLabel="name"
-                  optionValue="id"
-                  placeholder="Seleccione un paciente"
-                  class="w-full"
-                  :class="{
-                    'p-invalid': submitted && !clinicalRecord.patientId,
-                  }"
-                />
-                <small
-                  v-if="submitted && !clinicalRecord.patientId"
-                  class="p-error"
-                  >El paciente es requerido.</small
-                >
-              </div>
+        <PatientInfo
+          :clinicalRecord="clinicalRecord"
+          :submitted="submitted"
+          :patients="patients"
+        />
 
-              <!-- Anamnesis -->
-              <div>
-                <label
-                  for="anamnesis"
-                  class="block text-sm font-medium text-gray-700 mb-1"
-                  >Anamnesis</label
-                >
-                <Textarea
-                  id="anamnesis"
-                  v-model="clinicalRecord.anamnesis"
-                  rows="4"
-                  autoResize
-                  class="w-full"
-                  placeholder="Ingrese la anamnesis del paciente"
-                />
-              </div>
+        <VisualAcuity
+          :modelValue="clinicalRecord.visualAcuity"
+          @update:modelValue="clinicalRecord.visualAcuity = $event"
+        />
 
-              <div class="field">
-                <label for="latestClinicalDate">Latest Clinical Date</label>
-                <Calendar
-                  id="latestClinicalDate"
-                  v-model="clinicalRecord.latestClinicalDate"
-                  :showIcon="true"
-                />
-              </div>
-
-              <div class="field">
-                <label for="ophthalmologicalMedicalHistory"
-                  >Ophthalmological Medical History</label
-                >
-                <Textarea
-                  id="ophthalmologicalMedicalHistory"
-                  v-model="clinicalRecord.ophthalmologicalMedicalHistory"
-                  rows="4"
-                  autoResize
-                  class="w-full"
-                />
-              </div>
-
-              <div class="field">
-                <label for="familyMedicalHistory">Family Medical History</label>
-                <Textarea
-                  id="familyMedicalHistory"
-                  v-model="clinicalRecord.familyMedicalHistory"
-                  rows="5"
-                />
-              </div>
-
-              <div class="field">
-                <label for="generalMedicalHistory"
-                  >General Medical History</label
-                >
-                <Textarea
-                  id="generalMedicalHistory"
-                  v-model="clinicalRecord.generalMedicalHistory"
-                  rows="5"
-                />
-              </div>
-
-              <!-- VisualAcuity -->
-              <VisualAcuity
-                :modelValue="clinicalRecord.visualAcuity"
-                @update:modelValue="clinicalRecord.visualAcuity = $event"
-              />
-
-              <!-- Lensometry -->
-              <Lensometry
-                :modelValue="clinicalRecord.lensometry"
-                @update:modelValue="clinicalRecord.lensometry = $event"
-              />
-
-              <!-- Autorefractometria -->
-              <Autorefractometria
-                :modelValue="clinicalRecord.autorefractometria"
-                @update:modelValue="clinicalRecord.autorefractometria = $event"
-              />
-
-              <div class="field">
-                <label for="otherExam">Other Exam</label>
-                <Textarea
-                  id="otherExam"
-                  v-model="clinicalRecord.otherExam"
-                  rows="5"
-                />
-              </div>
-
-              <div class="field">
-                <label for="observations">Observations</label>
-                <Textarea
-                  id="observations"
-                  v-model="clinicalRecord.observations"
-                  rows="5"
-                />
-              </div>
-
-              <div class="field">
-                <label for="indicationId">Indication ID</label>
-                <Dropdown
-                  id="indicationId"
-                  v-model="clinicalRecord.indicationId"
-                  :options="indications"
-                  optionLabel="name"
-                  placeholder="Select Indication"
-                />
-              </div>
-
-              <div class="field">
-                <label for="controlId">Control ID</label>
-                <Dropdown
-                  id="controlId"
-                  v-model="clinicalRecord.controlId"
-                  :options="controls"
-                  optionLabel="name"
-                  placeholder="Select Control"
-                />
-              </div>
-            </div>
-          </template>
-        </Card>
-
-        <!-- Visual Acuity Section using the component -->
-        <VisualAcuity v-model="clinicalRecord.visualAcuity" />
-
-        <!-- Subjective Refraction Section using the component -->
         <SubjectiveRefraction
           v-model:subjectiveRefractionFar="
             clinicalRecord.subjectiveRefractionFar
@@ -187,74 +37,26 @@
           v-model:diagnosis="clinicalRecord.diagnosis"
         />
 
-        <!-- Tonometry Section -->
-        <Card class="shadow-sm">
-          <template #title>
-            <div class="flex items-center">
-              <i class="pi pi-chart-line mr-2"></i>
-              <span class="text-xl font-semibold">Tonometría Aplanática</span>
-            </div>
-          </template>
-          <template #content>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700"
-                  >Ojo Derecho (OD)</label
-                >
-                <InputNumber
-                  v-model="clinicalRecord.applanationTonometry.rightEye"
-                  mode="decimal"
-                  :minFractionDigits="0"
-                  :maxFractionDigits="0"
-                  locale="en-US"
-                  class="w-full"
-                  placeholder="OD"
-                />
-              </div>
-              <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700"
-                  >Ojo Izquierdo (OI)</label
-                >
-                <InputNumber
-                  v-model="clinicalRecord.applanationTonometry.leftEye"
-                  mode="decimal"
-                  :minFractionDigits="0"
-                  :maxFractionDigits="0"
-                  locale="en-US"
-                  class="w-full"
-                  placeholder="OI"
-                />
-              </div>
-            </div>
-          </template>
-        </Card>
+        <!-- Tonometry Component -->
+        <Tonometry :clinicalRecord="clinicalRecord" />
 
-        <!-- Diagnosis Section -->
-        <Card class="shadow-sm">
-          <template #title>
-            <div class="flex items-center">
-              <i class="pi pi-file-o mr-2"></i>
-              <span class="text-xl font-semibold">Diagnóstico Final</span>
-            </div>
-          </template>
-          <template #content>
-            <div>
-              <label
-                for="finalDiagnosis"
-                class="block text-sm font-medium text-gray-700 mb-1"
-                >Diagnóstico</label
-              >
-              <Textarea
-                id="finalDiagnosis"
-                v-model="clinicalRecord.finalDiagnosis"
-                rows="4"
-                autoResize
-                class="w-full"
-                placeholder="Ingrese el diagnóstico del paciente"
-              />
-            </div>
-          </template>
-        </Card>
+        <Lensometry
+          :modelValue="clinicalRecord.lensometry"
+          @update:modelValue="clinicalRecord.lensometry = $event"
+        />
+
+        <Autorefractometria
+          :modelValue="clinicalRecord.autorefractometry"
+          @update:modelValue="clinicalRecord.autorefractometry = $event"
+        />
+
+        <!-- Diagnosis Component -->
+        <Diagnosis
+          :clinicalRecord="clinicalRecord"
+          :indications="indications"
+          :controls="controls"
+          :typeDiagnosis="clinicalRecord.typeDiagnosis"
+        />
 
         <!-- Form Actions -->
         <div class="flex justify-end space-x-3">
@@ -279,18 +81,16 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import InputNumber from "primevue/inputnumber";
 import Card from "primevue/card";
 import Button from "primevue/button";
-import Textarea from "primevue/textarea";
-import Dropdown from "primevue/dropdown";
-import Calendar from "primevue/calendar";
-import apiClient from "../axios-config";
 import VisualAcuity from "../components/clinicalRecord/VisualAcuity.vue";
+import SubjectiveRefraction from "../components/clinicalRecord/SubjetiveRefraction.vue";
+import PatientInfo from "../components/clinicalRecord/PatientInfo.vue";
+import Tonometry from "../components/clinicalRecord/Tonometry.vue";
+import Diagnosis from "../components/clinicalRecord/Diagnosis.vue";
 import Lensometry from "../components/clinicalRecord/Lensometry.vue";
 import Autorefractometria from "../components/clinicalRecord/Autorefractometria.vue";
-/* import Lensometry from "./Lensometry.vue";
-import Autorefractometria from "./.vue"; */
+import apiClient from "../axios-config";
 
 const router = useRouter();
 const route = useRoute();
@@ -298,36 +98,58 @@ const route = useRoute();
 // Form submission state
 const submitted = ref(false);
 
-// State to hold clinical record data
 const clinicalRecord = ref({
+  // Basic fields
+  id: null,
   patientId: null,
   userId: parseInt(localStorage.getItem("iduser")),
   anamnesis: null,
-  latestClinicalDate: null,
-  ophthalmologicalMedicalHistory: "",
-  familyMedicalHistory: "",
-  generalMedicalHistory: "",
-  visualAcuity: {},
-  lensometry: {},
-  autorefractometria: {},
-  otherExam: "",
-  observations: "",
+  otherExam: null,
+  observations: null,
   indicationId: null,
   controlId: null,
-  finalDiagnosis: null,
+  latestClinicalDate: null,
+  ophthalmologicalMedicalHistory: null,
+  familyMedicalHistory: null,
+  generalMedicalHistory: null,
+
+  // Visual Acuity - handle both null and existing data
   visualAcuity: {
-    withoutCorrectionLE: null,
     withoutCorrectionRE: null,
-    withoutCorrectionBI: null,
-    laserCorrectionLE: null,
     laserCorrectionRE: null,
-    laserCorrectionBI: null,
-    pinholeLE: null,
     pinholeRE: null,
+    withoutCorrectionLE: null,
+    laserCorrectionLE: null,
+    pinholeLE: null,
+    withoutCorrectionBI: null,
+    laserCorrectionBI: null,
     pinholeBI: null,
-    pupilRedLE: null,
     pupilRedRE: null,
+    pupilRedLE: null,
   },
+
+  // Lensometry
+  lensometry: {
+    sphereLE: null,
+    sphereRE: null,
+    cylinderLE: null,
+    cylinderRE: null,
+    axisLE: null,
+    axisRE: null,
+    add: null,
+  },
+
+  // Autorefractometry
+  autorefractometry: {
+    sphereLE: null,
+    sphereRE: null,
+    cylinderLE: null,
+    cylinderRE: null,
+    axisLE: null,
+    axisRE: null
+  },
+
+  // Subjective Refraction Far
   subjectiveRefractionFar: {
     sphereLE: null,
     sphereRE: null,
@@ -339,6 +161,8 @@ const clinicalRecord = ref({
     vareachedRE: null,
     pupilarDistance: null,
   },
+
+  // Subjective Refraction Near
   subjectiveRefractionNear: {
     sphereLE: null,
     sphereRE: null,
@@ -351,22 +175,38 @@ const clinicalRecord = ref({
     pupilarDistance: null,
     add: null,
   },
+
+  // Applanation Tonometry
   applanationTonometry: {
     leftEye: null,
     rightEye: null,
   },
-});
 
+  // Type Diagnosis
+  typeDiagnosis: {
+    myopia: null,
+    hyperopia: null,
+    astigmatism: null,
+    presbyopia: null,
+    emmetrope: null,
+    derived: null,
+    artificialTear: null,
+  },
+});
 const isNew = ref(true);
 const patients = ref([]);
+const indications = ref([]);
+const controls = ref([]);
 
 onMounted(async () => {
-  const patientId = route.query.id || route.params.id; // Use query or params to get the ID
+  const patientId = route.query.id || route.params.id;
   if (patientId) {
     isNew.value = false;
-    fetchClinicalRecordDetails(patientId);
+    await fetchClinicalRecordDetails(patientId);
   }
-  fetchPatients();
+  await fetchPatients();
+  await fetchIndications();
+  await fetchControls();
 });
 
 const fetchClinicalRecordDetails = async (id) => {
@@ -374,7 +214,13 @@ const fetchClinicalRecordDetails = async (id) => {
     const response = await apiClient.get(`/clinicalRecords/${id}`);
     if (response.status === 200) {
       console.log("[fetchClinicalRecordDetails]", response.data);
-      clinicalRecord.value = response.data.clinicalRecord;
+
+      const data = response.data.data || response.data.clinicalRecord;
+
+      // Map the response data to the form structure
+      //clinicalRecord.value = ;
+
+      console.log("[Mapped Clinical Record]", clinicalRecord.value);
     }
   } catch (error) {
     console.error("Error fetching clinical record details:", error);
@@ -390,13 +236,20 @@ const saveClinicalRecord = async () => {
   }
 
   try {
+    console.log("[Saving Clinical Record]", clinicalRecord.value);
+
     if (isNew.value) {
-      await apiClient.post("/clinicalRecords", clinicalRecord.value);
+      const response = await apiClient.post(
+        "/clinicalRecords",
+        clinicalRecord.value
+      );
+      console.log("[Created Clinical Record]", response.data);
     } else {
-      await apiClient.put(
+      const response = await apiClient.put(
         `/clinicalRecords/${clinicalRecord.value.id}`,
         clinicalRecord.value
       );
+      console.log("[Updated Clinical Record]", response.data);
     }
     router.push("/app/listClinicalRecord");
   } catch (error) {
@@ -418,13 +271,25 @@ const fetchPatients = async () => {
 
 const fetchIndications = async () => {
   try {
-    const response = await apiClient.get("clinicalRecords/patients/name");
+    const response = await apiClient.get("clinicalRecords/indications");
     if (response.status === 200) {
-      console.log("[fetchPatients]", response.data.patients);
-      patients.value = response.data.patients;
+      console.log("[fetchIndications]", response.data.indications);
+      indications.value = response.data.indications;
     }
   } catch (error) {
-    console.error("Failed to fetch patients:", error);
+    console.error("Failed to fetch indications:", error);
+  }
+};
+
+const fetchControls = async () => {
+  try {
+    const response = await apiClient.get("clinicalRecords/controls");
+    if (response.status === 200) {
+      console.log("[fetchControls]", response.data.controls);
+      controls.value = response.data.controls;
+    }
+  } catch (error) {
+    console.error("Failed to fetch controls:", error);
   }
 };
 </script>

@@ -8,6 +8,10 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement: true,
         primaryKey: true,
       },
+      clinicalRecordId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
       myopia: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
@@ -38,6 +42,11 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: false,
       },
+      artificialTear: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
     },
     {
       tableName: "TypeDiagnoses",
@@ -46,8 +55,9 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   TypeDiagnosis.associate = (models) => {
+    // One-to-one relationship with ClinicalRecord
     TypeDiagnosis.belongsTo(models.ClinicalRecord, {
-      foreignKey: "diagnosisId",
+      foreignKey: "clinicalRecordId",
       as: "clinicalRecord",
     });
   };

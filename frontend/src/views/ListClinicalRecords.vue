@@ -2,12 +2,8 @@
   <div class="p-3">
     <Toast />
     <div class="pb-4">
-      <h1 class="text-3xl font-bold">
-        Listado Ficha Clínica
-      </h1>
-      <p class="text-gray-600 mt-1">
-        
-      </p>
+      <h1 class="text-3xl font-bold">Listado Ficha Clínica</h1>
+      <p class="text-gray-600 mt-1"></p>
     </div>
 
     <!-- Debug section to verify data loading -->
@@ -89,10 +85,13 @@
       </template>
     </DataTable>
 
-    <!-- Using the new clinical record dialog component -->
+    <!-- Using the new clinical record dialog component with patients data -->
     <ClinicalRecordDialog
       v-model:visible="visible"
       :clinicalRecord="detailClinicalRecord"
+      :patients="patients"
+      :indications="indications"
+      :controls="controls"
       @print="handlePrintRecord"
     />
   </div>
@@ -118,121 +117,141 @@ const expandedRowGroups = ref([]);
 const loading = ref(true);
 const visible = ref(false);
 
+//Used for the dialog, to block edit
+const isNew = ref(false);
+
+// Add patients ref for the dialog component
+const patients = ref([]);
+const indications = ref([]);
+const controls = ref([]);
+
 // Initialize with empty structure matching the expected format
 const detailClinicalRecord = ref({
-  id: null,
   patientId: null,
-  userId: null,
+  userId: parseInt(localStorage.getItem("iduser")),
   anamnesis: null,
-  othersDetails: null,
-  subjectiveRefractionDefects: {
+  otherExam: null,
+  observations: null,
+  indicationId: null,
+  controlId: null,
+  latestClinicalDate: null,
+  ophthalmologicalMedicalHistory: "",
+  familyMedicalHistory: "",
+  generalMedicalHistory: "",
+  visualAcuity: {
+    withoutCorrectionRE: null,
+    laserCorrectionRE: null,
+    pinholeRE: null,
+    withoutCorrectionLE: null,
+    laserCorrectionLE: null,
+    pinholeLE: null,
+    withoutCorrectionBI: null,
+    laserCorrectionBI: null,
+    pinholeBI: null,
+    pupilRedRE: null,
+    pupilRedLE: null,
+  },
+  lensometry: {
+    sphereLE: null,
+    sphereRE: null,
+    cylinderLE: null,
+    cylinderRE: null,
+    axisLE: null,
+    axisRE: null,
+    vareachedLE: null,
+    vareachedRE: null,
+    pupilarDistance: null,
+    add: null,
+  },
+  autorefractometry: {
+    sphereLE: null,
+    sphereRE: null,
+    cylinderLE: null,
+    cylinderRE: null,
+    axisLE: null,
+    axisRE: null,
+    vareachedLE: null,
+    vareachedRE: null,
+    pupilarDistance: null,
+    add: null,
+  },
+  subjectiveRefractionFar: {},
+  subjectiveRefractionNear: {},
+  applanationTonometry: {
+    leftEye: null,
+    rightEye: null,
+  },
+  typeDiagnosis: {
     myopia: null,
     hyperopia: null,
     astigmatism: null,
     presbyopia: null,
-    anisometropia: null,
-  },
-  createdAt: null,
-  updatedAt: null,
-  patient: {
-    id: null,
-    name: null,
-    passport: null,
-    genderId: null,
-    tel: null,
-    birthday: null,
-    homeAddress: null,
-    mail: null,
-    occupation: null,
-    legalRepresentative: null,
-    idIsapre: null,
-    createdAt: null,
-    updatedAt: null,
-    gender: {
-      id: null,
-      value: null,
-    },
-    isapre: {
-      id: null,
-      value: null,
-    },
-  },
-  user: {
-    id: null,
-    username: null,
-    password: null,
-    typeUserId: null,
-    status: true,
-    createdAt: null,
-    updatedAt: null,
-    userType: {
-      id: null,
-      type: null,
-      createdAt: null,
-      updatedAt: null,
-    },
-  },
-  visualAcuity: {
-    id: null,
-    clinicalRecordId: null,
-    withoutCorrectionLE: null,
-    withoutCorrectionRE: null,
-    withoutCorrectionBI: null,
-    laserCorrectionLE: null,
-    laserCorrectionRE: null,
-    laserCorrectionBI: null,
-    pinholeLE: null,
-    pinholeRE: null,
-    pinholeBI: null,
-    pupilRedLE: null,
-    pupilRedRE: null,
-    createdAt: null,
-    updatedAt: null,
-  },
-  subjectiveRefractionsFar: {
-    id: null,
-    clinicalRecordId: null,
-    sphereLE: null,
-    sphereRE: null,
-    cylinderLE: null,
-    cylinderRE: null,
-    axisLE: null,
-    axisRE: null,
-    vareachedLE: null,
-    vareachedRE: null,
-    pupilarDistance: null,
-    createdAt: null,
-    updatedAt: null,
-  },
-  subjectiveRefractionsNear: {
-    id: null,
-    clinicalRecordId: null,
-    sphereLE: null,
-    sphereRE: null,
-    cylinderLE: null,
-    cylinderRE: null,
-    axisLE: null,
-    axisRE: null,
-    vareachedLE: null,
-    vareachedRE: null,
-    pupilarDistance: null,
-    createdAt: null,
-    updatedAt: null,
-  },
-  applanationTonometry: {
-    id: null,
-    leftEye: null,
-    rightEye: null,
-    dateTime: null,
-    createdAt: null,
-    updatedAt: null,
-    clinicalRecordId: null,
+    emmetrope: null,
+    derived: null,
+    artificialTear: null
   },
 });
 
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
+
+// Fetch patient names function
+const fetchPatientNames = async () => {
+  try {
+    const response = await apiClient.get("clinicalRecords/patients/name");
+    if (response.status === 200) {
+      console.log("[fetchPatients]", response.data.patients);
+      patients.value = response.data.patients;
+    }
+  } catch (error) {
+    console.error("Failed to fetch patients:", error);
+    toast.add({
+      severity: "error",
+      summary: "Error",
+      detail: "Error al cargar la lista de pacientes",
+      life: 3000,
+    });
+  }
+};
+
+// Fetch indications function
+const fetchIndications = async () => {
+  try {
+    const response = await apiClient.get("clinicalRecords/indications");
+    if (response.status === 200) {
+      console.log("[fetchIndications]", response.data.indications);
+      indications.value = response.data.indications;
+    }
+  } catch (error) {
+    console.error("Failed to fetch indications:", error);
+    toast.add({
+      severity: "error",
+      summary: "Error",
+      detail: "Error al cargar las indicaciones",
+      life: 3000,
+    });
+  }
+};
+
+// Fetch controls function
+const fetchControls = async () => {
+  try {
+    const response = await apiClient.get("clinicalRecords/controls");
+    if (response.status === 200) {
+      console.log("[fetchControls]", response.data.controls);
+      controls.value = response.data.controls;
+    }
+  } catch (error) {
+    console.error("Failed to fetch controls:", error);
+    toast.add({
+      severity: "error",
+      summary: "Error",
+      detail: "Error al cargar los controles",
+      life: 3000,
+    });
+  }
+};
 
 // Format date function
 const formatDate = (dateString) => {
@@ -247,7 +266,6 @@ const formatDate = (dateString) => {
   });
 };
 
-// View record function
 const viewRecord = async (record) => {
   const { id } = record;
   console.log("Viewing record:", id);
@@ -258,22 +276,8 @@ const viewRecord = async (record) => {
     );
     if (response.status === 200) {
       console.log("[viewRecord] API Response:", response.data);
-      const recordData = response.data.data || {};
-      
-      // Transform diagnosis conditions into refractionDefects format if needed
-      if (recordData.diagnosis && recordData.diagnosis.conditions && !recordData.subjectiveRefractionDefects) {
-        // Convert array of conditions to object format
-        recordData.subjectiveRefractionDefects = {
-          myopia: recordData.diagnosis.conditions.includes('myopia'),
-          hyperopia: recordData.diagnosis.conditions.includes('hyperopia'),
-          astigmatism: recordData.diagnosis.conditions.includes('astigmatism'),
-          presbyopia: recordData.diagnosis.conditions.includes('presbyopia'),
-          anisometropia: recordData.diagnosis.conditions.includes('anisometropia')
-        };
-      }
-      
-      detailClinicalRecord.value = recordData;
-      visible.value = true;
+      detailClinicalRecord.value = response.data.data;
+      visible.value = true; // Ensure the dialog is made visible
     }
   } catch (error) {
     console.error("API Error:", error);
@@ -297,13 +301,17 @@ const handlePrintRecord = async (record) => {
     detail: `Imprimiendo ficha del paciente: ${record.patient.name}`,
     life: 3000,
   });
-  
+
   try {
     // Setting responseType to 'blob'
-    const response = await apiClient.post(`clinicalRecords/generatePDF/${record.id}`, null, {
-      responseType: 'blob'
-    });
-    
+    const response = await apiClient.post(
+      `clinicalRecords/generatePDF/${record.id}`,
+      null,
+      {
+        responseType: "blob",
+      }
+    );
+
     const blob = new Blob([response.data], { type: "application/pdf" });
     const url = window.URL.createObjectURL(blob);
     window.open(url, "_blank");
@@ -383,6 +391,10 @@ const fetchClinicalRecords = async () => {
 };
 
 onMounted(() => {
+  // Fetch all required data on component mount
   fetchClinicalRecords();
+  fetchPatientNames();
+  fetchIndications();
+  fetchControls();
 });
 </script>

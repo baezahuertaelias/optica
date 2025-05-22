@@ -12,4 +12,8 @@ router.get('/', authMiddleware, clinicalRecordsController.getAllrecords);
 router.post('/', authMiddleware, clinicalRecordsController.createClinicalRecordWithRelations);
 router.post('/generatePDF/:id', authMiddleware, clinicalRecordsController.generatePDF);
 
+// New routes for getting all indications and controls
+router.get('/indications', authMiddleware, clinicalRecordsController.getAllIndications);
+router.get('/controls', authMiddleware, clinicalRecordsController.getAllControls);
+
 module.exports = router;

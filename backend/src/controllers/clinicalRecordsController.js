@@ -1,3 +1,4 @@
+const { createPDFClinicalRecord } = require("../helpers/pdf");
 const {
   ClinicalRecord,
   VisualAcuity,
@@ -10,6 +11,9 @@ const {
   Gender,
   User,
   TypeUser,
+  TypeIndication,
+  TypeControl,
+  TypeDiagnosis
 } = require("../models");
 const { sequelize } = require("../models");
 
@@ -18,12 +22,14 @@ module.exports = {
     const transaction = await sequelize.transaction();
 
     try {
-      console.log("body", req.body);
-
+      
       const clinicalRecord = await ClinicalRecord.create(
-        req.body.clinicalRecord,
+        req.body,
         { transaction }
       );
+      console.log('[createClinicalRecordWithRelations] paso1', clinicalRecord);
+
+      console.log('[createClinicalRecordWithRelations] visualAcuity', req.body.visualAcuity);
 
       if (req.body.visualAcuity) {
         await VisualAcuity.create(
@@ -31,6 +37,8 @@ module.exports = {
           { transaction }
         );
       }
+
+      console.log('[createClinicalRecordWithRelations] subjectiveRefractionFar', req.body.subjectiveRefractionFar);
 
       if (req.body.subjectiveRefractionFar) {
         await SubjectiveRefractionFar.create(
@@ -42,6 +50,41 @@ module.exports = {
         );
       }
 
+      console.log('[createClinicalRecordWithRelations] subjectiveRefractionNear', req.body.subjectiveRefractionNear);
+
+      if (req.body.subjectiveRefractionNear) {
+        await SubjectiveRefractionNear.create(
+          {
+            ...req.body.subjectiveRefractionNear,
+            clinicalRecordId: clinicalRecord.id,
+          },
+          { transaction }
+        );
+      }
+      console.log('[createClinicalRecordWithRelations] applanationTonometry', req.body.applanationTonometry);
+      
+      if (req.body.applanationTonometry) {
+        await ApplanationTonometry.create(
+          {
+            ...req.body.applanationTonometry,
+            clinicalRecordId: clinicalRecord.id,
+            dateTime: new Date()
+          },
+          { transaction }
+        );
+      }
+      
+      console.log('[createClinicalRecordWithRelations] lensometry', req.body.lensometry);
+
+      if (req.body.lensometry) {
+        await Lensometry.create(
+          { ...req.body.lensometry, clinicalRecordId: clinicalRecord.id },
+          { transaction }
+        );
+      }
+
+      console.log('[createClinicalRecordWithRelations] autorefractometry', req.body.autorefractometry);
+
       if (req.body.autorefractometry) {
         await Autorefractometry.create(
           {
@@ -52,28 +95,38 @@ module.exports = {
         );
       }
 
-      if (req.body.applanationTonometry) {
-        await ApplanationTonometry.create(
+      console.log('[createClinicalRecordWithRelations] typeDiagnosis', req.body.typeDiagnosis);
+
+      if (req.body.typeDiagnosis) {
+        await TypeDiagnosis.create(
           {
-            ...req.body.applanationTonometry,
+            //...req.body.typeDiagnosis,
+            myopia: req.body.typeDiagnosis.myopia || false,
+            hyperopia: req.body.typeDiagnosis.hyperopia || false,
+            astigmatism: req.body.typeDiagnosis.astigmatism || false,
+            presbyopia: req.body.typeDiagnosis.presbyopia || false,
+            emmetrope: req.body.typeDiagnosis.emmetrope || false,
+            derived: req.body.typeDiagnosis.derived || false,
+            artificialTear: req.body.typeDiagnosis.artificialTear || false,
             clinicalRecordId: clinicalRecord.id,
           },
           { transaction }
         );
       }
+      
 
-      if (req.body.lensometry) {
-        await Lensometry.create(
-          { ...req.body.lensometry, clinicalRecordId: clinicalRecord.id },
-          { transaction }
-        );
-      }
+
+
+
+      console.log('[createClinicalRecordWithRelations] paso7');
 
       // Add other related models here...
 
       await transaction.commit();
       res.status(201).send(clinicalRecord);
     } catch (error) {
+      console.log('[CreateClinicalRecord] error', error);
+
       await transaction.rollback();
       res.status(400).send(error.message);
     }
@@ -137,48 +190,91 @@ module.exports = {
 
   async getClinicalRecordWithRelations(req, res) {
     const { id } = req.params;
-
     try {
-      // Find the clinical record by ID and include all related models
-      const clinicalRecord = await ClinicalRecord.findByPk(id, {
-        include: [
-          {
-            model: Patient, // Fixed: changed from Patients to Patient
-            as: "patient", // Fixed: changed from 'Patient' to 'patient'
+        // Find the clinical record by ID and include all related models
+        const clinicalRecord = await ClinicalRecord.findByPk(id, {
             include: [
-              { model: Gender, as: "gender" }, // Fixed model and alias names
-              /* { model: Isapre, as: 'isapre' } */ // Fixed model and alias names
+                {
+                    model: Patient,
+                    as: "patient",
+                    include: [
+                        { model: Gender, as: "gender" },
+                        // { model: Isapre, as: 'isapre' } // Uncomment if needed
+                    ],
+                },
+                {
+                    model: User,
+                    as: "user",
+                    include: [
+                        { model: TypeUser, as: "typeUser" },
+                    ],
+                },
+                { 
+                    model: VisualAcuity, 
+                    as: "visualAcuity",
+                    required: false // This makes it a LEFT JOIN instead of INNER JOIN
+                },
+                { 
+                    model: SubjectiveRefractionFar, 
+                    as: "subjectiveRefractionsFar",
+                    required: false
+                },
+                { 
+                    model: SubjectiveRefractionNear, 
+                    as: "subjectiveRefractionsNear",
+                    required: false
+                },
+                { 
+                    model: ApplanationTonometry, 
+                    as: "applanationTonometry",
+                    required: false
+                },
+                { 
+                    model: Lensometry, 
+                    as: 'lensometry',
+                    required: false
+                },
+                { 
+                    model: Autorefractometry, 
+                    as: 'autorefractometry',
+                    required: false
+                },
+                { 
+                    model: TypeDiagnosis, 
+                    as: 'typeDiagnosis',
+                    required: false
+                },
+                {
+                    model: TypeControl,
+                    as: "control",
+                    required: false
+                },
+                {
+                    model: TypeIndication,
+                    as: "typeIndication",
+                    required: false
+                }
             ],
-          },
-          {
-            model: User,
-            as: "user", // Fixed model and alias names
-            include: [
-              { model: UserType, as: "userType" }, // Fixed model and alias names
-            ],
-          },
-          { model: VisualAcuity, as: "visualAcuity" }, // Fixed: using camelCase alias
-          { model: SubjectiveRefractionFar, as: "subjectiveRefractionsFar" }, // Corrected alias
-          { model: SubjectiveRefractionNear, as: "subjectiveRefractionsNear" }, // Corrected alias
-          { model: ApplanationTonometry, as: "applanationTonometry" }, // Include ApplanationTonometry
-          /* { model: SubjectiveRefractionDefects, as: 'subjectiveRefractionDefects' } // Include SubjectiveRefractionDefects */
-        ],
-      });
-
-      if (!clinicalRecord) {
-        return res.status(404).json({
-          success: false,
-          message: "Clinical record not found",
         });
-      }
 
-      return res.status(200).json({
-        success: true,
-        data: clinicalRecord,
-      });
+        if (!clinicalRecord) {
+            return res.status(404).json({
+                success: false,
+                message: "Clinical record not found",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: clinicalRecord,
+        });
     } catch (error) {
-      console.error("Failed to fetch a clinical record:", error);
-      return res.status(500).json({ message: "Internal server error" });
+        console.error("Failed to fetch a clinical record:", error);
+        return res.status(500).json({ 
+            success: false,
+            message: "Internal server error",
+            error: error.message // Add error details for debugging
+        });
     }
   },
 
@@ -228,33 +324,29 @@ module.exports = {
       const clinicalRecord = await ClinicalRecord.findByPk(id, {
         include: [
           {
-            model: Patient, // Fixed: changed from Patients to Patient
-            as: "patient", // Fixed: changed from 'Patient' to 'patient'
-            include: [
-              { model: Gender, as: "gender" }, // Fixed model and alias names
-              { model: Isapre, as: "isapre" }, // Fixed model and alias names
-            ],
+            model: Patient,
+            as: "patient",
+            include: [{ model: Gender, as: "gender" }],
           },
           {
             model: User,
-            as: "user", // Fixed model and alias names
-            include: [
-              { model: UserType, as: "userType" }, // Fixed model and alias names
-            ],
+            as: "user",
+            include: [{ model: TypeUser, as: "typeUser" }],
           },
-          { model: VisualAcuity, as: "visualAcuity" }, // Fixed: using camelCase alias
-          { model: SubjectiveRefractionFar, as: "subjectiveRefractionsFar" }, // Corrected alias
-          { model: SubjectiveRefractionNear, as: "subjectiveRefractionsNear" }, // Corrected alias
-          { model: ApplanationTonometry, as: "applanationTonometry" }, // Include ApplanationTonometry
-          {
-            model: SubjectiveRefractionDefects,
-            as: "subjectiveRefractionDefects",
-          }, // Include SubjectiveRefractionDefects
+          { model: VisualAcuity, as: "visualAcuity" },
+          { model: SubjectiveRefractionFar, as: "subjectiveRefractionsFar" },
+          { model: SubjectiveRefractionNear, as: "subjectiveRefractionsNear" },
+          { model: ApplanationTonometry, as: "applanationTonometry" },
+          { model: Lensometry, as: "lensometry" },
+          { model: Autorefractometry, as: "autorefractometry" },
+          { model: TypeDiagnosis, as: 'typeDiagnosis' },
+          { model: TypeControl, as: "control" },
+          { model: TypeIndication, as: "typeIndication" }
         ],
       });
 
       // Create the PDF document
-      const pdfDoc = createPdfDocument(clinicalRecord);
+      const pdfDoc = createPDFClinicalRecord(clinicalRecord);
 
       // Set response headers
       res.setHeader("Content-Type", "application/pdf");
@@ -273,4 +365,25 @@ module.exports = {
       res.status(500).send("Error generating PDF");
     }
   },
+
+  async getAllIndications(req, res) {
+    try {
+      const indications = await TypeIndication.findAll();
+      return res.status(200).json({ indications });
+    } catch (error) {
+      console.error("Failed to fetch indications:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  },
+
+  async getAllControls(req, res) {
+    try {
+      const controls = await TypeControl.findAll();
+      return res.status(200).json({ controls });
+    } catch (error) {
+      console.error("Failed to fetch controls:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  },
+
 };

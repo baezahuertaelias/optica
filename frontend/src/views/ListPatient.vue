@@ -165,11 +165,6 @@
         </div>
         <div class="text-center mb-3">
           <h2 class="text-xl font-bold">{{ selectedPatient.name }}</h2>
-          <Tag
-            :value="selectedPatient.isapre.value"
-            :severity="getIsapreSeverity(selectedPatient.isapre.value)"
-            class="mt-2"
-          />
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div class="field">

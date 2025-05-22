@@ -1,4 +1,4 @@
-const { Patient, Isapre, Gender, Country } = require("../models");
+const { Patient, Isapre, Gender, Country, ClinicalRecord } = require("../models");
 // ... rest of code here ...
 
 module.exports = {
@@ -17,8 +17,6 @@ module.exports = {
         isapreId,
         countryId,
       } = req.body;
-
-      console.log("createpatient body", req.body);
 
       if (!name || !genderId || !mail || !birthday) {
         return res.status(400).json({ message: "Required fields missing" });

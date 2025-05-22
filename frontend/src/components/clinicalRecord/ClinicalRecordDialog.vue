@@ -1,136 +1,84 @@
 <template>
   <Dialog
     :visible="visible"
-    @update:visible="$emit('update:visible', $event)"
+    @update:visible="(val) => emit('update:visible', val)"
     modal
-    :header="`Ficha clinica ${clinicalRecord?.id || ''}`"
-    :style="{ width: '50rem' }"
-    :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+    :header="'Registro Clínico ' + clinicalRecord.id"
   >
-    <Card class="shadow-sm">
-      <template #title>
-        <div class="flex items-center">
-          <i class="pi pi-user mr-2"></i>
-          <span class="text-xl font-semibold">Información del Paciente</span>
-        </div>
-      </template>
-      <template #content>
-        <div class="grid grid-cols-1 gap-6">
-          <div>
-            <FloatLabel variant="on">
-              <InputText
-                id="on_label_nombre"
-                v-model="safePatientName"
-                class="w-full"
-                style="resize: none"
-                readonly
-              />
-              <label for="on_label_nombre">Nombre</label>
-            </FloatLabel>
-          </div>
+    <!-- Dialog content here -->
+    <div>
+      <form @submit.prevent="saveClinicalRecord" class="space-y-6">
+        <PatientInfo
+          :clinicalRecord="currentRecord"
+          :submitted="submitted"
+          :patients="patients"
+        />
 
-          <div>
-            <FloatLabel variant="on">
-              <Textarea
-                id="on_label_anamnsis"
-                v-model="clinicalRecord.anamnesis"
-                rows="3"
-                style="resize: none"
-                readonly
-                fluid
-              />
-              <label for="on_label_anamnsis">Anamnesis</label>
-            </FloatLabel>
-          </div>
+        <VisualAcuity
+          :modelValue="currentRecord.visualAcuity"
+          @update:modelValue="currentRecord.visualAcuity = $event"
+        />
 
-          <div>
-            <FloatLabel variant="on">
-              <Textarea
-                id="othersDetails"
-                v-model="clinicalRecord.othersDetails"
-                rows="3"
-                style="resize: none"
-                readonly
-                fluid
-              />
-              <label for="othersDetails">Otros Detalles</label>
-            </FloatLabel>
-          </div>
-        </div>
-      </template>
-    </Card>
+        <SubjectiveRefraction
+          v-model:subjectiveRefractionFar="
+            currentRecord.subjectiveRefractionsFar
+          "
+          v-model:subjectiveRefractionNear="
+            currentRecord.subjectiveRefractionsNear
+          "
+        />
 
-    <!-- Visual Acuity Section using the component -->
-    <VisualAcuity v-model="safeVisualAcuity" />
+        <!-- Tonometry Component -->
+        <Tonometry :clinicalRecord="currentRecord" />
 
-    <SubjectiveRefraction
-      v-model:subjectiveRefractionFar="safeSubjectiveRefractionFar"
-      v-model:subjectiveRefractionNear="safeSubjectiveRefractionNear"
-      v-model:subjectiveRefractionDefects="safeRefractionDefects"
-    />
+        <Lensometry
+          :modelValue="currentRecord.lensometry"
+          @update:modelValue="currentRecord.lensometry = $event"
+        />
 
-    <Card>
-      <template #title>Tonometría de Aplanación</template>
-      <template #content>
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium mb-1"
-              >Ojo Izquierdo (OI)</label
-            >
-            <InputNumber
-              v-model="safeTonometryLeftEye"
-              readonly
-              mode="decimal"
-              :minFractionDigits="0"
-              :maxFractionDigits="0"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-1"
-              >Ojo Derecho (OD)</label
-            >
-            <InputNumber
-              v-model="safeTonometryRightEye"
-              readonly
-              mode="decimal"
-              :minFractionDigits="0"
-              :maxFractionDigits="0"
-            />
-          </div>
-        </div>
-      </template>
-    </Card>
+        <Autorefractometria
+          :modelValue="currentRecord.autorefractometry"
+          @update:modelValue="currentRecord.autorefractometry = $event"
+        />
+
+        <!-- Diagnosis Component with error handling -->
+        <Diagnosis
+          :clinicalRecord="currentRecord"
+          :indications="indications"
+          :controls="controls"
+          :typeDiagnosis="currentRecord.typeDiagnosis"
+        />
+      </form>
+    </div>
 
     <template #footer>
       <Button
         label="Cerrar"
         icon="pi pi-times"
-        text
-        @click="closeDialog"
         class="p-button-secondary"
+        @click="closeDialog"
       />
       <Button
         label="Imprimir"
         icon="pi pi-print"
-        outlined
-        @click="printRecord"
         class="p-button-secondary ml-2"
+        @click="printRecord"
       />
     </template>
   </Dialog>
 </template>
-  
+
 <script setup>
-import { defineProps, defineEmits, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import Dialog from "primevue/dialog";
-import Card from "primevue/card";
-import FloatLabel from "primevue/floatlabel";
-import Textarea from "primevue/textarea";
-import InputNumber from "primevue/inputnumber";
 import Button from "primevue/button";
-import InputText from "primevue/inputtext";
-import VisualAcuity from "../clinicalRecord/VisualAcuity.vue";
-import SubjectiveRefraction from "../clinicalRecord/SubjetiveRefraction.vue";
+import PatientInfo from "./PatientInfo.vue";
+import VisualAcuity from "./VisualAcuity.vue";
+import SubjectiveRefraction from "./SubjetiveRefraction.vue";
+import Tonometry from "./Tonometry.vue";
+import Autorefractometria from "./Autorefractometria.vue";
+import Lensometry from "./Lensometry.vue";
+import Diagnosis from "./Diagnosis.vue";
 
 const props = defineProps({
   visible: {
@@ -140,206 +88,157 @@ const props = defineProps({
   clinicalRecord: {
     type: Object,
     required: true,
-    default: () => ({
-      id: null,
-      patient: { name: null },
-      anamnesis: null,
-      othersDetails: null,
-      subjectiveRefractionDefects: {
-        myopia: null,
-        hyperopia: null,
-        astigmatism: null,
-        presbyopia: null,
-        anisometropia: null,
-      },
-      visualAcuity: {
-        withoutCorrectionLE: null,
-        withoutCorrectionRE: null,
-        withoutCorrectionBI: null,
-        laserCorrectionLE: null,
-        laserCorrectionRE: null,
-        laserCorrectionBI: null,
-        pinholeLE: null,
-        pinholeRE: null,
-        pinholeBI: null,
-        pupilRedLE: null,
-        pupilRedRE: null,
-      },
-      subjectiveRefractionsFar: {
-        sphereLE: null,
-        sphereRE: null,
-        cylinderLE: null,
-        cylinderRE: null,
-        axisLE: null,
-        axisRE: null,
-        vareachedLE: null,
-        vareachedRE: null,
-        pupilarDistance: null,
-      },
-      subjectiveRefractionsNear: {
-        sphereLE: null,
-        sphereRE: null,
-        cylinderLE: null,
-        cylinderRE: null,
-        axisLE: null,
-        axisRE: null,
-        vareachedLE: null,
-        vareachedRE: null,
-        pupilarDistance: null,
-        add: null,
-      },
-      applanationTonometry: {
-        leftEye: null,
-        rightEye: null,
-      },
-    }),
+  },
+  patients: {
+    type: Array,
+    default: () => [],
+  },
+  indications: {
+    type: Array,
+    default: () => [],
+  },
+  controls: {
+    type: Array,
+    default: () => [],
   },
 });
 
-const emit = defineEmits(["update:visible", "print"]);
+const emit = defineEmits(["update:visible", "save", "print"]);
 
-// Add computed properties to ensure data safety
-const safePatientName = computed(() => props.clinicalRecord?.patient?.name || "");
+// Form submission state
+const submitted = ref(false);
 
-const safeVisualAcuity = computed(() => props.clinicalRecord?.visualAcuity || {
-  withoutCorrectionLE: null,
-  withoutCorrectionRE: null,
-  withoutCorrectionBI: null,
-  laserCorrectionLE: null,
-  laserCorrectionRE: null,
-  laserCorrectionBI: null,
-  pinholeLE: null,
-  pinholeRE: null,
-  pinholeBI: null,
-  pupilRedLE: null,
-  pupilRedRE: null,
+// Determine if this is a new record or existing one
+const isNew = computed(() => {
+  return !props.clinicalRecord?.id;
 });
 
-const safeSubjectiveRefractionFar = computed(() => props.clinicalRecord?.subjectiveRefractionsFar || {
-  sphereLE: null,
-  sphereRE: null,
-  cylinderLE: null,
-  cylinderRE: null,
-  axisLE: null,
-  axisRE: null,
-  vareachedLE: null,
-  vareachedRE: null,
-  pupilarDistance: null,
+// Create a reactive copy of the clinical record
+const currentRecord = ref({});
+
+// Default structure for new records
+const getDefaultRecord = () => ({
+  patientId: null,
+  userId: parseInt(localStorage.getItem("iduser")) || null,
+  anamnesis: null,
+  othersDetails: null,
+  observations: null,
+  indicationId: null,
+  controlId: null,
+  latestClinicalDate: null,
+  ophthalmologicalMedicalHistory: "",
+  familyMedicalHistory: "",
+  generalMedicalHistory: "",
+  visualAcuity: {
+    
+  },
+  lensometry: {
+    
+  },
+  autorefractometry: {
+    
+  },
+  subjectiveRefractionsFar: {
+    
+  },
+  subjectiveRefractionsNear: {
+    
+  },
+  applanationTonometry: {
+    
+  },
+
+  patient: {
+    
+  },
+  user: {
+    
+  },
 });
 
-const safeSubjectiveRefractionNear = computed(() => props.clinicalRecord?.subjectiveRefractionsNear || {
-  sphereLE: null,
-  sphereRE: null,
-  cylinderLE: null,
-  cylinderRE: null,
-  axisLE: null,
-  axisRE: null,
-  vareachedLE: null,
-  vareachedRE: null,
-  pupilarDistance: null,
-  add: null,
-});
+// Initialize currentRecord when component mounts or props change
+const initializeRecord = () => {
+  if (props.clinicalRecord && Object.keys(props.clinicalRecord).length > 0) {
+    // Deep clone the existing record and ensure all required properties exist
+    const defaultRecord = getDefaultRecord();
 
-const safeRefractionDefects = computed(() => props.clinicalRecord?.subjectiveRefractionDefects || {
-  myopia: null,
-  hyperopia: null,
-  astigmatism: null,
-  presbyopia: null,
-  anisometropia: null
-});
-
-const safeTonometryLeftEye = computed(() => props.clinicalRecord?.applanationTonometry?.leftEye || null);
-const safeTonometryRightEye = computed(() => props.clinicalRecord?.applanationTonometry?.rightEye || null);
+    currentRecord.value = {
+      ...defaultRecord,
+      ...props.clinicalRecord,
+    };
+  } else {
+    // Initialize with default structure for new records
+    currentRecord.value = getDefaultRecord();
+  }
+};
 
 const closeDialog = () => {
   emit("update:visible", false);
 };
 
-const printRecord = () => {  
-  emit("print", props.clinicalRecord);
+const printRecord = () => {
+  emit("print", currentRecord.value);
 };
+
+const saveClinicalRecord = () => {
+  submitted.value = true;
+  // Add validation and API calls here
+  emit("save", currentRecord.value);
+};
+
+// Watch for changes in props to reinitialize the record
+watch(
+  () => props.clinicalRecord,
+  () => {
+    console.log("ClinicalDialog", props);
+
+    if (props.visible) {
+      initializeRecord();
+    }
+  },
+  { deep: true, immediate: true }
+);
+
+// Watch for changes in visible prop to handle dialog state
+watch(
+  () => props.visible,
+  (newVal) => {
+    if (newVal) {
+      console.log("Dialog opened with record:", props.clinicalRecord);
+      console.log("Dialog opened with patients:", props.patients);
+      console.log("Dialog opened with indications:", props.indications);
+      console.log("Dialog opened with controls:", props.controls);
+      initializeRecord();
+    } else {
+      // Reset submitted state when dialog closes
+      submitted.value = false;
+    }
+  }
+);
 </script>
-  
+
 <style scoped>
-.p-card {
-  margin-bottom: 1rem;
-}
-
-.p-card .p-card-content {
-  padding-top: 0.5rem;
-}
-
-.p-inputnumber {
+/* Additional custom styles can be added here */
+:deep(.p-dropdown) {
   width: 100%;
 }
 
-.p-float-label {
-  margin-bottom: 1rem;
+:deep(.p-card) {
+  border-radius: 0.5rem;
 }
 
-.grid {
-  display: grid;
+:deep(.p-tabview .p-tabview-nav) {
+  border-bottom: 2px solid #e2e8f0;
 }
 
-.grid-cols-2 {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+:deep(.p-tabview .p-tabview-nav li .p-tabview-nav-link) {
+  border: none;
+  color: #64748b;
+  padding: 1rem 1.5rem;
 }
 
-.grid-cols-3 {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.gap-2 {
-  gap: 0.5rem;
-}
-
-.gap-4 {
-  gap: 1rem;
-}
-
-.col-span-1 {
-  grid-column: span 1 / span 1;
-}
-
-.mt-2 {
-  margin-top: 0.5rem;
-}
-
-.mt-3 {
-  margin-top: 0.75rem;
-}
-
-.mb-1 {
-  margin-bottom: 0.25rem;
-}
-
-.mb-2 {
-  margin-bottom: 0.5rem;
-}
-
-.ml-2 {
-  margin-left: 0.5rem;
-}
-
-.block {
-  display: block;
-}
-
-.text-sm {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-}
-
-.text-lg {
-  font-size: 1.125rem;
-  line-height: 1.75rem;
-}
-
-.font-medium {
-  font-weight: 500;
-}
-
-.text-gray-500 {
-  color: #6b7280;
+:deep(.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link) {
+  color: #3b82f6;
+  border-bottom: 2px solid #3b82f6;
 }
 </style>

@@ -6,41 +6,44 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true,
-        primaryKey: true,
-      },
-      sphereLE: {
-        type: DataTypes.FLOAT,
-        allowNull: true,
-      },
-      sphereRE: {
-        type: DataTypes.FLOAT,
-        allowNull: true,
-      },
-      cylinderLE: {
-        type: DataTypes.FLOAT,
-        allowNull: true,
-      },
-      cylinderRE: {
-        type: DataTypes.FLOAT,
-        allowNull: true,
-      },
-      axisLE: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-      },
-      axisRE: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-      },
-      add: {
-        type: DataTypes.FLOAT,
-        allowNull: true,
+        primaryKey: true
       },
       clinicalRecordId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        unique: true, // Ensures one-to-one relationship
-      }
+      },
+      sphereLE: {
+        type: DataTypes.FLOAT,
+        allowNull: true
+      },
+      sphereRE: {
+        type: DataTypes.FLOAT,
+        allowNull: true
+      },
+      cylinderLE: {
+        type: DataTypes.FLOAT,
+        allowNull: true
+      },
+      cylinderRE: {
+        type: DataTypes.FLOAT,
+        allowNull: true
+      },
+      axisLE: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+      },
+      axisRE: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+      },
+      vareachedLE: {
+        type: DataTypes.FLOAT,
+        allowNull: true
+      },
+      vareachedRE: {
+        type: DataTypes.FLOAT,
+        allowNull: true
+      },
     },
     {
       tableName: "Autorefractometries",
@@ -49,6 +52,7 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   Autorefractometry.associate = (models) => {
+    // One-to-one relationship with ClinicalRecord
     Autorefractometry.belongsTo(models.ClinicalRecord, {
       foreignKey: "clinicalRecordId",
       as: "clinicalRecord"
