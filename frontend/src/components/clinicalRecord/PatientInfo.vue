@@ -8,8 +8,9 @@
         </div>
       </template>
       <template #content>
-        <div class="grid grid-cols-1 gap-6">
+        <div class="grid grid-cols-1 gap-6 pt-4">
           <div class="field">
+            <FloatLabel>
             <label
               for="patient"
               class="block text-sm font-medium text-gray-700 mb-1"
@@ -23,18 +24,22 @@
               optionValue="id"
               placeholder="Seleccione un paciente"
               class="w-full"
+              filter
+              :disabled="disabled"
               :class="{ 'p-invalid': submitted && !clinicalRecord.patientId }"
             />
+            </FloatLabel>
             <small v-if="submitted && !clinicalRecord.patientId" class="p-error"
               >El paciente es requerido.</small
             >
           </div>
 
           <div class="field">
+            <FloatLabel>
             <label
               for="latestClinicalDate"
               class="block text-sm font-medium text-gray-700 mb-1"
-              >Latest Clinical Date</label
+              >Ultima atencion oftamológica</label
             >
             <Calendar
               id="latestClinicalDate"
@@ -43,11 +48,19 @@
               class="w-full"
               dateFormat="dd-mm-yy"
               :value="formattedDateValue"
+              :disabled="disabled"
+              :class="{ 'p-invalid': submitted && !clinicalRecord.latestClinicalDate }"
             />
+            </FloatLabel>
+            <small v-if="submitted && !clinicalRecord.latestClinicalDate" class="p-error"
+              >latestClinicalDate es requerido.</small
+            >
           </div>
 
           <!-- Anamnesis -->
+          <!-- <FloatLabel></FloatLabel> -->
           <div>
+            <FloatLabel>
             <label
               for="anamnesis"
               class="block text-sm font-medium text-gray-700 mb-1"
@@ -59,15 +72,22 @@
               rows="4"
               autoResize
               class="w-full"
-              placeholder="Ingrese la anamnesis del paciente"
+              placeholder=""
+              :disabled="disabled"
+              :class="{ 'p-invalid': submitted && !clinicalRecord.anamnesis }"
             />
+            </FloatLabel>
+            <small v-if="submitted && !clinicalRecord.anamnesis" class="p-error"
+              >anamnesis es requerido.</small
+            >
           </div>
 
           <div class="field">
+            <FloatLabel>
             <label
               for="ophthalmologicalMedicalHistory"
               class="block text-sm font-medium text-gray-700 mb-1"
-              >Ophthalmological Medical History</label
+              >Historial medico oftamologico</label
             >
             <Textarea
               id="ophthalmologicalMedicalHistory"
@@ -75,14 +95,21 @@
               rows="4"
               autoResize
               class="w-full"
+              :disabled="disabled"
+              :class="{ 'p-invalid': submitted && !clinicalRecord.ophthalmologicalMedicalHistory }"
             />
+            </FloatLabel>
+            <small v-if="submitted && !clinicalRecord.ophthalmologicalMedicalHistory" class="p-error"
+              >ophthalmologicalMedicalHistory es requerido.</small
+            >
           </div>
 
           <div class="field">
+            <FloatLabel>
             <label
               for="familyMedicalHistory"
               class="block text-sm font-medium text-gray-700 mb-1"
-              >Family Medical History</label
+              >Historial medico familiar</label
             >
             <Textarea
               id="familyMedicalHistory"
@@ -90,14 +117,22 @@
               rows="4"
               autoResize
               class="w-full"
+              :disabled="disabled"
+              :class="{ 'p-invalid': submitted && !clinicalRecord.familyMedicalHistory }"
             />
+            </FloatLabel>
+            <small v-if="submitted && !clinicalRecord.familyMedicalHistory" class="p-error"
+              >familyMedicalHistory es requerido.</small
+            >
+
           </div>
 
           <div class="field">
+            <FloatLabel>
             <label
               for="generalMedicalHistory"
               class="block text-sm font-medium text-gray-700 mb-1"
-              >General Medical History</label
+              >Historial medico familiar</label
             >
             <Textarea
               id="generalMedicalHistory"
@@ -105,7 +140,11 @@
               rows="4"
               autoResize
               class="w-full"
+              :disabled="disabled"
+              :class="{ 'p-invalid': submitted && !clinicalRecord.familyMedicalHistory }"
             />
+            </FloatLabel>
+            <small v-if="submitted && !clinicalRecord.familyMedicalHistory" class="p-error">familyMedicalHistory es requerido.</small>
           </div>
         </div>
       </template>
@@ -119,11 +158,13 @@ import Card from "primevue/card";
 import Dropdown from "primevue/dropdown";
 import Calendar from "primevue/calendar";
 import Textarea from "primevue/textarea";
+import FloatLabel from "primevue/floatlabel";
 
 const props = defineProps({
   clinicalRecord: Object,
   submitted: Boolean,
   patients: Array,
+  disabled: Boolean
 });
 
 // Computed property to ensure the date is properly formatted as a Date object

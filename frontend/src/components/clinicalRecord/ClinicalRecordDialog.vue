@@ -12,11 +12,13 @@
           :clinicalRecord="currentRecord"
           :submitted="submitted"
           :patients="patients"
+          :disabled="visible"
         />
 
         <VisualAcuity
           :modelValue="currentRecord.visualAcuity"
           @update:modelValue="currentRecord.visualAcuity = $event"
+          :disabled="visible"
         />
 
         <SubjectiveRefraction
@@ -26,19 +28,26 @@
           v-model:subjectiveRefractionNear="
             currentRecord.subjectiveRefractionsNear
           "
+          :submitted="submitted"
+          :disabled="visible"
         />
 
         <!-- Tonometry Component -->
-        <Tonometry :clinicalRecord="currentRecord" />
+        <Tonometry :clinicalRecord="currentRecord" :submitted="submitted" :disabled="visible"/>
 
         <Lensometry
           :modelValue="currentRecord.lensometry"
           @update:modelValue="currentRecord.lensometry = $event"
+          :submitted="submitted"
+          :disabled="visible"
+          
         />
 
         <Autorefractometria
           :modelValue="currentRecord.autorefractometry"
           @update:modelValue="currentRecord.autorefractometry = $event"
+          :submitted="submitted"
+          :disabled="visible"
         />
 
         <!-- Diagnosis Component with error handling -->
@@ -47,6 +56,8 @@
           :indications="indications"
           :controls="controls"
           :typeDiagnosis="currentRecord.typeDiagnosis"
+          :submitted="submitted"
+          :disabled="visible"
         />
       </form>
     </div>

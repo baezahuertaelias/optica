@@ -25,6 +25,7 @@
         <VisualAcuity
           :modelValue="clinicalRecord.visualAcuity"
           @update:modelValue="clinicalRecord.visualAcuity = $event"
+          :submitted="submitted"
         />
 
         <SubjectiveRefraction
@@ -35,19 +36,22 @@
             clinicalRecord.subjectiveRefractionNear
           "
           v-model:diagnosis="clinicalRecord.diagnosis"
+          :submitted="submitted"
         />
 
         <!-- Tonometry Component -->
-        <Tonometry :clinicalRecord="clinicalRecord" />
+        <Tonometry :clinicalRecord="clinicalRecord" :submitted="submitted"/>
 
         <Lensometry
           :modelValue="clinicalRecord.lensometry"
           @update:modelValue="clinicalRecord.lensometry = $event"
+          :submitted="submitted"
         />
 
         <Autorefractometria
           :modelValue="clinicalRecord.autorefractometry"
           @update:modelValue="clinicalRecord.autorefractometry = $event"
+          :submitted="submitted"
         />
 
         <!-- Diagnosis Component -->
@@ -56,6 +60,7 @@
           :indications="indications"
           :controls="controls"
           :typeDiagnosis="clinicalRecord.typeDiagnosis"
+          :submitted="submitted"
         />
 
         <!-- Form Actions -->
