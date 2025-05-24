@@ -121,7 +121,7 @@ module.exports = {
   async updateUser(req, res) {
     try {
       const { id } = req.params;
-      const { username, password, typeUserId, status } = req.body;
+      const { username, password, typeUserId, status, name } = req.body;
 
       console.log('updateUser body',req.body);
       
@@ -151,6 +151,7 @@ module.exports = {
       if (typeUserId !== undefined) user.typeUserId = typeUserId;
 
       if (status !== undefined) user.status = status;
+      if (name !== undefined) user.name = name;
 
       await user.save();
 
