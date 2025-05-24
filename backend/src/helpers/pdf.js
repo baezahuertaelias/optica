@@ -294,346 +294,666 @@ function createPdfDocument(data) {
 }
 
 function createPDFClinicalRecord(data) {
-  // playground requires you to assign document definition to a variable called dd
-  //console.log('[createPDFClinicalRecord] start', data);
-  console.log('[createPDFClinicalRecord] lensometry', data.typeDiagnosis);
-  console.log('[createPDFClinicalRecord] typeControl', data.control);
-  console.log('[createPDFClinicalRecord] typeIndication', data.typeIndication);
-
 
   let docDefinition = {
+    pageSize: 'A4',
+    pageMargins: [40, 60, 40, 60],
     content: [
-      // Header row with title and number
+      // Header section with enhanced styling
       {
         columns: [
-          { text: 'FICHA CLINICA', style: 'header', bold: true, width: '70%' },
-          { text: 'Nro: ' + data.id, style: 'header', bold: true, width: '30%', alignment: 'right' }
+          {
+            stack: [
+              {
+                text: 'FICHA CLÍNICA',
+                style: 'mainTitle'
+              },
+              {
+                canvas: [{
+                  type: 'line',
+                  x1: 0, y1: 5, x2: 300, y2: 5,
+                  lineWidth: 2,
+                  lineColor: '#2c5aa0'
+                }]
+              }
+            ],
+            width: '70%'
+          },
+          {
+            table: {
+              widths: ['100%'],
+              body: [[
+                {
+                  text: `Nº ${data.id}`,
+                  style: 'recordNumber',
+                  fillColor: '#f8f9fa',
+                  border: [true, true, true, true]
+                }
+              ]]
+            },
+            width: '30%',
+            alignment: 'right'
+          }
         ],
-        columnGap: 10,
-        margin: [0, 0, 0, 10]
+        columnGap: 20,
+        margin: [0, 0, 0, 20]
       },
 
-      // Horizontal line
-      //{ canvas: [ { type: 'line', x1: 0, y1: 0, x2: 520, y2: 0, lineWidth: 1 } ] },
-      //{ canvas: [ { type: 'line', x1: 0, y1: 2, x2: 520, y2: 2, lineWidth: 1 } ] },
-
-      // Patient information table
+      // Patient information with improved table design
       {
+        style: 'patientInfoTable',
         table: {
-          widths: ['35%', '65%'],
+          headerRows: 1,
+          widths: ['30%', '70%'],
           body: [
             [
-              { text: 'FECHA DE ATENCION', style: 'tableHeader', bold: true },
-              { text: data.createdAt.toLocaleString('es-US') }
+              { text: 'INFORMACIÓN DEL PACIENTE', style: 'tableTitle', colSpan: 2, fillColor: '#e3f2fd' },
+              {}
             ],
             [
-              { text: 'NOMBRE', style: 'tableHeader', bold: true },
-              { text: data.patient.name }
+              { text: 'Fecha de Atención', style: 'fieldLabel' },
+              { text: data.createdAt.toLocaleString('es-US'), style: 'fieldValue' }
             ],
             [
-              { text: 'RUT / Pasaporte', style: 'tableHeader', bold: true },
-              { text: data.patient.passport }
-            ],
-
-            [
-              { text: 'SEXO', style: 'tableHeader', bold: true },
-              { text: data.patient.gender.value }
+              { text: 'Nombre Completo', style: 'fieldLabel' },
+              { text: data.patient.name.toUpperCase(), style: 'fieldValueBold' }
             ],
             [
-              { text: 'FONO', style: 'tableHeader', bold: true },
-              { text: data.patient.tel }
+              { text: 'RUT / Pasaporte', style: 'fieldLabel' },
+              { text: data.patient.passport, style: 'fieldValue' }
             ],
             [
-
-              { text: 'EDAD', style: 'tableHeader', bold: true },
-              { text: Math.floor((new Date() - new Date(data.patient.birthday).getTime()) / 3.15576e+10) }
+              { text: 'Sexo', style: 'fieldLabel' },
+              { text: data.patient.gender.value, style: 'fieldValue' }
             ],
             [
-              { text: 'FECHA DE NACIMIENTO', style: 'tableHeader', bold: true },
-              { text: new Date(data.patient.birthday).toLocaleString('es-US') }
+              { text: 'Teléfono', style: 'fieldLabel' },
+              { text: data.patient.tel, style: 'fieldValue' }
             ],
             [
-              { text: 'DOMICILIO', style: 'tableHeader', bold: true },
-              { text: data.patient.homeAddress }
+              { text: 'Edad', style: 'fieldLabel' },
+              { text: `${Math.floor((new Date() - new Date(data.patient.birthday).getTime()) / 3.15576e+10)} años`, style: 'fieldValue' }
             ],
             [
-              { text: 'CORREO ELECTRÓNICO', style: 'tableHeader', bold: true },
-              { text: data.patient.mail }
+              { text: 'Fecha de Nacimiento', style: 'fieldLabel' },
+              { text: new Date(data.patient.birthday).toLocaleDateString('es-US'), style: 'fieldValue' }
             ],
             [
-              { text: 'OCUPACIÓN', style: 'tableHeader', bold: true },
-              { text: data.patient.occupation }
+              { text: 'Domicilio', style: 'fieldLabel' },
+              { text: data.patient.homeAddress, style: 'fieldValue' }
             ],
             [
-              { text: 'REPRESENTANTE LEGAL (TUTOR)', style: 'tableHeader', bold: true },
-              { text: data.patient.legalRepresentative }
+              { text: 'Correo Electrónico', style: 'fieldLabel' },
+              { text: data.patient.mail, style: 'fieldValue' }
             ],
-
+            [
+              { text: 'Ocupación', style: 'fieldLabel' },
+              { text: data.patient.occupation, style: 'fieldValue' }
+            ],
+            [
+              { text: 'Representante Legal', style: 'fieldLabel' },
+              { text: data.patient.legalRepresentative || 'No aplica', style: 'fieldValue' }
+            ]
           ]
+        },
+        layout: {
+          fillColor: function (rowIndex) {
+            return (rowIndex > 0 && rowIndex % 2 === 0) ? '#f8f9fa' : null;
+          },
+          hLineWidth: function (i, node) {
+            return (i === 0 || i === 1 || i === node.table.body.length) ? 1 : 0.5;
+          },
+          vLineWidth: function () { return 0.5; },
+          hLineColor: function () { return '#dee2e6'; },
+          vLineColor: function () { return '#dee2e6'; }
         }
       },
 
-      // Horizontal line
-      //{ canvas: [ { type: 'line', x1: 0, y1: 0, x2: 520, y2: 0, lineWidth: 1 } ], margin: [0, 5, 0, 5] },
-
-      // Anamnesis section
-      { text: 'ANAMNESIS:', style: 'sectionHeader', bold: true, margin: [0, 10, 0, 5] },
-      { text: data.anamnesis, margin: [0, 0, 0, 10] },
-
-      { text: 'Ultima receta: ' + new Date(data.latestClinicalDate).toLocaleString('es-US'), margin: [0, 0, 0, 5] },
-      { text: 'Antecedente Medico General: ' + data.generalMedicalHistory, margin: [0, 0, 0, 5] },
-      { text: 'Antecedente Medico Oftamologico: ' + data.ophthalmologicalMedicalHistory, margin: [0, 0, 0, 5] },
-      { text: 'Antecedente Familiar: ' + data.familyMedicalHistory, margin: [0, 0, 0, 10] },
-
-      // AV Table with Rojo Pupilar
-      { pageBreak: 'before', text: 'AV', style: 'sectionHeader', bold: true, margin: [0, 5, 0, 5] },
+      // Clinical History Section
       {
-        columns: [
+        stack: [
           {
-            width: '70%',
-            table: {
-              widths: ['25%', '25%', '25%', '25%'],
-              body: [
-                [
-                  '',
-                  { text: 'AV sc', alignment: 'center', bold: true },
-                  { text: 'AV csl', alignment: 'center', bold: true },
-                  { text: 'CAE', alignment: 'center', bold: true }
-                ],
-                [
-                  { text: 'OD', bold: true },
-                  { text: data.visualAcuity.withoutCorrectionRE },
-                  { text: data.visualAcuity.laserCorrectionRE },
-                  { text: data.visualAcuity.pinholeRE }
-                ],
-                [
-                  { text: 'OI', bold: true },
-                  { text: data.visualAcuity.withoutCorrectionLE },
-                  { text: data.visualAcuity.laserCorrectionLE },
-                  { text: data.visualAcuity.pinholeLE }
-                ],
-                [
-                  { text: 'Binocular', bold: true },
-                  { text: data.visualAcuity.withoutCorrectionBI },
-                  { text: data.visualAcuity.laserCorrectionBI },
-                  { text: data.visualAcuity.pinholeBI }
-                ]
-              ]
-            }
+            text: 'HISTORIA CLÍNICA',
+            style: 'sectionTitle',
+            margin: [0, 25, 0, 10]
           },
           {
-            width: '30%',
-            stack: [
-              { text: 'Rojo Pupilar', bold: true, margin: [0, 0, 0, 5] },
-              { text: 'OD: ' + (data.visualAcuity.pupilRedRE === true ? 'Presente' : 'No presente'), margin: [5, 0, 0, 5] },
-              { text: 'OI: ' + (data.visualAcuity.pupilRedLE === true ? 'Presente' : 'No presente'), margin: [5, 0, 0, 0] }
+            table: {
+              widths: ['100%'],
+              body: [
+                [{
+                  stack: [
+                    { text: 'Anamnesis', style: 'subsectionTitle' },
+                    { text: data.anamnesis || 'Sin información registrada', style: 'clinicalText' }
+                  ],
+                  margin: [10, 10, 10, 10]
+                }]
+              ]
+            },
+            layout: 'lightHorizontalLines'
+          },
+
+          // Medical History in organized layout
+          {
+            columns: [
+              {
+                width: '50%',
+                stack: [
+                  { text: 'Antecedentes Médicos Generales', style: 'subsectionTitle' },
+                  { text: data.generalMedicalHistory || 'No reportados', style: 'clinicalText' },
+                  { text: 'Antecedentes Familiares', style: 'subsectionTitle', margin: [0, 10, 0, 5] },
+                  { text: data.familyMedicalHistory || 'No reportados', style: 'clinicalText' }
+                ]
+              },
+              {
+                width: '50%',
+                stack: [
+                  { text: 'Antecedentes Oftalmológicos', style: 'subsectionTitle' },
+                  { text: data.ophthalmologicalMedicalHistory || 'No reportados', style: 'clinicalText' },
+                  { text: 'Última Receta', style: 'subsectionTitle', margin: [0, 10, 0, 5] },
+                  { text: new Date(data.latestClinicalDate).toLocaleDateString('es-US'), style: 'clinicalText' }
+                ]
+              }
             ],
-            margin: [10, 0, 0, 0]
+            columnGap: 15,
+            margin: [0, 15, 0, 0]
           }
         ]
       },
 
-      // Horizontal line
-      //{ canvas: [ { type: 'line', x1: 0, y1: 0, x2: 520, y2: 0, lineWidth: 2 } ], margin: [0, 10, 0, 10] },
-      //{ canvas: [ { type: 'line', x1: 0, y1: 0, x2: 520, y2: 0, lineWidth: 1 } ], margin: [0, 5, 0, 10] },
-
-      // Refracción Subjetiva
-      { text: 'REFRACCION SUBJETIVA', style: 'sectionHeader', bold: true, margin: [0, 5, 0, 5] },
-
-      { text: 'Lejos', bold: true, margin: [0, 5, 0, 5] },
+      // Page break and Visual Acuity section
       {
-        table: {
-          widths: ['15%', '17%', '17%', '17%', '17%', '17%'],
-          body: [
-            [
-              '',
-              { text: 'Esfera', bold: true, alignment: 'center' },
-              { text: 'Cilindro', bold: true, alignment: 'center' },
-              { text: 'Eje', bold: true, alignment: 'center' },
-              { text: 'AV Alcanzada', bold: true, alignment: 'center' },
-              { text: 'DP', bold: true, alignment: 'center' }
-            ],
-            [
-              { text: 'OI', bold: true },
-              { text: data.subjectiveRefractionsFar.sphereLE },
-              { text: data.subjectiveRefractionsFar.cylinderLE },
-              { text: data.subjectiveRefractionsFar.axisLE },
-              { text: data.subjectiveRefractionsFar.vareachedLE },
-              { text: data.subjectiveRefractionsFar.pupilarDistance }
-            ],
-            [
-              { text: 'OD', bold: true },
-              { text: data.subjectiveRefractionsFar.sphereRE },
-              { text: data.subjectiveRefractionsFar.cylinderRE },
-              { text: data.subjectiveRefractionsFar.axisRE },
-              { text: data.subjectiveRefractionsFar.vareachedRE },
-              { text: '' }
-            ]
-          ]
-        }
+        pageBreak: 'before',
+        text: 'EXAMEN OFTALMOLÓGICO',
+        style: 'sectionTitle',
+        margin: [0, 0, 0, 15]
       },
 
-      { text: 'Cerca', bold: true, margin: [0, 10, 0, 5] },
+      // Enhanced AV section
       {
-        table: {
-          widths: ['15%', '17%', '17%', '17%', '17%', '17%'],
-          body: [
-            [
-              '',
-              { text: 'Esfera', bold: true, alignment: 'center' },
-              { text: 'Cilindro', bold: true, alignment: 'center' },
-              { text: 'Eje', bold: true, alignment: 'center' },
-              { text: 'AV Alcanzada', bold: true, alignment: 'center' },
-              { text: 'DP', bold: true, alignment: 'center' }
-            ],
-            [
-              { text: 'OI', bold: true },
-              { text: data.subjectiveRefractionsFar.sphereLE },
-              { text: data.subjectiveRefractionsFar.cylinderLE },
-              { text: data.subjectiveRefractionsFar.axisLE },
-              { text: data.subjectiveRefractionsFar.vareachedLE },
-              { text: data.subjectiveRefractionsFar.pupilarDistance }
-            ],
-            [
-              { text: 'OD', bold: true },
-              { text: data.subjectiveRefractionsNear.sphereRE },
-              { text: data.subjectiveRefractionsNear.cylinderRE },
-              { text: data.subjectiveRefractionsNear.axisRE },
-              { text: data.subjectiveRefractionsNear.vareachedRE },
-              { text: '' }
-            ],
-            [
-              { text: 'ADD', bold: true },
-              { text: data.subjectiveRefractionsNear.add },
-              { text: '' },
-              { text: '' },
-              { text: '' },
-              { text: '' }
+        columns: [
+          {
+            width: '65%',
+            stack: [
+              { text: 'Agudeza Visual', style: 'subsectionTitle' },
+              {
+                table: {
+                  headerRows: 1,
+                  widths: ['20%', '25%', '25%', '30%'],
+                  body: [
+                    [
+                      { text: '', style: 'tableHeader' },
+                      { text: 'AV s/c', style: 'tableHeader', alignment: 'center' },
+                      { text: 'AV c/c', style: 'tableHeader', alignment: 'center' },
+                      { text: 'Estenopeico', style: 'tableHeader', alignment: 'center' }
+                    ],
+                    [
+                      { text: 'OD', style: 'eyeLabel' },
+                      { text: data.visualAcuity.withoutCorrectionRE, alignment: 'center' },
+                      { text: data.visualAcuity.laserCorrectionRE, alignment: 'center' },
+                      { text: data.visualAcuity.pinholeRE, alignment: 'center' }
+                    ],
+                    [
+                      { text: 'OI', style: 'eyeLabel' },
+                      { text: data.visualAcuity.withoutCorrectionLE, alignment: 'center' },
+                      { text: data.visualAcuity.laserCorrectionLE, alignment: 'center' },
+                      { text: data.visualAcuity.pinholeLE, alignment: 'center' }
+                    ],
+                    [
+                      { text: 'Binocular', style: 'eyeLabel' },
+                      { text: data.visualAcuity.withoutCorrectionBI, alignment: 'center' },
+                      { text: data.visualAcuity.laserCorrectionBI, alignment: 'center' },
+                      { text: data.visualAcuity.pinholeBI, alignment: 'center' }
+                    ]
+                  ]
+                },
+                layout: {
+                  fillColor: function (rowIndex) {
+                    return rowIndex === 0 ? '#e8f4f8' : (rowIndex % 2 === 0 ? '#f8f9fa' : null);
+                  }
+                }
+              }
             ]
-          ]
-        },
-        margin: [0, 0, 0, 10]
+          },
+          {
+            width: '35%',
+            table: {
+              widths: ['100%'],
+              body: [
+                [{
+                  text: 'Reflejo Rojo Pupilar',
+                  style: 'subsectionTitle',
+                  fillColor: '#fff3e0',
+                  margin: [8, 8, 8, 5]
+                }],
+                [{
+                  stack: [
+                    {
+                      text: `OD: ${data.visualAcuity.pupilRedRE ? 'Presente' : 'Ausente'}`,
+                      style: data.visualAcuity.pupilRedRE ? 'positiveResult' : 'negativeResult'
+                    },
+                    {
+                      text: `OI: ${data.visualAcuity.pupilRedLE ? 'Presente' : 'Ausente'}`,
+                      style: data.visualAcuity.pupilRedLE ? 'positiveResult' : 'negativeResult',
+                      margin: [0, 5, 0, 0]
+                    }
+                  ],
+                  margin: [8, 5, 8, 8]
+                }]
+              ]
+            },
+            layout: 'lightHorizontalLines'
+          }
+        ],
+        columnGap: 20
       },
 
-      // Tonometría
-      { text: 'TONOMETRÍA APLANÁTICA', style: 'sectionHeader', bold: true, margin: [0, 10, 0, 5] },
+      // Enhanced Refraction sections
       {
-        table: {
-          widths: ['35%', '65%'],
-          body: [
-            [
-              { text: 'OD', bold: true },
-              { text: data.applanationTonometry.rightEye + ' mmHg' }
-            ],
-            [
-              { text: 'OI', bold: true },
-              { text: data.applanationTonometry.leftEye + ' mmHg' }
-            ],
-            [
-              { text: 'Hora', bold: true },
-              { text: new Date(data.latestClinicalDate).toLocaleString('es-US') }
-            ]
-          ]
-        },
-        margin: [0, 0, 0, 10]
+        stack: [
+          {
+            text: 'REFRACCIÓN SUBJETIVA',
+            style: 'sectionTitle',
+            margin: [0, 25, 0, 15]
+          },
+
+          // Distance refraction
+          { text: 'Visión de Lejos', style: 'subsectionTitle' },
+          {
+            table: {
+              headerRows: 1,
+              widths: ['12%', '18%', '18%', '12%', '22%', '18%'],
+              body: [
+                [
+                  { text: '', style: 'tableHeader' },
+                  { text: 'Esfera', style: 'tableHeader', alignment: 'center' },
+                  { text: 'Cilindro', style: 'tableHeader', alignment: 'center' },
+                  { text: 'Eje', style: 'tableHeader', alignment: 'center' },
+                  { text: 'AV Alcanzada', style: 'tableHeader', alignment: 'center' },
+                  { text: 'DP (mm)', style: 'tableHeader', alignment: 'center' }
+                ],
+                [
+                  { text: 'OD', style: 'eyeLabel' },
+                  { text: data.subjectiveRefractionsFar.sphereRE, alignment: 'center' },
+                  { text: data.subjectiveRefractionsFar.cylinderRE, alignment: 'center' },
+                  { text: data.subjectiveRefractionsFar.axisRE, alignment: 'center' },
+                  { text: data.subjectiveRefractionsFar.vareachedRE, alignment: 'center' },
+                  { text: data.subjectiveRefractionsFar.pupilarDistance, alignment: 'center' }
+                ],
+                [
+                  { text: 'OI', style: 'eyeLabel' },
+                  { text: data.subjectiveRefractionsFar.sphereLE, alignment: 'center' },
+                  { text: data.subjectiveRefractionsFar.cylinderLE, alignment: 'center' },
+                  { text: data.subjectiveRefractionsFar.axisLE, alignment: 'center' },
+                  { text: data.subjectiveRefractionsFar.vareachedLE, alignment: 'center' },
+                  { text: '', alignment: 'center' }
+                ]
+              ]
+            },
+            layout: {
+              fillColor: function (rowIndex) {
+                return rowIndex === 0 ? '#e8f4f8' : (rowIndex % 2 === 0 ? '#f8f9fa' : null);
+              }
+            },
+            margin: [0, 0, 0, 15]
+          },
+
+          // Near refraction
+          { text: 'Visión de Cerca', style: 'subsectionTitle' },
+          {
+            table: {
+              headerRows: 1,
+              widths: ['12%', '18%', '18%', '12%', '22%', '18%'],
+              body: [
+                [
+                  { text: '', style: 'tableHeader' },
+                  { text: 'Esfera', style: 'tableHeader', alignment: 'center' },
+                  { text: 'Cilindro', style: 'tableHeader', alignment: 'center' },
+                  { text: 'Eje', style: 'tableHeader', alignment: 'center' },
+                  { text: 'AV Alcanzada', style: 'tableHeader', alignment: 'center' },
+                  { text: 'DP (mm)', style: 'tableHeader', alignment: 'center' }
+                ],
+                [
+                  { text: 'OD', style: 'eyeLabel' },
+                  { text: data.subjectiveRefractionsNear.sphereRE, alignment: 'center' },
+                  { text: data.subjectiveRefractionsNear.cylinderRE, alignment: 'center' },
+                  { text: data.subjectiveRefractionsNear.axisRE, alignment: 'center' },
+                  { text: data.subjectiveRefractionsNear.vareachedRE, alignment: 'center' },
+                  { text: '', alignment: 'center' }
+                ],
+                [
+                  { text: 'OI', style: 'eyeLabel' },
+                  { text: data.subjectiveRefractionsFar.sphereLE, alignment: 'center' },
+                  { text: data.subjectiveRefractionsFar.cylinderLE, alignment: 'center' },
+                  { text: data.subjectiveRefractionsFar.axisLE, alignment: 'center' },
+                  { text: data.subjectiveRefractionsFar.vareachedLE, alignment: 'center' },
+                  { text: data.subjectiveRefractionsFar.pupilarDistance, alignment: 'center' }
+                ],
+                [
+                  { text: 'ADD', style: 'addLabel', fillColor: '#fff3e0' },
+                  { text: data.subjectiveRefractionsNear.add, alignment: 'center', bold: true },
+                  { text: '', alignment: 'center' },
+                  { text: '', alignment: 'center' },
+                  { text: '', alignment: 'center' },
+                  { text: '', alignment: 'center' }
+                ]
+              ]
+            },
+            layout: {
+              fillColor: function (rowIndex) {
+                return rowIndex === 0 ? '#e8f4f8' : (rowIndex === 3 ? '#fff3e0' : (rowIndex % 2 === 0 ? '#f8f9fa' : null));
+              }
+            }
+          }
+        ]
       },
 
-      // Lensometría
-      { text: 'LENSOMETRÍA', style: 'sectionHeader', bold: true, margin: [0, 10, 0, 5] },
+      // Measurements section with improved layout
       {
-        table: {
-          widths: ['25%', '25%', '25%', '25%'],
-          body: [
-            [
-              '',
-              { text: 'Esfera', bold: true, alignment: 'center' },
-              { text: 'Cilindro', bold: true, alignment: 'center' },
-              { text: 'Eje', bold: true, alignment: 'center' }
-            ],
-            [
-              { text: 'OI', bold: true },
-              { text: data.lensometry.sphereLE },
-              { text: data.lensometry.cylinderLE },
-              { text: data.lensometry.axisLE }
-            ],
-            [
-              { text: 'OD', bold: true },
-              { text: data.lensometry.sphereRE },
-              { text: data.lensometry.cylinderRE },
-              { text: data.lensometry.axisRE }
-            ],
-            [
-              { text: 'ADD', bold: true },
-              { text: data.lensometry.add },
-              { text: '' },
-              { text: '' }
+        columns: [
+          {
+            width: '48%',
+            stack: [
+              { text: 'TONOMETRÍA APLANÁTICA', style: 'subsectionTitle', margin: [0, 20, 0, 8] },
+              {
+                table: {
+                  widths: ['30%', '70%'],
+                  body: [
+                    [
+                      { text: 'OD', style: 'eyeLabel' },
+                      { text: `${data.applanationTonometry.rightEye} mmHg`, style: 'measurementValue' }
+                    ],
+                    [
+                      { text: 'OI', style: 'eyeLabel' },
+                      { text: `${data.applanationTonometry.leftEye} mmHg`, style: 'measurementValue' }
+                    ],
+                    [
+                      { text: 'Hora', style: 'fieldLabel' },
+                      { text: new Date(data.latestClinicalDate).toLocaleTimeString('es-US'), style: 'fieldValue' }
+                    ]
+                  ]
+                },
+                layout: 'lightHorizontalLines'
+              }
             ]
-          ]
-        },
-        margin: [0, 0, 0, 10]
+          },
+          {
+            width: '48%',
+            stack: [
+              { text: 'LENSOMETRÍA', style: 'subsectionTitle', margin: [0, 20, 0, 8] },
+              {
+                table: {
+                  headerRows: 1,
+                  widths: ['25%', '25%', '25%', '25%'],
+                  body: [
+                    [
+                      { text: '', style: 'tableHeader' },
+                      { text: 'Esfera', style: 'tableHeader', alignment: 'center' },
+                      { text: 'Cilindro', style: 'tableHeader', alignment: 'center' },
+                      { text: 'Eje', style: 'tableHeader', alignment: 'center' }
+                    ],
+                    [
+                      { text: 'OD', style: 'eyeLabel' },
+                      { text: data.lensometry.sphereRE, alignment: 'center' },
+                      { text: data.lensometry.cylinderRE, alignment: 'center' },
+                      { text: data.lensometry.axisRE, alignment: 'center' }
+                    ],
+                    [
+                      { text: 'OI', style: 'eyeLabel' },
+                      { text: data.lensometry.sphereLE, alignment: 'center' },
+                      { text: data.lensometry.cylinderLE, alignment: 'center' },
+                      { text: data.lensometry.axisLE, alignment: 'center' }
+                    ],
+                    [
+                      { text: 'ADD', style: 'addLabel', fillColor: '#fff3e0' },
+                      { text: data.lensometry.add, alignment: 'center', bold: true },
+                      { text: '', alignment: 'center' },
+                      { text: '', alignment: 'center' }
+                    ]
+                  ]
+                },
+                layout: {
+                  fillColor: function (rowIndex) {
+                    return rowIndex === 0 ? '#e8f4f8' : (rowIndex === 3 ? '#fff3e0' : null);
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        columnGap: 20
       },
 
-      // Autorefractometría
-      { text: 'AUTOREFRACTOMETRÍA', style: 'sectionHeader', bold: true, margin: [0, 10, 0, 5] },
+      // Autorefractometry
       {
-        table: {
-          widths: ['25%', '25%', '25%', '25%'],
-          body: [
-            [
-              '',
-              { text: 'Esfera', bold: true, alignment: 'center' },
-              { text: 'Cilindro', bold: true, alignment: 'center' },
-              { text: 'Eje', bold: true, alignment: 'center' }
-            ],
-            [
-              { text: 'OI', bold: true },
-              { text: data.autorefractometry.sphereLE },
-              { text: data.autorefractometry.cylinderLE },
-              { text: data.autorefractometry.axisLE }
-            ],
-            [
-              { text: 'OD', bold: true },
-              { text: data.autorefractometry.sphereRE },
-              { text: data.autorefractometry.cylinderRE },
-              { text: data.autorefractometry.axisRE }
-            ]
-          ]
-        },
-        margin: [0, 0, 0, 10]
+        stack: [
+          { text: 'AUTOREFRACTOMETRÍA', style: 'subsectionTitle', margin: [0, 20, 0, 8] },
+          {
+            table: {
+              headerRows: 1,
+              widths: ['25%', '25%', '25%', '25%'],
+              body: [
+                [
+                  { text: '', style: 'tableHeader' },
+                  { text: 'Esfera', style: 'tableHeader', alignment: 'center' },
+                  { text: 'Cilindro', style: 'tableHeader', alignment: 'center' },
+                  { text: 'Eje', style: 'tableHeader', alignment: 'center' }
+                ],
+                [
+                  { text: 'OD', style: 'eyeLabel' },
+                  { text: data.autorefractometry.sphereRE, alignment: 'center' },
+                  { text: data.autorefractometry.cylinderRE, alignment: 'center' },
+                  { text: data.autorefractometry.axisRE, alignment: 'center' }
+                ],
+                [
+                  { text: 'OI', style: 'eyeLabel' },
+                  { text: data.autorefractometry.sphereLE, alignment: 'center' },
+                  { text: data.autorefractometry.cylinderLE, alignment: 'center' },
+                  { text: data.autorefractometry.axisLE, alignment: 'center' }
+                ]
+              ]
+            },
+            layout: {
+              fillColor: function (rowIndex) {
+                return rowIndex === 0 ? '#e8f4f8' : (rowIndex % 2 === 0 ? '#f8f9fa' : null);
+              }
+            }
+          }
+        ]
       },
 
-      // Final sections
-      { text: 'OTROS EXÁMENES: ' + data.otherExam, style: 'sectionHeader', bold: true, margin: [0, 10, 0, 5] },
-
-      { text: 'OBSERVACIONES: ' + data.observations, style: 'sectionHeader', bold: true, margin: [0, 10, 0, 5] },
-
-      { text: 'DIAGNÓSTICO: ' + createTextDiagnosis(data.typeDiagnosis), style: 'sectionHeader', bold: true, margin: [0, 10, 0, 5] },
-
-      { text: 'INDICACIONES: ' + data.typeIndication.value + (data.typeDiagnosis.artificialTear ? '. Lagrimas artificiales' : ''), style: 'sectionHeader', bold: true, margin: [0, 10, 0, 5] }
+      // Clinical conclusions section
+      {
+        stack: [
+          {
+            text: 'CONCLUSIONES CLÍNICAS',
+            style: 'sectionTitle',
+            margin: [0, 25, 0, 15]
+          },
+          {
+            table: {
+              widths: ['100%'],
+              body: [
+                [{
+                  stack: [
+                    { text: 'Otros Exámenes', style: 'conclusionLabel' },
+                    { text: data.otherExam || 'No se realizaron exámenes adicionales', style: 'conclusionText' }
+                  ],
+                  margin: [12, 10, 12, 8]
+                }],
+                [{
+                  stack: [
+                    { text: 'Observaciones Clínicas', style: 'conclusionLabel' },
+                    { text: data.observations || 'Sin observaciones particulares', style: 'conclusionText' }
+                  ],
+                  margin: [12, 8, 12, 8]
+                }],
+                [{
+                  stack: [
+                    { text: 'Diagnóstico', style: 'conclusionLabel' },
+                    { text: createTextDiagnosis(data.typeDiagnosis), style: 'conclusionTextImportant' }
+                  ],
+                  margin: [12, 8, 12, 8],
+                  fillColor: '#e8f5e8'
+                }],
+                [{
+                  stack: [
+                    { text: 'Indicaciones y Tratamiento', style: 'conclusionLabel' },
+                    {
+                      text: data.typeIndication.value + (data.typeDiagnosis.artificialTear ? '\n• Uso de lágrimas artificiales según necesidad' : ''),
+                      style: 'conclusionTextImportant'
+                    }
+                  ],
+                  margin: [12, 8, 12, 10],
+                  fillColor: '#fff3e0'
+                }]
+              ]
+            },
+            layout: 'lightHorizontalLines'
+          }
+        ]
+      }
     ],
+    footer: {
+      columns: [
+        {
+          text: [
+            { text: 'CONSULTA OFTALMOLÓGICA DE ÓPTICA TARAPACÁ\n', style: 'footerTitle' },
+            { text: 'Francisco Bilbao 3717 local 2\n', style: 'footerText' },
+            { text: 'oftalmologia.tarapaca@gmail.com\n', style: 'footerText' },
+            { text: 'Iquique', style: 'footerText' }
+          ],
+          alignment: 'center',
+          width: '100%'
+        }
+      ],
+      margin: [0, 10, 0, 0]
+    },
     styles: {
-      header: {
-        fontSize: 16,
+      mainTitle: {
+        fontSize: 20,
         bold: true,
-        margin: [0, 0, 0, 5]
+        color: '#2c5aa0',
+        alignment: 'left'
       },
-      subheader: {
+      recordNumber: {
         fontSize: 14,
         bold: true,
-        margin: [0, 10, 0, 5]
+        color: '#2c5aa0',
+        alignment: 'center',
+        margin: [8, 8, 8, 8]
       },
-      sectionHeader: {
+      sectionTitle: {
+        fontSize: 14,
+        bold: true,
+        color: '#1976d2',
+        alignment: 'left'
+      },
+      subsectionTitle: {
         fontSize: 12,
         bold: true,
-        margin: [0, 5, 0, 5]
+        color: '#424242',
+        margin: [0, 8, 0, 5]
+      },
+      tableTitle: {
+        fontSize: 12,
+        bold: true,
+        color: '#1976d2',
+        alignment: 'center',
+        margin: [0, 8, 0, 8]
       },
       tableHeader: {
+        fontSize: 10,
         bold: true,
-        fontSize: 11
-      }
+        color: '#37474f',
+        fillColor: '#e8f4f8',
+        margin: [4, 6, 4, 6]
+      },
+      fieldLabel: {
+        fontSize: 10,
+        bold: true,
+        color: '#37474f',
+        margin: [8, 4, 4, 4]
+      },
+      fieldValue: {
+        fontSize: 10,
+        color: '#212121',
+        margin: [4, 4, 8, 4]
+      },
+      fieldValueBold: {
+        fontSize: 10,
+        bold: true,
+        color: '#212121',
+        margin: [4, 4, 8, 4]
+      },
+      eyeLabel: {
+        fontSize: 10,
+        bold: true,
+        color: '#1976d2',
+        margin: [4, 4, 4, 4]
+      },
+      addLabel: {
+        fontSize: 10,
+        bold: true,
+        color: '#f57c00',
+        margin: [4, 4, 4, 4]
+      },
+      measurementValue: {
+        fontSize: 11,
+        bold: true,
+        color: '#2e7d32',
+        margin: [4, 4, 4, 4]
+      },
+      clinicalText: {
+        fontSize: 10,
+        color: '#424242',
+        lineHeight: 1.3,
+        margin: [0, 4, 0, 8]
+      },
+      conclusionLabel: {
+        fontSize: 11,
+        bold: true,
+        color: '#1976d2',
+        margin: [0, 0, 0, 4]
+      },
+      conclusionText: {
+        fontSize: 10,
+        color: '#424242',
+        lineHeight: 1.3
+      },
+      conclusionTextImportant: {
+        fontSize: 10,
+        bold: true,
+        color: '#212121',
+        lineHeight: 1.3
+      },
+      positiveResult: {
+        fontSize: 10,
+        color: '#2e7d32',
+        bold: true
+      },
+      negativeResult: {
+        fontSize: 10,
+        color: '#d32f2f',
+        bold: true
+      },
+      patientInfoTable: {
+        margin: [0, 0, 0, 20]
+      },
+      footerTitle: {
+        fontSize: 10,
+        bold: true,
+        color: '#848884'
+      },
+      footerText: {
+        fontSize: 8,
+        color: '#848884'
+      },
     },
     defaultStyle: {
-      fontSize: 11
+      fontSize: 10,
+      color: '#212121',
+      lineHeight: 1.2
     }
   };
   // Create and return the PDF document
