@@ -64,6 +64,7 @@
               :class="{ 'p-invalid': submitted && isNew && !user.password }"
               placeholder="Ingrese contraseña"
               :required="isNew"
+              fluid
             />
             <small v-if="!isNew" class="text-gray-500 text-xs"
               >Deje en blanco para mantener la contraseña actual</small

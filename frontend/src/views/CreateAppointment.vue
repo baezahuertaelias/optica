@@ -19,6 +19,7 @@
                 class="w-full"
                 required
                 @change="onPatientChange"
+                filter
               />
               <small
                 v-if="submitted && !appointmentData.patientId"
@@ -40,6 +41,7 @@
                 required
                 :disabled="!appointmentData.patientId"
                 @change="onDoctorChange"
+                filter
               />
               <small
                 v-if="submitted && !appointmentData.userId"

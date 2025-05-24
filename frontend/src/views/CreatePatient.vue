@@ -21,58 +21,103 @@
         <div class="shadow-2 card p-3 mb-3 mt-5">
           <h2 class="text-lg font-medium mb-3">Información Personal</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="field">
-              <label for="name">Nombre Completo*</label>
-              <InputText
-                id="name"
-                v-model.trim="patient.name"
-                class="w-full"
-                aria-describedby="name-error"
-              />
+            <div class="field pt-5">
+              <FloatLabel>
+                <label for="name">Nombre Completo *</label>
+                <InputText
+                  id="name"
+                  v-model.trim="patient.name"
+                  class="w-full"
+                  :class="{ 'p-invalid': submitted && !patient.name }"
+                  aria-describedby="name-error"
+                  fluif
+                />
+              </FloatLabel>
+              <small
+                v-if="submitted && !patient.name"
+                class="p-error"
+                id="name-error"
+              >
+                El nombre completo es requerido
+              </small>
             </div>
 
-            <div class="field">
-              <label for="gender">Sexo*</label>
-              <Dropdown
-                id="gender"
-                v-model="patient.genderId"
-                :options="genders"
-                optionLabel="value"
-                optionValue="id"
-                class="w-full"
-                aria-describedby="gender-error"
-              />
+            <div class="field pt-5">
+              <FloatLabel>
+                <label for="gender">Sexo *</label>
+                <Dropdown
+                  id="gender"
+                  v-model="patient.genderId"
+                  :options="genders"
+                  optionLabel="value"
+                  optionValue="id"
+                  class="w-full"
+                  :class="{ 'p-invalid': submitted && !patient.genderId }"
+                  aria-describedby="gender-error"
+                  placeholder="Sexo"
+                  fluid
+                />
+              </FloatLabel>
+              <small
+                v-if="submitted && !patient.genderId"
+                class="p-error"
+                id="gender-error"
+              >
+                El sexo es requerido
+              </small>
             </div>
 
-            <div class="field">
-              <label for="country">Pais</label>
-              <Dropdown
-                id="country"
-                v-model="patient.countryId"
-                :options="countries"
-                optionLabel="name"
-                optionValue="id"
-                class="w-full"
-                aria-describedby="country-error"
-              />
+            <div class="field pt-5">
+              <FloatLabel>
+                <label for="country">País *</label>
+                <Dropdown
+                  id="country"
+                  v-model="patient.countryId"
+                  :options="countries"
+                  optionLabel="name"
+                  optionValue="id"
+                  class="w-full"
+                  :class="{ 'p-invalid': submitted && !patient.countryId }"
+                  aria-describedby="country-error"
+                  placeholder="País"
+                  fluid
+                />
+              </FloatLabel>
+              <small
+                v-if="submitted && !patient.countryId"
+                class="p-error"
+                id="country-error"
+              >
+                El país es requerido
+              </small>
             </div>
 
             <!-- Updated template code for the passport/RUT input field -->
-            <div class="field">
-              <label for="passport">Pasaporte / DNI</label>
-              <InputText
-                class="w-full"
-                id="passport"
-                placeholder="12345678-9"
-                v-model.trim="patient.passport"
-                @input="formatRut"
-                @blur="validateRut"
-                :class="{
-                  'p-invalid': submitted && !isValidRut && patient.passport,
-                }"
-              />
+            <div class="field pt-5">
+              <FloatLabel>
+                <label for="passport">Pasaporte / DNI *</label>
+                <InputText
+                  class="w-full"
+                  id="passport"
+                  v-model.trim="patient.passport"
+                  @input="formatRut"
+                  @blur="validateRut"
+                  :class="{
+                    'p-invalid': (submitted && !patient.passport) || (submitted && !isValidRut && patient.passport),
+                  }"
+                  aria-describedby="passport-error"
+                  fluid
+                />
+              </FloatLabel>
               <small
-                v-if="submitted && !isValidRut && patient.passport"
+                v-if="submitted && !patient.passport"
+                class="p-error"
+                id="passport-error"
+              >
+                El pasaporte/DNI es requerido
+              </small>
+              <small
+                v-else-if="submitted && !isValidRut && patient.passport"
                 class="p-error"
               >
                 RUT no válido. Verifique el formato y dígito verificador.
@@ -85,16 +130,27 @@
               </small>
             </div>
 
-            <div class="field">
-              <label for="birthday">Fecha de Nacimiento*</label>
-              <Calendar
-                id="birthday"
-                v-model="patient.birthday"
-                :showIcon="true"
-                dateFormat="dd/mm/yy"
-                class="w-full"
-                aria-describedby="birthday-error"
-              />
+            <div class="field pt-5">
+              <FloatLabel>
+                <label for="birthday">Fecha de Nacimiento *</label>
+                <Calendar
+                  id="birthday"
+                  v-model="patient.birthday"
+                  :showIcon="true"
+                  dateFormat="dd/mm/yy"
+                  class="w-full"
+                  :class="{ 'p-invalid': submitted && !patient.birthday }"
+                  aria-describedby="birthday-error"
+                  fluid
+                />
+              </FloatLabel>
+              <small
+                v-if="submitted && !patient.birthday"
+                class="p-error"
+                id="birthday-error"
+              >
+                La fecha de nacimiento es requerida
+              </small>
             </div>
           </div>
         </div>
@@ -102,33 +158,75 @@
         <div class="p-card p-3 mb-3">
           <h2 class="text-lg font-medium mb-3">Información de Contacto</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="field">
-              <label for="tel">Teléfono</label>
-              <InputText
-                id="tel"
-                v-model.trim="patient.tel"
-                keyfilter="int"
-                class="w-full"
-              />
+            <div class="field pt-5">
+              <FloatLabel>
+                <label for="tel">Teléfono</label>
+                <InputText
+                  id="tel"
+                  v-model.trim="patient.tel"
+                  keyfilter="int"
+                  class="w-full"
+                  :class="{ 'p-invalid': submitted && !patient.tel }"
+                  aria-describedby="tel-error"
+                  fluid
+                />
+              </FloatLabel>
+              <small
+                v-if="submitted && !patient.tel"
+                class="p-error"
+                id="tel-error"
+              >
+                El teléfono es requerido
+              </small>
             </div>
 
-            <div class="field">
-              <label for="mail">Correo Electrónico</label>
-              <InputText
-                id="mail"
-                v-model.trim="patient.mail"
-                class="w-full"
-                aria-describedby="email-error"
-              />
+            <div class="field pt-5">
+              <FloatLabel>
+                <label for="mail">Correo Electrónico</label>
+                <InputText
+                  id="mail"
+                  v-model.trim="patient.mail"
+                  class="w-full"
+                  :class="{ 'p-invalid': submitted && (!patient.mail || !isValidEmail) }"
+                  aria-describedby="email-error"
+                  @blur="validateEmail"
+                  fluid
+                />
+              </FloatLabel>
+              <small
+                v-if="submitted && !patient.mail"
+                class="p-error"
+                id="email-error"
+              >
+                El correo electrónico es requerido
+              </small>
+              <small
+                v-else-if="submitted && patient.mail && !isValidEmail"
+                class="p-error"
+              >
+                Ingrese un correo electrónico válido
+              </small>
             </div>
 
-            <div class="field">
-              <label for="homeAddress">Dirección</label>
-              <InputText
-                id="homeAddress"
-                v-model.trim="patient.homeAddress"
-                class="w-full"
-              />
+            <div class="field pt-5">
+              <FloatLabel>
+                <label for="homeAddress">Dirección</label>
+                <InputText
+                  id="homeAddress"
+                  v-model.trim="patient.homeAddress"
+                  class="w-full"
+                  :class="{ 'p-invalid': submitted && !patient.homeAddress }"
+                  aria-describedby="address-error"
+                  fluid
+                />
+              </FloatLabel>
+              <small
+                v-if="submitted && !patient.homeAddress"
+                class="p-error"
+                id="address-error"
+              >
+                La dirección es requerida
+              </small>
             </div>
           </div>
         </div>
@@ -137,35 +235,30 @@
       <div class="p-card p-3 mb-3">
         <h2 class="text-lg font-medium mb-3">Información Adicional</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="field">
-            <label for="occupation">Ocupación</label>
-            <InputText
-              id="occupation"
-              class="w-full"
-              v-model.trim="patient.occupation"
-            />
+          <div class="field pt-5">
+            <FloatLabel>
+              <label for="occupation">Ocupación</label>
+              <InputText
+                id="occupation"
+                class="w-full"
+                v-model.trim="patient.occupation"
+                fluid
+              />
+            </FloatLabel>
           </div>
 
-          <!-- <div class="field">
-            <label for="isapre">Isapre / Seguro Médico*</label>
-            <Dropdown
-              id="isapre"
-              v-model="patient.isapreId"
-              :options="isapres"
-              optionLabel="value"
-              optionValue="id"
-              class="w-full"
-              aria-describedby="isapre-error"
-            />
-          </div> -->
-
-          <div class="field">
-            <label for="legalRepresentative">Tutor (Adulto responsable)</label>
-            <InputText
-              id="legalRepresentative"
-              v-model.trim="patient.legalRepresentative"
-              class="w-full"
-            />
+          <div class="field pt-5">
+            <FloatLabel>
+              <label for="legalRepresentative"
+                >Tutor (Adulto responsable)</label
+              >
+              <InputText
+                id="legalRepresentative"
+                v-model.trim="patient.legalRepresentative"
+                class="w-full"
+                fluid
+              />
+            </FloatLabel>
           </div>
         </div>
       </div>
@@ -227,6 +320,7 @@ const genders = ref([]);
 /* const isapres = ref([]); */
 const countries = ref([]);
 const isValidRut = ref(false);
+const isValidEmail = ref(true);
 
 onMounted(async () => {
   try {
@@ -278,8 +372,64 @@ const fetchPatientDetails = async (id) => {
   }
 };
 
+// Form validation function
+const validateForm = () => {
+  const requiredFields = [
+    'name',
+    'genderId', 
+    'countryId',
+    'passport',
+    'birthday',
+    'tel',
+    'mail',
+    'homeAddress'
+  ];
+
+  let isValid = true;
+
+  // Check required fields
+  for (const field of requiredFields) {
+    if (!patient.value[field]) {
+      isValid = false;
+    }
+  }
+
+  // Additional validations
+  if (patient.value.passport && !isValidRut.value) {
+    isValid = false;
+  }
+
+  if (patient.value.mail && !isValidEmail.value) {
+    isValid = false;
+  }
+
+  return isValid;
+};
+
 const savePatient = async () => {
   submitted.value = true;
+  
+  // Validate email before proceeding
+  if (patient.value.mail) {
+    validateEmail();
+  }
+  
+  // Validate RUT before proceeding
+  if (patient.value.passport) {
+    validateRut();
+  }
+
+  // Check if form is valid
+  if (!validateForm()) {
+    toast.add({
+      severity: "warn",
+      summary: "Advertencia",
+      detail: "Por favor complete todos los campos requeridos correctamente",
+      life: 3000,
+    });
+    return;
+  }
+
   loading.value = true;
   try {
     const patientData = { ...patient.value };
@@ -349,6 +499,19 @@ const fetchCountries = async () => {
   } catch (error) {
     console.error("Failed to fetch genders:", error);
   }
+};
+
+/**
+ * Validate email format
+ */
+const validateEmail = () => {
+  if (!patient.value.mail) {
+    isValidEmail.value = true;
+    return;
+  }
+  
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  isValidEmail.value = emailRegex.test(patient.value.mail);
 };
 
 /**
